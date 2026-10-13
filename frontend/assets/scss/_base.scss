@@ -1,0 +1,126 @@
+:root {
+  --app-rail-width: 64px;
+  --app-panel-width: 236px;
+  --app-sidebar-width: calc(var(--app-rail-width) + var(--app-panel-width));
+  --app-topbar-height: 60px;
+  --app-radius: 12px;
+  --app-radius-sm: 10px;
+  --app-transition: 0.18s ease;
+
+  --app-black: #0a0a0a;
+  --app-surface: var(--p-surface-0);
+  --app-surface-muted: var(--p-surface-50);
+  --app-surface-hover: var(--p-surface-100);
+  --app-border: var(--p-surface-200);
+  --app-text: var(--p-surface-900);
+  --app-text-muted: var(--p-surface-500);
+  --app-accent: var(--p-primary-500);
+  --app-accent-contrast: var(--app-black);
+  --app-accent-soft: var(--p-primary-50);
+  --app-accent-text: var(--p-primary-700);
+
+  --surface-border: var(--app-border);
+  --code-background: var(--app-surface);
+  --p-inputtext-border-color: var(--app-border);
+}
+
+:root[class*='app-dark'] {
+  --app-surface: var(--p-surface-900);
+  --app-surface-muted: var(--p-surface-950);
+  --app-surface-hover: var(--p-surface-800);
+  --app-border: var(--p-surface-800);
+  --app-text: var(--p-surface-0);
+  --app-text-muted: var(--p-surface-400);
+  --app-accent: var(--p-primary-500);
+  --app-accent-soft: color-mix(in srgb, var(--p-primary-500) 16%, transparent);
+  --app-accent-text: var(--p-primary-300);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+  color: var(--app-text);
+  background-color: var(--app-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.app-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-border) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--app-border);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+.border,
+.border-l,
+.border-r,
+.border-t,
+.border-b {
+  border-color: var(--app-border);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0.75rem;
+  max-width: 100%;
+
+  > label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--app-text-muted);
+  }
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background-color: var(--app-surface);
+}
+
+.p-tag.p-component {
+  font-size: 12px;
+  font-weight: 500;
+}

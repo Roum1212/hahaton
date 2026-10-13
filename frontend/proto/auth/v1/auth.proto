@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "user/v1/user.proto";
+
+service AuthService {
+  rpc LoginWithFlida(LoginWithFlidaRequest) returns (LoginWithFlidaResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc Me(MeRequest) returns (MeResponse);
+}
+
+message LoginWithFlidaRequest {
+  string flida_access_token = 1;
+}
+
+message LoginWithFlidaResponse {
+  string access_token = 1;
+}
+
+message RefreshTokenRequest {}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+message MeRequest {}
+
+message MeResponse {
+  user.v1.User user = 1;
+}
