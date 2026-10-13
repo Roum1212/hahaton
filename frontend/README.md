@@ -114,25 +114,3 @@ AuthService.LoginWithFlida({ flidaAccessToken }) ──▶ бэкенд: GET id.
 
 Настройка в консоли Флида ID: в «Платформы → Web» добавить Redirect URL, совпадающий с `APP_FLIDA_REDIRECT_URI` (например `http://localhost:3000/auth/callback`).
 
-## Тема и оболочка
-
-Светлая оболочка в стиле kms-frontend: колонка разделов с lucide-иконками, панель меню с группами и пользователем внизу, топбар с крошками «раздел › страница», страницы `AppPage` с заголовком, подзаголовком и действиями.
-
-- `theme.settings.js` — пресет PrimeVue: оранжевый `primary` и нейтральные `surface` для светлой и тёмной схем.
-- `assets/scss/_base.scss` — токены `--app-*` (поверхности, границы, текст, акцент, размеры колонки и панели).
-- `assets/scss/_cabinet.scss` — блоки `app-shell`, `app-rail`, `app-panel`, `app-nav`, `app-user`, `app-topbar`, `app-page`, `app-card`, `app-grid`, `app-field`, `app-form-grid`, `app-list`, `app-table`, `app-empty`, `app-settings-*`.
-- `config/menu.config.ts` — разделы (`IMenuSection`: `lucide`-иконка и группы ссылок).
-- Кнопка в топбаре сворачивает панель до колонки иконок; на мобильных сайдбар выезжает поверх контента.
-
-Для таблиц используйте `UiTable` (toolbar, пустое состояние, «Показать ещё», выделение строк с панелью массовых действий). Пример — `components/users/List.vue`.
-
-## Как добавить новый модуль
-
-1. Описать сервис в `proto/<module>/v1/<module>.proto` и выполнить `pnpm proto:gen`.
-2. Создать `core/<module>/api/<entity>/<entity>.api.ts` — класс `extends BaseRpcApi<typeof XxxService>`, и `<entity>.api.types.ts` с типами на основе `MessageInitShape`.
-3. Создать `core/<module>/services/<entity>/` — сервис с маппингом в доменные интерфейсы (`MapperService`) и `*.types.ts`.
-4. Создать `core/<module>/index.ts` с `<MODULE>_API()` и `<MODULE>_SERVICES()`; зарегистрировать сервисы в `composables/helpers/useServices.ts`.
-5. Добавить стор в `core/<module>/stores/` (подхватывается автоимпортом).
-6. Добавить composables, компоненты, страницы и раздел или пункты в `config/menu.config.ts`.
-
-Пример полного модуля — `core/users` + `composables/users` + `components/users` + `pages/cabinet/settings/users`.
