@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#FFF2EB"/>
+  <circle cx="520" cy="70" r="110" fill="#FFE2D4"/>
+  <circle cx="70" cy="360" r="120" fill="#FFE2D4"/>
+  <g>
+    <rect x="150" y="70" width="230" height="290" rx="22" fill="#fff" stroke="#F6DDD0" stroke-width="3"/>
+    <rect x="215" y="54" width="100" height="34" rx="12" fill="#FB6F47"/>
+    <circle cx="190" cy="138" r="14" fill="#22A06B"/>
+    <path d="M183 138l5 5 9-10" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="216" y="128" width="130" height="10" rx="5" fill="#3D2016"/>
+    <rect x="216" y="144" width="86" height="8" rx="4" fill="#E5D5CC"/>
+    <circle cx="190" cy="202" r="14" fill="#22A06B"/>
+    <path d="M183 202l5 5 9-10" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="216" y="192" width="118" height="10" rx="5" fill="#3D2016"/>
+    <rect x="216" y="208" width="98" height="8" rx="4" fill="#E5D5CC"/>
+    <circle cx="190" cy="266" r="14" fill="#FDE2E2"/>
+    <path d="M184 260l12 12M196 260l-12 12" stroke="#E11D48" stroke-width="4" stroke-linecap="round"/>
+    <rect x="216" y="256" width="124" height="10" rx="5" fill="#3D2016"/>
+    <rect x="216" y="272" width="70" height="8" rx="4" fill="#E5D5CC"/>
+    <rect x="176" y="308" width="178" height="30" rx="10" fill="#FFEDE4"/>
+    <text x="265" y="328" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700" fill="#C2410C">+30 койнов</text>
+  </g>
+  <g>
+    <circle cx="452" cy="216" r="70" fill="#fff" stroke="#F6DDD0" stroke-width="3"/>
+    <circle cx="452" cy="216" r="56" fill="#FFF6F1"/>
+    <path d="M452 216V176M452 216l28 16" stroke="#3D2016" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="452" cy="216" r="7" fill="#FB6F47"/>
+    <rect x="410" y="300" width="84" height="34" rx="17" fill="#FB6F47"/>
+    <text x="452" y="323" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800" fill="#fff">3 часа</text>
+  </g>
+  <g transform="translate(96 250) rotate(-14)">
+    <rect x="-46" y="-24" width="92" height="48" rx="10" stroke="#22A06B" stroke-width="4"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#22A06B">ПРИНЯТО</text>
+  </g>
+</svg>
