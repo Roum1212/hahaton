@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file session/v1/session_service.proto.
  */
 export const file_session_v1_session_service: GenFile = /*@__PURE__*/
-  fileDesc("CiBzZXNzaW9uL3YxL3Nlc3Npb25fc2VydmljZS5wcm90bxIKc2Vzc2lvbi52MSKqAQoHU2Vzc2lvbhIdCgd1c2VyX2lkGAQgASgJSABSB3VzZXJfaWSIAQESOAoXaGFzX2Nvb3JkaW5hdG9yX3Byb2ZpbGUYBSABKAhSF2hhc19jb29yZGluYXRvcl9wcm9maWxlEjoKCmV4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpleHBpcmVzX2F0QgoKCF91c2VyX2lkIhQKEk9wZW5TZXNzaW9uUmVxdWVzdCI7ChNPcGVuU2Vzc2lvblJlc3BvbnNlEiQKB3Nlc3Npb24YASABKAsyEy5zZXNzaW9uLnYxLlNlc3Npb24iOAoaQXV0aGVudGljYXRlU2Vzc2lvblJlcXVlc3QSGgoIaWRfdG9rZW4YAyABKAlSCGlkX3Rva2VuIkMKG0F1dGhlbnRpY2F0ZVNlc3Npb25SZXNwb25zZRIkCgdzZXNzaW9uGAEgASgLMhMuc2Vzc2lvbi52MS5TZXNzaW9uIhMKEUdldFNlc3Npb25SZXF1ZXN0IjoKEkdldFNlc3Npb25SZXNwb25zZRIkCgdzZXNzaW9uGAEgASgLMhMuc2Vzc2lvbi52MS5TZXNzaW9uIhUKE0Nsb3NlU2Vzc2lvblJlcXVlc3Qy5gIKDlNlc3Npb25TZXJ2aWNlElAKC09wZW5TZXNzaW9uEh4uc2Vzc2lvbi52MS5PcGVuU2Vzc2lvblJlcXVlc3QaHy5zZXNzaW9uLnYxLk9wZW5TZXNzaW9uUmVzcG9uc2UiABJoChNBdXRoZW50aWNhdGVTZXNzaW9uEiYuc2Vzc2lvbi52MS5BdXRoZW50aWNhdGVTZXNzaW9uUmVxdWVzdBonLnNlc3Npb24udjEuQXV0aGVudGljYXRlU2Vzc2lvblJlc3BvbnNlIgASTQoKR2V0U2Vzc2lvbhIdLnNlc3Npb24udjEuR2V0U2Vzc2lvblJlcXVlc3QaHi5zZXNzaW9uLnYxLkdldFNlc3Npb25SZXNwb25zZSIAEkkKDENsb3NlU2Vzc2lvbhIfLnNlc3Npb24udjEuQ2xvc2VTZXNzaW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAQjxaOmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9zZXNzaW9uL3YxO3Nlc3Npb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("CiBzZXNzaW9uL3YxL3Nlc3Npb25fc2VydmljZS5wcm90bxIKc2Vzc2lvbi52MSKqAQoHU2Vzc2lvbhIdCgd1c2VyX2lkGAQgASgJSABSB3VzZXJfaWSIAQESOAoXaGFzX2Nvb3JkaW5hdG9yX3Byb2ZpbGUYBSABKAhSF2hhc19jb29yZGluYXRvcl9wcm9maWxlEjoKCmV4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpleHBpcmVzX2F0QgoKCF91c2VyX2lkIjgKGkF1dGhlbnRpY2F0ZVNlc3Npb25SZXF1ZXN0EhoKCGlkX3Rva2VuGAMgASgJUghpZF90b2tlbiI6ChJHZXRTZXNzaW9uUmVzcG9uc2USJAoHc2Vzc2lvbhgBIAEoCzITLnNlc3Npb24udjEuU2Vzc2lvbjK0AgoOU2Vzc2lvblNlcnZpY2USPwoLT3BlblNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJXChNBdXRoZW50aWNhdGVTZXNzaW9uEiYuc2Vzc2lvbi52MS5BdXRoZW50aWNhdGVTZXNzaW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkYKCkdldFNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaHi5zZXNzaW9uLnYxLkdldFNlc3Npb25SZXNwb25zZSIAEkAKDENsb3NlU2Vzc2lvbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAQjxaOmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9zZXNzaW9uL3YxO3Nlc3Npb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message session.v1.Session
@@ -50,36 +50,6 @@ export const SessionSchema: GenMessage<Session> = /*@__PURE__*/
   messageDesc(file_session_v1_session_service, 0);
 
 /**
- * @generated from message session.v1.OpenSessionRequest
- */
-export type OpenSessionRequest = Message<"session.v1.OpenSessionRequest"> & {
-};
-
-/**
- * Describes the message session.v1.OpenSessionRequest.
- * Use `create(OpenSessionRequestSchema)` to create a new message.
- */
-export const OpenSessionRequestSchema: GenMessage<OpenSessionRequest> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 1);
-
-/**
- * @generated from message session.v1.OpenSessionResponse
- */
-export type OpenSessionResponse = Message<"session.v1.OpenSessionResponse"> & {
-  /**
-   * @generated from field: session.v1.Session session = 1;
-   */
-  session?: Session | undefined;
-};
-
-/**
- * Describes the message session.v1.OpenSessionResponse.
- * Use `create(OpenSessionResponseSchema)` to create a new message.
- */
-export const OpenSessionResponseSchema: GenMessage<OpenSessionResponse> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 2);
-
-/**
  * @generated from message session.v1.AuthenticateSessionRequest
  */
 export type AuthenticateSessionRequest = Message<"session.v1.AuthenticateSessionRequest"> & {
@@ -100,37 +70,7 @@ export type AuthenticateSessionRequest = Message<"session.v1.AuthenticateSession
  * Use `create(AuthenticateSessionRequestSchema)` to create a new message.
  */
 export const AuthenticateSessionRequestSchema: GenMessage<AuthenticateSessionRequest> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 3);
-
-/**
- * @generated from message session.v1.AuthenticateSessionResponse
- */
-export type AuthenticateSessionResponse = Message<"session.v1.AuthenticateSessionResponse"> & {
-  /**
-   * @generated from field: session.v1.Session session = 1;
-   */
-  session?: Session | undefined;
-};
-
-/**
- * Describes the message session.v1.AuthenticateSessionResponse.
- * Use `create(AuthenticateSessionResponseSchema)` to create a new message.
- */
-export const AuthenticateSessionResponseSchema: GenMessage<AuthenticateSessionResponse> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 4);
-
-/**
- * @generated from message session.v1.GetSessionRequest
- */
-export type GetSessionRequest = Message<"session.v1.GetSessionRequest"> & {
-};
-
-/**
- * Describes the message session.v1.GetSessionRequest.
- * Use `create(GetSessionRequestSchema)` to create a new message.
- */
-export const GetSessionRequestSchema: GenMessage<GetSessionRequest> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 5);
+  messageDesc(file_session_v1_session_service, 1);
 
 /**
  * @generated from message session.v1.GetSessionResponse
@@ -147,46 +87,35 @@ export type GetSessionResponse = Message<"session.v1.GetSessionResponse"> & {
  * Use `create(GetSessionResponseSchema)` to create a new message.
  */
 export const GetSessionResponseSchema: GenMessage<GetSessionResponse> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 6);
-
-/**
- * @generated from message session.v1.CloseSessionRequest
- */
-export type CloseSessionRequest = Message<"session.v1.CloseSessionRequest"> & {
-};
-
-/**
- * Describes the message session.v1.CloseSessionRequest.
- * Use `create(CloseSessionRequestSchema)` to create a new message.
- */
-export const CloseSessionRequestSchema: GenMessage<CloseSessionRequest> = /*@__PURE__*/
-  messageDesc(file_session_v1_session_service, 7);
+  messageDesc(file_session_v1_session_service, 2);
 
 /**
  * Cookie-сессия содержит серверную привязку к единому user_id участника.
- * Connect interceptor проверяет cookie и сессию, помещает user_id в context.
+ * Authentication проверяет cookie и сессию; authn.NewMiddleware помещает агрегат Session в context.
  * Координаторские команды дополнительно проверяют наличие Coordinator и права на объект.
  * Режим кабинета выбирает фронт; роль и отдельные coordinator_id/volunteer_id в сессии не хранятся.
  * Cookie: HttpOnly, Secure, Path=/; собственных access/refresh JWT приложения нет.
- * Истечение/отзыв сессии даёт Unauthenticated, включая открытые стримы.
+ * Истечение/отзыв сессии даёт Unauthenticated при следующем запросе или открытии стрима.
+ * Проверку сессии уже открытого стрима обеспечивает EventChatService.
  *
  * @generated from service session.v1.SessionService
  */
 export const SessionService: GenService<{
   /**
-   * Без авторизации. Ставит cookie анонимной сессии. Действующую сессию возвращает
-   * без замены и выхода из аккаунта.
+   * Без авторизации. Ставит cookie анонимной сессии. Действующая сессия остаётся
+   * без замены и выхода из аккаунта. Данные читаются через GetSession.
    *
    * @generated from rpc session.v1.SessionService.OpenSession
    */
   openSession: {
     methodKind: "unary";
-    input: typeof OpenSessionRequestSchema;
-    output: typeof OpenSessionResponseSchema;
+    input: typeof EmptySchema;
+    output: typeof EmptySchema;
   },
   /**
    * Только действующая анонимная сессия. Проверяет Flida ID token и определяет
-   * общий user_id по (iss, sub), затем заменяет cookie; старое значение недействительно.
+   * общий user_id по (iss, sub), затем создаёт сессию с новым ID и заменяет cookie.
+   * Прежняя анонимная сессия удаляется; старое значение cookie недействительно.
    * Первый вход создаёт Volunteer и нулевой Wallet; Coordinator выдаётся только админами.
    * Вход по произвольному ID невозможен. Для другого аккаунта сначала требуется выход;
    * переключение режима волонтёр/координатор нового входа и отдельного RPC не требует.
@@ -196,26 +125,28 @@ export const SessionService: GenService<{
   authenticateSession: {
     methodKind: "unary";
     input: typeof AuthenticateSessionRequestSchema;
-    output: typeof AuthenticateSessionResponseSchema;
+    output: typeof EmptySchema;
   },
   /**
    * Текущая сессия. Наличие Coordinator вычисляется заново для доступных режимов кабинета.
+   * Запрос пустой; идентификатор берётся только из проверенной cookie-сессии.
    *
    * @generated from rpc session.v1.SessionService.GetSession
    */
   getSession: {
     methodKind: "unary";
-    input: typeof GetSessionRequestSchema;
+    input: typeof EmptySchema;
     output: typeof GetSessionResponseSchema;
   },
   /**
-   * Отзывает только текущую сессию и удаляет cookie; повтор без cookie успешен.
+   * Удаляет только текущую сессию из БД и удаляет cookie; повтор без cookie успешен.
+   * Запрос пустой; закрыть чужую сессию по переданному ID невозможно.
    *
    * @generated from rpc session.v1.SessionService.CloseSession
    */
   closeSession: {
     methodKind: "unary";
-    input: typeof CloseSessionRequestSchema;
+    input: typeof EmptySchema;
     output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/

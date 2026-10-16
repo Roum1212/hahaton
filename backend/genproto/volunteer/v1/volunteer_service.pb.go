@@ -79,16 +79,18 @@ func (VolunteerOperationType) EnumDescriptor() ([]byte, []int) {
 }
 
 type Volunteer struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	DateOfBirth      *date.Date             `protobuf:"bytes,2,opt,name=date_of_birth,proto3" json:"date_of_birth,omitempty"`
-	FirstName        string                 `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty"`
-	LastName         string                 `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty"`
-	MiddleName       string                 `protobuf:"bytes,5,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
-	EmailAddress     string                 `protobuf:"bytes,6,opt,name=email_address,proto3" json:"email_address,omitempty"`
-	PhoneNumber      string                 `protobuf:"bytes,9,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
-	CoinBalance      int64                  `protobuf:"varint,7,opt,name=coin_balance,proto3" json:"coin_balance,omitempty"`
-	ConfirmedMinutes int64                  `protobuf:"varint,8,opt,name=confirmed_minutes,proto3" json:"confirmed_minutes,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
+	AvatarUrl        string     `protobuf:"bytes,10,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	DateOfBirth      *date.Date `protobuf:"bytes,2,opt,name=date_of_birth,proto3" json:"date_of_birth,omitempty"`
+	FirstName        string     `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty"`
+	LastName         string     `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty"`
+	MiddleName       string     `protobuf:"bytes,5,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
+	EmailAddress     string     `protobuf:"bytes,6,opt,name=email_address,proto3" json:"email_address,omitempty"`
+	PhoneNumber      string     `protobuf:"bytes,9,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
+	CoinBalance      int64      `protobuf:"varint,7,opt,name=coin_balance,proto3" json:"coin_balance,omitempty"`
+	ConfirmedMinutes int64      `protobuf:"varint,8,opt,name=confirmed_minutes,proto3" json:"confirmed_minutes,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -126,6 +128,13 @@ func (*Volunteer) Descriptor() ([]byte, []int) {
 func (x *Volunteer) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *Volunteer) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
 	}
 	return ""
 }
@@ -280,6 +289,7 @@ func (x *GetVolunteerResponse) GetVolunteer() *Volunteer {
 type CoordinatorVolunteer struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,7,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
 	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,proto3" json:"last_name,omitempty"`
 	MiddleName    string                 `protobuf:"bytes,4,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
@@ -322,6 +332,13 @@ func (*CoordinatorVolunteer) Descriptor() ([]byte, []int) {
 func (x *CoordinatorVolunteer) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *CoordinatorVolunteer) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
 	}
 	return ""
 }
@@ -451,6 +468,9 @@ func (x *GetCoordinatorVolunteerResponse) GetVolunteer() *CoordinatorVolunteer {
 
 type UpdateVolunteerRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Отсутствует — сохранить; пустая строка — убрать аватар.
+	// Иначе image_path из UploadImage текущего участника; файл обязан существовать.
+	AvatarPath *string `protobuf:"bytes,5,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
 	// Отсутствующее поле сохраняется. Дата должна быть полной и не в будущем.
 	// Имя и фамилия непустые; пустое middle_name очищает отчество.
 	DateOfBirth   *date.Date `protobuf:"bytes,1,opt,name=date_of_birth,proto3,oneof" json:"date_of_birth,omitempty"`
@@ -489,6 +509,13 @@ func (x *UpdateVolunteerRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateVolunteerRequest.ProtoReflect.Descriptor instead.
 func (*UpdateVolunteerRequest) Descriptor() ([]byte, []int) {
 	return file_volunteer_v1_volunteer_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateVolunteerRequest) GetAvatarPath() string {
+	if x != nil && x.AvatarPath != nil {
+		return *x.AvatarPath
+	}
+	return ""
 }
 
 func (x *UpdateVolunteerRequest) GetDateOfBirth() *date.Date {
@@ -824,9 +851,13 @@ var File_volunteer_v1_volunteer_service_proto protoreflect.FileDescriptor
 
 const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\n" +
-	"$volunteer/v1/volunteer_service.proto\x12\fvolunteer.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xd0\x02\n" +
+	"$volunteer/v1/volunteer_service.proto\x12\fvolunteer.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xf0\x02\n" +
 	"\tVolunteer\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x127\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
+	"\n" +
+	"avatar_url\x18\n" +
+	" \x01(\tR\n" +
+	"avatar_url\x127\n" +
 	"\rdate_of_birth\x18\x02 \x01(\v2\x11.google.type.DateR\rdate_of_birth\x12\x1e\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\n" +
@@ -841,9 +872,12 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x88\x01\x01B\x05\n" +
 	"\x03_id\"M\n" +
 	"\x14GetVolunteerResponse\x125\n" +
-	"\tvolunteer\x18\x01 \x01(\v2\x17.volunteer.v1.VolunteerR\tvolunteer\"\xfd\x01\n" +
+	"\tvolunteer\x18\x01 \x01(\v2\x17.volunteer.v1.VolunteerR\tvolunteer\"\x9d\x02\n" +
 	"\x14CoordinatorVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
+	"\n" +
+	"avatar_url\x18\a \x01(\tR\n" +
+	"avatar_url\x12\x1e\n" +
 	"\n" +
 	"first_name\x18\x02 \x01(\tR\n" +
 	"first_name\x12\x1c\n" +
@@ -856,14 +890,16 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\x1eGetCoordinatorVolunteerRequest\x12\"\n" +
 	"\fvolunteer_id\x18\x01 \x01(\tR\fvolunteer_id\"c\n" +
 	"\x1fGetCoordinatorVolunteerResponse\x12@\n" +
-	"\tvolunteer\x18\x01 \x01(\v2\".volunteer.v1.CoordinatorVolunteerR\tvolunteer\"\x84\x02\n" +
-	"\x16UpdateVolunteerRequest\x12<\n" +
-	"\rdate_of_birth\x18\x01 \x01(\v2\x11.google.type.DateH\x00R\rdate_of_birth\x88\x01\x01\x12#\n" +
+	"\tvolunteer\x18\x01 \x01(\v2\".volunteer.v1.CoordinatorVolunteerR\tvolunteer\"\xbb\x02\n" +
+	"\x16UpdateVolunteerRequest\x12%\n" +
+	"\vavatar_path\x18\x05 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12<\n" +
+	"\rdate_of_birth\x18\x01 \x01(\v2\x11.google.type.DateH\x01R\rdate_of_birth\x88\x01\x01\x12#\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tH\x01R\n" +
+	"first_name\x18\x02 \x01(\tH\x02R\n" +
 	"first_name\x88\x01\x01\x12!\n" +
-	"\tlast_name\x18\x03 \x01(\tH\x02R\tlast_name\x88\x01\x01\x12%\n" +
-	"\vmiddle_name\x18\x04 \x01(\tH\x03R\vmiddle_name\x88\x01\x01B\x10\n" +
+	"\tlast_name\x18\x03 \x01(\tH\x03R\tlast_name\x88\x01\x01\x12%\n" +
+	"\vmiddle_name\x18\x04 \x01(\tH\x04R\vmiddle_name\x88\x01\x01B\x0e\n" +
+	"\f_avatar_pathB\x10\n" +
 	"\x0e_date_of_birthB\r\n" +
 	"\v_first_nameB\f\n" +
 	"\n" +

@@ -35,6 +35,8 @@ message Reward {
   string coordinator_id = 2 [json_name = "coordinator_id"];
 
   string description = 3 [json_name = "description"];
+  // Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
+  string image_url = 9 [json_name = "image_url"];
   string title = 4 [json_name = "title"];
 
   // Целое положительное число коинов за одну единицу.
@@ -56,6 +58,9 @@ enum RewardStatus {
 
 message CreateRewardRequest {
   string description = 1 [json_name = "description"];
+  // Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
+  // Файл обязан существовать и принадлежать ему.
+  string image_path = 5 [json_name = "image_path"];
   // Непустое название.
   string title = 2 [json_name = "title"];
 
@@ -114,6 +119,9 @@ message UpdateRewardRequest {
 
   // Отсутствующие поля не меняются. Пустое описание очищает его.
   optional string description = 2 [json_name = "description"];
+  // Отсутствует — сохранить; пустая строка — убрать изображение.
+  // Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
+  optional string image_path = 6 [json_name = "image_path"];
   // Непустое название.
   optional string title = 3 [json_name = "title"];
 

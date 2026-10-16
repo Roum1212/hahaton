@@ -50,19 +50,22 @@ const (
 
 // SessionServiceClient is a client for the session.v1.SessionService service.
 type SessionServiceClient interface {
-	// Без авторизации. Ставит cookie анонимной сессии. Действующую сессию возвращает
-	// без замены и выхода из аккаунта.
-	OpenSession(context.Context, *connect.Request[v1.OpenSessionRequest]) (*connect.Response[v1.OpenSessionResponse], error)
+	// Без авторизации. Ставит cookie анонимной сессии. Действующая сессия остаётся
+	// без замены и выхода из аккаунта. Данные читаются через GetSession.
+	OpenSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 	// Только действующая анонимная сессия. Проверяет Flida ID token и определяет
-	// общий user_id по (iss, sub), затем заменяет cookie; старое значение недействительно.
+	// общий user_id по (iss, sub), затем создаёт сессию с новым ID и заменяет cookie.
+	// Прежняя анонимная сессия удаляется; старое значение cookie недействительно.
 	// Первый вход создаёт Volunteer и нулевой Wallet; Coordinator выдаётся только админами.
 	// Вход по произвольному ID невозможен. Для другого аккаунта сначала требуется выход;
 	// переключение режима волонтёр/координатор нового входа и отдельного RPC не требует.
-	AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[v1.AuthenticateSessionResponse], error)
+	AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[emptypb.Empty], error)
 	// Текущая сессия. Наличие Coordinator вычисляется заново для доступных режимов кабинета.
-	GetSession(context.Context, *connect.Request[v1.GetSessionRequest]) (*connect.Response[v1.GetSessionResponse], error)
-	// Отзывает только текущую сессию и удаляет cookie; повтор без cookie успешен.
-	CloseSession(context.Context, *connect.Request[v1.CloseSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// Запрос пустой; идентификатор берётся только из проверенной cookie-сессии.
+	GetSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSessionResponse], error)
+	// Удаляет только текущую сессию из БД и удаляет cookie; повтор без cookie успешен.
+	// Запрос пустой; закрыть чужую сессию по переданному ID невозможно.
+	CloseSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewSessionServiceClient constructs a client for the session.v1.SessionService service. By
@@ -76,25 +79,25 @@ func NewSessionServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 	baseURL = strings.TrimRight(baseURL, "/")
 	sessionServiceMethods := v1.File_session_v1_session_service_proto.Services().ByName("SessionService").Methods()
 	return &sessionServiceClient{
-		openSession: connect.NewClient[v1.OpenSessionRequest, v1.OpenSessionResponse](
+		openSession: connect.NewClient[emptypb.Empty, emptypb.Empty](
 			httpClient,
 			baseURL+SessionServiceOpenSessionProcedure,
 			connect.WithSchema(sessionServiceMethods.ByName("OpenSession")),
 			connect.WithClientOptions(opts...),
 		),
-		authenticateSession: connect.NewClient[v1.AuthenticateSessionRequest, v1.AuthenticateSessionResponse](
+		authenticateSession: connect.NewClient[v1.AuthenticateSessionRequest, emptypb.Empty](
 			httpClient,
 			baseURL+SessionServiceAuthenticateSessionProcedure,
 			connect.WithSchema(sessionServiceMethods.ByName("AuthenticateSession")),
 			connect.WithClientOptions(opts...),
 		),
-		getSession: connect.NewClient[v1.GetSessionRequest, v1.GetSessionResponse](
+		getSession: connect.NewClient[emptypb.Empty, v1.GetSessionResponse](
 			httpClient,
 			baseURL+SessionServiceGetSessionProcedure,
 			connect.WithSchema(sessionServiceMethods.ByName("GetSession")),
 			connect.WithClientOptions(opts...),
 		),
-		closeSession: connect.NewClient[v1.CloseSessionRequest, emptypb.Empty](
+		closeSession: connect.NewClient[emptypb.Empty, emptypb.Empty](
 			httpClient,
 			baseURL+SessionServiceCloseSessionProcedure,
 			connect.WithSchema(sessionServiceMethods.ByName("CloseSession")),
@@ -105,47 +108,50 @@ func NewSessionServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // sessionServiceClient implements SessionServiceClient.
 type sessionServiceClient struct {
-	openSession         *connect.Client[v1.OpenSessionRequest, v1.OpenSessionResponse]
-	authenticateSession *connect.Client[v1.AuthenticateSessionRequest, v1.AuthenticateSessionResponse]
-	getSession          *connect.Client[v1.GetSessionRequest, v1.GetSessionResponse]
-	closeSession        *connect.Client[v1.CloseSessionRequest, emptypb.Empty]
+	openSession         *connect.Client[emptypb.Empty, emptypb.Empty]
+	authenticateSession *connect.Client[v1.AuthenticateSessionRequest, emptypb.Empty]
+	getSession          *connect.Client[emptypb.Empty, v1.GetSessionResponse]
+	closeSession        *connect.Client[emptypb.Empty, emptypb.Empty]
 }
 
 // OpenSession calls session.v1.SessionService.OpenSession.
-func (c *sessionServiceClient) OpenSession(ctx context.Context, req *connect.Request[v1.OpenSessionRequest]) (*connect.Response[v1.OpenSessionResponse], error) {
+func (c *sessionServiceClient) OpenSession(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return c.openSession.CallUnary(ctx, req)
 }
 
 // AuthenticateSession calls session.v1.SessionService.AuthenticateSession.
-func (c *sessionServiceClient) AuthenticateSession(ctx context.Context, req *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[v1.AuthenticateSessionResponse], error) {
+func (c *sessionServiceClient) AuthenticateSession(ctx context.Context, req *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.authenticateSession.CallUnary(ctx, req)
 }
 
 // GetSession calls session.v1.SessionService.GetSession.
-func (c *sessionServiceClient) GetSession(ctx context.Context, req *connect.Request[v1.GetSessionRequest]) (*connect.Response[v1.GetSessionResponse], error) {
+func (c *sessionServiceClient) GetSession(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSessionResponse], error) {
 	return c.getSession.CallUnary(ctx, req)
 }
 
 // CloseSession calls session.v1.SessionService.CloseSession.
-func (c *sessionServiceClient) CloseSession(ctx context.Context, req *connect.Request[v1.CloseSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+func (c *sessionServiceClient) CloseSession(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return c.closeSession.CallUnary(ctx, req)
 }
 
 // SessionServiceHandler is an implementation of the session.v1.SessionService service.
 type SessionServiceHandler interface {
-	// Без авторизации. Ставит cookie анонимной сессии. Действующую сессию возвращает
-	// без замены и выхода из аккаунта.
-	OpenSession(context.Context, *connect.Request[v1.OpenSessionRequest]) (*connect.Response[v1.OpenSessionResponse], error)
+	// Без авторизации. Ставит cookie анонимной сессии. Действующая сессия остаётся
+	// без замены и выхода из аккаунта. Данные читаются через GetSession.
+	OpenSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 	// Только действующая анонимная сессия. Проверяет Flida ID token и определяет
-	// общий user_id по (iss, sub), затем заменяет cookie; старое значение недействительно.
+	// общий user_id по (iss, sub), затем создаёт сессию с новым ID и заменяет cookie.
+	// Прежняя анонимная сессия удаляется; старое значение cookie недействительно.
 	// Первый вход создаёт Volunteer и нулевой Wallet; Coordinator выдаётся только админами.
 	// Вход по произвольному ID невозможен. Для другого аккаунта сначала требуется выход;
 	// переключение режима волонтёр/координатор нового входа и отдельного RPC не требует.
-	AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[v1.AuthenticateSessionResponse], error)
+	AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[emptypb.Empty], error)
 	// Текущая сессия. Наличие Coordinator вычисляется заново для доступных режимов кабинета.
-	GetSession(context.Context, *connect.Request[v1.GetSessionRequest]) (*connect.Response[v1.GetSessionResponse], error)
-	// Отзывает только текущую сессию и удаляет cookie; повтор без cookie успешен.
-	CloseSession(context.Context, *connect.Request[v1.CloseSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// Запрос пустой; идентификатор берётся только из проверенной cookie-сессии.
+	GetSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSessionResponse], error)
+	// Удаляет только текущую сессию из БД и удаляет cookie; повтор без cookie успешен.
+	// Запрос пустой; закрыть чужую сессию по переданному ID невозможно.
+	CloseSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewSessionServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -198,18 +204,18 @@ func NewSessionServiceHandler(svc SessionServiceHandler, opts ...connect.Handler
 // UnimplementedSessionServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedSessionServiceHandler struct{}
 
-func (UnimplementedSessionServiceHandler) OpenSession(context.Context, *connect.Request[v1.OpenSessionRequest]) (*connect.Response[v1.OpenSessionResponse], error) {
+func (UnimplementedSessionServiceHandler) OpenSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("session.v1.SessionService.OpenSession is not implemented"))
 }
 
-func (UnimplementedSessionServiceHandler) AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[v1.AuthenticateSessionResponse], error) {
+func (UnimplementedSessionServiceHandler) AuthenticateSession(context.Context, *connect.Request[v1.AuthenticateSessionRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("session.v1.SessionService.AuthenticateSession is not implemented"))
 }
 
-func (UnimplementedSessionServiceHandler) GetSession(context.Context, *connect.Request[v1.GetSessionRequest]) (*connect.Response[v1.GetSessionResponse], error) {
+func (UnimplementedSessionServiceHandler) GetSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSessionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("session.v1.SessionService.GetSession is not implemented"))
 }
 
-func (UnimplementedSessionServiceHandler) CloseSession(context.Context, *connect.Request[v1.CloseSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+func (UnimplementedSessionServiceHandler) CloseSession(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("session.v1.SessionService.CloseSession is not implemented"))
 }

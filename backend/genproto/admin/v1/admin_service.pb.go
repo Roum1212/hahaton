@@ -24,6 +24,7 @@ const (
 type AdminVolunteer struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AvatarUrl             string                 `protobuf:"bytes,8,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
 	FirstName             string                 `protobuf:"bytes,2,opt,name=first_name,proto3" json:"first_name,omitempty"`
 	LastName              string                 `protobuf:"bytes,3,opt,name=last_name,proto3" json:"last_name,omitempty"`
 	MiddleName            string                 `protobuf:"bytes,4,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
@@ -67,6 +68,13 @@ func (*AdminVolunteer) Descriptor() ([]byte, []int) {
 func (x *AdminVolunteer) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *AdminVolunteer) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
 	}
 	return ""
 }
@@ -290,8 +298,9 @@ type CreateCoordinatorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательный внутренний ID существующего волонтёра.
 	VolunteerId string `protobuf:"bytes,7,opt,name=volunteer_id,proto3" json:"volunteer_id,omitempty"`
-	// Пустой avatar_url означает отсутствие аватара; иначе абсолютный HTTPS URL.
-	AvatarUrl   string `protobuf:"bytes,5,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	// Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
+	// Файл обязан существовать и принадлежать этому участнику.
+	AvatarPath  string `protobuf:"bytes,5,opt,name=avatar_path,proto3" json:"avatar_path,omitempty"`
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	// Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
 	CooperationRequestCooldownSeconds *int64 `protobuf:"varint,6,opt,name=cooperation_request_cooldown_seconds,proto3,oneof" json:"cooperation_request_cooldown_seconds,omitempty"`
@@ -336,9 +345,9 @@ func (x *CreateCoordinatorRequest) GetVolunteerId() string {
 	return ""
 }
 
-func (x *CreateCoordinatorRequest) GetAvatarUrl() string {
+func (x *CreateCoordinatorRequest) GetAvatarPath() string {
 	if x != nil {
-		return x.AvatarUrl
+		return x.AvatarPath
 	}
 	return ""
 }
@@ -406,9 +415,12 @@ var File_admin_v1_admin_service_proto protoreflect.FileDescriptor
 
 const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1cadmin/v1/admin_service.proto\x12\badmin.v1\"\x84\x02\n" +
+	"\x1cadmin/v1/admin_service.proto\x12\badmin.v1\"\xa4\x02\n" +
 	"\x0eAdminVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
+	"\n" +
+	"avatar_url\x18\b \x01(\tR\n" +
+	"avatar_url\x12\x1e\n" +
 	"\n" +
 	"first_name\x18\x02 \x01(\tR\n" +
 	"first_name\x12\x1c\n" +
@@ -428,12 +440,10 @@ const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"\n" +
 	"volunteers\x18\x01 \x03(\v2\x18.admin.v1.AdminVolunteerR\n" +
 	"volunteers\x12 \n" +
-	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\x82\x02\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\x84\x02\n" +
 	"\x18CreateCoordinatorRequest\x12\"\n" +
-	"\fvolunteer_id\x18\a \x01(\tR\fvolunteer_id\x12\x1e\n" +
-	"\n" +
-	"avatar_url\x18\x05 \x01(\tR\n" +
-	"avatar_url\x12 \n" +
+	"\fvolunteer_id\x18\a \x01(\tR\fvolunteer_id\x12 \n" +
+	"\vavatar_path\x18\x05 \x01(\tR\vavatar_path\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12W\n" +
 	"$cooperation_request_cooldown_seconds\x18\x06 \x01(\x03H\x00R$cooperation_request_cooldown_seconds\x88\x01\x01B'\n" +
 	"%_cooperation_request_cooldown_seconds\"+\n" +

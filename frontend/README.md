@@ -116,3 +116,24 @@ AuthService.LoginWithFlida({ flidaAccessToken }) ──▶ бэкенд: GET id.
 
 Настройка в консоли Флида ID: в «Платформы → Web» добавить Redirect URL, совпадающий с `APP_FLIDA_REDIRECT_URI` (например `http://localhost:3000/auth/callback`).
 
+## Загрузка аватаров и изображений поощрений
+
+Новый `ImageService` использует актуальную cookie-сессию бэкенда. Приведённое выше описание
+старого AuthService относится к текущему шаблону UI; его миграция на SessionService ещё нужна.
+Helper `utils/helpers/image.helper.ts` отправляет файл с `credentials: 'include'`:
+
+```ts
+const image = await uploadImage(file, useRuntimeConfig().public.rpcUrl);
+// Для превью: image.imageUrl.
+// Для UpdateVolunteer/UpdateCoordinator: { avatarPath: image.imagePath }.
+// Для CreateReward/UpdateReward: { imagePath: image.imagePath }.
+```
+
+Поле выбора файла должно иметь `accept="image/jpeg,image/png"`; лимит — 5 МиБ.
+После выбора можно показать локальное превью, затем дождаться UploadImage и сохранить карточку.
+Сервер сам проверяет файл и ограничивает каждую сторону 4096 пикселями.
+URL из ответа относится к origin бэкенда; helper возвращает полный URL для отдельного фронтенда.
+Для удаления картинки передаётся пустой путь, для сохранения прежней — поле не отправляется.
+Аватары волонтёра и координатора независимы. Пока нет полной интеграции поля выбора в формы:
+профильные сервисы и сервис поощрений ещё не реализованы на бэкенде.
+

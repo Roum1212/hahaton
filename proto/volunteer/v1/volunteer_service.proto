@@ -31,6 +31,8 @@ service VolunteerService {
 message Volunteer {
   string id = 1 [json_name = "id"];
 
+  // Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
+  string avatar_url = 10 [json_name = "avatar_url"];
   google.type.Date date_of_birth = 2 [json_name = "date_of_birth"];
   string first_name = 3 [json_name = "first_name"];
   string last_name = 4 [json_name = "last_name"];
@@ -57,6 +59,7 @@ message GetVolunteerResponse {
 message CoordinatorVolunteer {
   string id = 1 [json_name = "id"];
 
+  string avatar_url = 7 [json_name = "avatar_url"];
   string first_name = 2 [json_name = "first_name"];
   string last_name = 3 [json_name = "last_name"];
   string middle_name = 4 [json_name = "middle_name"];
@@ -74,6 +77,9 @@ message GetCoordinatorVolunteerResponse {
 }
 
 message UpdateVolunteerRequest {
+  // Отсутствует — сохранить; пустая строка — убрать аватар.
+  // Иначе image_path из UploadImage текущего участника; файл обязан существовать.
+  optional string avatar_path = 5 [json_name = "avatar_path"];
   // Отсутствующее поле сохраняется. Дата должна быть полной и не в будущем.
   // Имя и фамилия непустые; пустое middle_name очищает отчество.
   optional google.type.Date date_of_birth = 1 [json_name = "date_of_birth"];

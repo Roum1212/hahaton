@@ -124,7 +124,9 @@ type Reward struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	CoordinatorId string                 `protobuf:"bytes,2,opt,name=coordinator_id,proto3" json:"coordinator_id,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Title         string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	// Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
+	ImageUrl string `protobuf:"bytes,9,opt,name=image_url,proto3" json:"image_url,omitempty"`
+	Title    string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
 	// Целое положительное число коинов за одну единицу.
 	PriceCoins int64 `protobuf:"varint,5,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
 	// Вычисляется сервером: quantity_limit минус выданные единицы и резервы.
@@ -188,6 +190,13 @@ func (x *Reward) GetDescription() string {
 	return ""
 }
 
+func (x *Reward) GetImageUrl() string {
+	if x != nil {
+		return x.ImageUrl
+	}
+	return ""
+}
+
 func (x *Reward) GetTitle() string {
 	if x != nil {
 		return x.Title
@@ -226,6 +235,9 @@ func (x *Reward) GetStatus() RewardStatus {
 type CreateRewardRequest struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Description string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	// Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
+	// Файл обязан существовать и принадлежать ему.
+	ImagePath string `protobuf:"bytes,5,opt,name=image_path,proto3" json:"image_path,omitempty"`
 	// Непустое название.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	// Строго больше нуля.
@@ -269,6 +281,13 @@ func (*CreateRewardRequest) Descriptor() ([]byte, []int) {
 func (x *CreateRewardRequest) GetDescription() string {
 	if x != nil {
 		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateRewardRequest) GetImagePath() string {
+	if x != nil {
+		return x.ImagePath
 	}
 	return ""
 }
@@ -560,6 +579,9 @@ type UpdateRewardRequest struct {
 	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Отсутствующие поля не меняются. Пустое описание очищает его.
 	Description *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Отсутствует — сохранить; пустая строка — убрать изображение.
+	// Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
+	ImagePath *string `protobuf:"bytes,6,opt,name=image_path,proto3,oneof" json:"image_path,omitempty"`
 	// Непустое название.
 	Title *string `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	// Строго больше нуля. Новая цена применяется только к новым заказам.
@@ -611,6 +633,13 @@ func (x *UpdateRewardRequest) GetId() string {
 func (x *UpdateRewardRequest) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateRewardRequest) GetImagePath() string {
+	if x != nil && x.ImagePath != nil {
+		return *x.ImagePath
 	}
 	return ""
 }
@@ -684,18 +713,22 @@ var File_reward_v1_reward_service_proto protoreflect.FileDescriptor
 
 const file_reward_v1_reward_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1ereward/v1/reward_service.proto\x12\treward.v1\x1a\x1bgoogle/protobuf/empty.proto\"\xa3\x02\n" +
+	"\x1ereward/v1/reward_service.proto\x12\treward.v1\x1a\x1bgoogle/protobuf/empty.proto\"\xc1\x02\n" +
 	"\x06Reward\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
 	"\x0ecoordinator_id\x18\x02 \x01(\tR\x0ecoordinator_id\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1c\n" +
+	"\timage_url\x18\t \x01(\tR\timage_url\x12\x14\n" +
 	"\x05title\x18\x04 \x01(\tR\x05title\x12 \n" +
 	"\vprice_coins\x18\x05 \x01(\x03R\vprice_coins\x12.\n" +
 	"\x12available_quantity\x18\a \x01(\x05R\x12available_quantity\x12&\n" +
 	"\x0equantity_limit\x18\x06 \x01(\x05R\x0equantity_limit\x12/\n" +
-	"\x06status\x18\b \x01(\x0e2\x17.reward.v1.RewardStatusR\x06status\"\x97\x01\n" +
+	"\x06status\x18\b \x01(\x0e2\x17.reward.v1.RewardStatusR\x06status\"\xb7\x01\n" +
 	"\x13CreateRewardRequest\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x14\n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x1e\n" +
+	"\n" +
+	"image_path\x18\x05 \x01(\tR\n" +
+	"image_path\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
 	"\vprice_coins\x18\x03 \x01(\x03R\vprice_coins\x12&\n" +
 	"\x0equantity_limit\x18\x04 \x01(\x05R\x0equantity_limit\"&\n" +
@@ -713,14 +746,18 @@ const file_reward_v1_reward_service_proto_rawDesc = "" +
 	"\x0f_coordinator_id\"d\n" +
 	"\x13ListRewardsResponse\x12+\n" +
 	"\arewards\x18\x01 \x03(\v2\x11.reward.v1.RewardR\arewards\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\xf8\x01\n" +
+	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\xac\x02\n" +
 	"\x13UpdateRewardRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x19\n" +
-	"\x05title\x18\x03 \x01(\tH\x01R\x05title\x88\x01\x01\x12%\n" +
-	"\vprice_coins\x18\x04 \x01(\x03H\x02R\vprice_coins\x88\x01\x01\x12+\n" +
-	"\x0equantity_limit\x18\x05 \x01(\x05H\x03R\x0equantity_limit\x88\x01\x01B\x0e\n" +
-	"\f_descriptionB\b\n" +
+	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12#\n" +
+	"\n" +
+	"image_path\x18\x06 \x01(\tH\x01R\n" +
+	"image_path\x88\x01\x01\x12\x19\n" +
+	"\x05title\x18\x03 \x01(\tH\x02R\x05title\x88\x01\x01\x12%\n" +
+	"\vprice_coins\x18\x04 \x01(\x03H\x03R\vprice_coins\x88\x01\x01\x12+\n" +
+	"\x0equantity_limit\x18\x05 \x01(\x05H\x04R\x0equantity_limit\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\r\n" +
+	"\v_image_pathB\b\n" +
 	"\x06_titleB\x0e\n" +
 	"\f_price_coinsB\x11\n" +
 	"\x0f_quantity_limit\"%\n" +
