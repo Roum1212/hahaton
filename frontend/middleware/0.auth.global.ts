@@ -1,7 +1,7 @@
 import type { RouteLocationNormalized } from 'vue-router';
 
 export const AUTH_PAGES: string[] = [ROUTES.login, ROUTES.authCallback];
-export const GUEST_PAGES: string[] = [...AUTH_PAGES, ROUTES.access];
+export const GUEST_PAGES: string[] = [ROUTES.home, ...AUTH_PAGES, ROUTES.access];
 
 export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized) => {
   const authStore = useAuthStore();

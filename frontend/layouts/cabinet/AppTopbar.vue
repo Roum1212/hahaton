@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { layoutState, isDarkTheme, toggleDarkMode, toggleSidebar, toggleMobileSidebar } = useAppLayout();
+const { layoutState, toggleSidebar, toggleMobileSidebar } = useAppLayout();
 const { sectionLabel, pageLabel } = useAppMenu();
 
 const collapseIcon = computed(() => (layoutState.sidebarCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'));
@@ -25,12 +25,6 @@ const collapseIcon = computed(() => (layoutState.sidebarCollapsed ? 'pi pi-angle
         <i class="app-topbar__sep pi pi-angle-right" />
         <span class="app-topbar__crumb app-topbar__crumb--current">{{ pageLabel }}</span>
       </template>
-    </div>
-
-    <div class="app-topbar__actions">
-      <button type="button" class="app-topbar__button" :aria-label="isDarkTheme ? 'Светлая тема' : 'Тёмная тема'" @click="toggleDarkMode">
-        <i :class="`pi ${isDarkTheme ? 'pi-sun' : 'pi-moon'}`" />
-      </button>
     </div>
   </header>
 </template>

@@ -30,7 +30,7 @@ const readStorage = (key: string): boolean => {
 };
 
 const layoutConfig = reactive<ILayoutConfig>({
-  darkTheme: readStorage(STORAGE_KEYS.darkTheme),
+  darkTheme: false,
 });
 
 const layoutState = reactive<ILayoutState>({
@@ -40,7 +40,7 @@ const layoutState = reactive<ILayoutState>({
   menu: MENU,
 });
 
-if (import.meta.client) document.documentElement.classList.toggle('app-dark', layoutConfig.darkTheme);
+if (import.meta.client) document.documentElement.classList.remove('app-dark');
 
 export function useAppLayout() {
   const isDarkTheme = computed(() => layoutConfig.darkTheme);

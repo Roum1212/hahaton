@@ -1,10 +1,28 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
-  redirect: ROUTES.cabinet,
 });
+
+const { siteName } = useLanding();
+
+useHead({ title: `Цифровой волонтёр Обнинска | ${siteName}` });
 </script>
 
 <template>
-  <div />
+  <div class="landing">
+    <LandingHeader />
+    <main>
+      <LandingHero />
+      <LandingStats />
+      <LandingProblems />
+      <LandingFeatures />
+      <LandingSteps />
+      <LandingEvents />
+      <LandingAudience />
+      <LandingRules />
+      <LandingCta />
+      <LandingFaq />
+    </main>
+    <LandingFooter />
+  </div>
 </template>

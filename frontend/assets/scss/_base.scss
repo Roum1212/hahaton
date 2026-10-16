@@ -1,23 +1,31 @@
 :root {
-  --app-rail-width: 64px;
+  --app-rail-width: 72px;
   --app-panel-width: 236px;
-  --app-sidebar-width: calc(var(--app-rail-width) + var(--app-panel-width));
+  --app-sidebar-width: 260px;
   --app-topbar-height: 60px;
   --app-radius: 12px;
   --app-radius-sm: 10px;
   --app-transition: 0.18s ease;
 
+  --app-brand: #ffe2d4;
+  --app-brand-top: #fff2eb;
+  --app-brand-bottom: #ffe2d4;
+  --app-brand-border: #f6ddd0;
+  --app-brand-hover: #ffe7dc;
+  --app-brand-muted: #a9826f;
+
   --app-black: #0a0a0a;
   --app-surface: var(--p-surface-0);
-  --app-surface-muted: var(--p-surface-50);
+  --app-surface-muted: #fff6f1;
+  --app-topbar-bg: #fff2eb;
   --app-surface-hover: var(--p-surface-100);
   --app-border: var(--p-surface-200);
   --app-text: var(--p-surface-900);
   --app-text-muted: var(--p-surface-500);
   --app-accent: var(--p-primary-500);
-  --app-accent-contrast: var(--app-black);
-  --app-accent-soft: var(--p-primary-50);
-  --app-accent-text: var(--p-primary-700);
+  --app-accent-contrast: #ffffff;
+  --app-accent-soft: #ffede4;
+  --app-accent-text: #c2410c;
 
   --surface-border: var(--app-border);
   --code-background: var(--app-surface);

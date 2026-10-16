@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
+import AppBottomNav from './AppBottomNav.vue';
 
 const route = useRoute();
 const { layoutState, closeMobileSidebar, selectSection } = useAppLayout();
@@ -39,5 +40,7 @@ onUnmounted(() => document.body.classList.remove('app-scroll-lock'));
         </div>
       </main>
     </div>
+
+    <app-bottom-nav />
   </div>
 </template>

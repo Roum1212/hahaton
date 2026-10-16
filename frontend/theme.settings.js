@@ -259,9 +259,23 @@ const NEUTRAL = {
   950: '#0a0a0a',
 };
 
+const PRIMARY = {
+  50: '#fff4ef',
+  100: '#ffe6db',
+  200: '#ffcab4',
+  300: '#fda888',
+  400: '#fc8862',
+  500: '#fb6f47',
+  600: '#ed5429',
+  700: '#c53f1c',
+  800: '#9c331a',
+  900: '#7e2d19',
+  950: '#44130b',
+};
+
 const THEME_PRESET = definePreset(Aura, {
   semantic: {
-    primary: PALLETS[THEMES.orange],
+    primary: PRIMARY,
     colorScheme: {
       light: {
         surface: NEUTRAL,
