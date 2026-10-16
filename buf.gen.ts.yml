@@ -8,6 +8,7 @@ inputs:
 plugins:
   - local: frontend/node_modules/.bin/protoc-gen-es
     out: frontend/genproto
+    include_imports: true
     opt:
       - target=ts
       - import_extension=none

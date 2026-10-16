@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package event_chat.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/Roum1212/hahaton/genproto/event-chat/v1;event_chat_v1";
+
+// Общий текстовый чат одного мероприятия; отдельное создание чата не требуется.
+// Доступен создателю мероприятия и волонтёрам с активной кооперацией и участием
+// в статусе APPROVED, CONFIRMED или NOT_ATTENDED при сохранённом периоде доступа.
+// Итоговая неявка не равна выходу из переписки; завершённые чаты доступны для чтения.
+// Права проверяются при каждом чтении и отправке, включая повтор запросов.
+// Отмена записи или прекращение кооперации закрывает волонтёру доступ к истории чата.
+// Действующий участник — user_id сессии. Владелец мероприятия с профилем Coordinator
+// выступает координатором; остальные допущенные участники — волонтёрами.
+service EventChatService {
+  // Текущая нижняя граница истории. При любом одобрении волонтёра сервер открывает
+  // доступ заново: даже первое вступление скрывает все предыдущие сообщения.
+  rpc GetEventChat(GetEventChatRequest) returns (GetEventChatResponse) {}
+  // Все чаты с текущим правом чтения, в том числе завершённые: объединение чатов
+  // своих мероприятий и чатов своих участий, без дубликатов и зависимости от режима кабинета.
+  rpc ListMyEventChats(ListMyEventChatsRequest) returns (ListMyEventChatsResponse) {}
+  // Только PUBLISHED и при наличии доступа к чату; после CompleteEvent чат read-only.
+  // ID автора берётся из сессии, его тип определяется отношением к мероприятию,
+  // ФИО — из общего Volunteer. Клиент не задаёт тип автора.
+  // Отправка согласована с отменой участия/мероприятия и прекращением кооперации.
+  rpc SendEventChatMessage(SendEventChatMessageRequest) returns (SendEventChatMessageResponse) {}
+  // История чата. Координатор сохраняет право чтения своего отменённого мероприятия.
+  rpc ListEventChatMessages(ListEventChatMessagesRequest) returns (ListEventChatMessagesResponse) {}
+  // Серверный стрим: сначала сохранённые сообщения с sequence > after_sequence,
+  // затем новые сообщения того же чата по возрастанию sequence, включая сообщения самого клиента.
+  // История и live-доставка соединяются без пропусков; отправляются только зафиксированные сообщения.
+  // Источник восстановления — сохранённая история, а не только события в памяти процесса.
+  // После обрыва клиент передаёт sequence последнего обработанного сообщения.
+  // Повторы при восстановлении и пересечение с SendEventChatMessage дедуплицируются клиентом по id.
+  // Доступ проверяется при подключении и перед доставкой. При отзыве доступа сервер закрывает
+  // открытый стрим с PermissionDenied, включая простаивающий стрим; при истечении сессии — Unauthenticated.
+  // При переполнении буфера медленного клиента стрим закрывается с ResourceExhausted;
+  // клиент может восстановиться из сохранённой истории, сообщения молча не пропускаются.
+  // После фиксации CompleteEvent стрим доставляет оставшиеся доступные сохранённые
+  // сообщения и успешно завершается (EOF). Для уже COMPLETED мероприятия новый стрим
+  // выдаёт доступную историю после after_sequence и также завершается без ожидания новых сообщений.
+  // После успешного EOF клиент перечитывает GetEventChat: при read_only = true
+  // отключает отправку и не переподключает стрим. Потеря доступа/сессии остаётся ошибкой.
+  rpc SubscribeEventChatMessages(SubscribeEventChatMessagesRequest) returns (stream SubscribeEventChatMessagesResponse) {}
+}
+
+// Координатор-создатель видит весь свой чат; для него visible_after_sequence = 0.
+// У волонтёра срез последовательности фиксируется атомарно при APPROVED.
+// Отмена заявки/мероприятия и прекращение Cooperation закрывают период навсегда.
+// Открытый старый стрим закрывается даже при быстром новом вступлении.
+message EventChat {
+  string event_id = 1 [json_name = "event_id"];
+
+  string event_title = 2 [json_name = "event_title"];
+
+  bool read_only = 6 [json_name = "read_only"];
+
+  uint64 latest_sequence = 5 [json_name = "latest_sequence"];
+  // Доступны только сообщения со sequence строго больше этой границы.
+  uint64 visible_after_sequence = 4 [json_name = "visible_after_sequence"];
+}
+
+message GetEventChatRequest {
+  string event_id = 1 [json_name = "event_id"];
+}
+
+message GetEventChatResponse {
+  EventChat chat = 1 [json_name = "chat"];
+}
+
+message ListMyEventChatsRequest {
+  // Общая пагинация: 0 означает 20, допустимы 1–100; offset >= 0.
+  int32 limit = 1 [json_name = "limit"];
+  int64 offset = 2 [json_name = "offset"];
+}
+
+message ListMyEventChatsResponse {
+  // По starts_at мероприятия, затем event_id по убыванию. Недоступные чаты исключены.
+  repeated EventChat chats = 1 [json_name = "chats"];
+  int64 total_count = 2 [json_name = "total_count"];
+}
+
+message EventChatMessage {
+  string id = 1 [json_name = "id"];
+
+  string event_id = 2 [json_name = "event_id"];
+
+  // Сервер всегда устанавливает ровно одного автора.
+  oneof author {
+    string coordinator_id = 3 [json_name = "coordinator_id"];
+    string volunteer_id = 4 [json_name = "volunteer_id"];
+  }
+
+  // Снимок отображаемого имени на момент отправки, без email, телефона и даты рождения.
+  string author_display_name = 5 [json_name = "author_display_name"];
+
+  // Обычный текст без HTML, вложений и редактирования в MVP.
+  // В БД зашифрован; авторизованный ответ содержит исходный текст. Это не E2E.
+  string text = 6 [json_name = "text"];
+
+  // Положительный уникальный возрастающий номер внутри event_id, назначаемый сервером.
+  // Нумерация и сохранение сериализуются по чату: нельзя позже зафиксировать сообщение
+  // с sequence ниже уже видимой границы. Это обеспечивает восстановление без пропусков.
+  uint64 sequence = 8 [json_name = "sequence"];
+
+  google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
+}
+
+message SendEventChatMessageRequest {
+  string event_id = 1 [json_name = "event_id"];
+
+  // От 1 до 2000 Unicode-символов; текст только из пробелов недопустим.
+  string text = 2 [json_name = "text"];
+
+  // Обязательный ключ отправки. Уникален для роли, автора и мероприятия.
+  // Повтор с тем же текстом возвращает существующее сообщение без дублирования,
+  // с другим текстом — AlreadyExists. Проверка текущего доступа обязательна и при повторе.
+  // Если прежнее сообщение уже вне видимой истории, FailedPrecondition без его текста.
+  string request_id = 3 [json_name = "request_id"];
+}
+
+message SendEventChatMessageResponse {
+  EventChatMessage message = 1 [json_name = "message"];
+}
+
+message ListEventChatMessagesRequest {
+  string event_id = 1 [json_name = "event_id"];
+
+  // Необязательная фиксированная верхняя граница истории, включительно.
+  // Без поля сервер выбирает последний зафиксированный sequence (0 для пустого чата).
+  // Для следующих страниц клиент повторяет snapshot_sequence из первого ответа:
+  // новые сообщения стрима не сдвигают offset в этой выборке.
+  // Граница вне [visible_after_sequence, latest_sequence] означает InvalidArgument.
+  optional uint64 snapshot_sequence = 5 [json_name = "snapshot_sequence"];
+
+  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
+  int32 limit = 2 [json_name = "limit"];
+  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
+  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
+  // На каждом запросе применяются текущие права доступа и фильтры.
+  int64 offset = 4 [json_name = "offset"];
+}
+
+message ListEventChatMessagesResponse {
+  // По sequence по убыванию в пределах (visible_after_sequence, snapshot_sequence].
+  repeated EventChatMessage messages = 1 [json_name = "messages"];
+
+  // Верхняя граница выбранной истории, а не sequence последнего элемента страницы.
+  // Клиент загружает историю, затем открывает стрим с after_sequence = snapshot_sequence.
+  // Сообщения, появившиеся между этими запросами, будут доставлены стримом.
+  uint64 snapshot_sequence = 4 [json_name = "snapshot_sequence"];
+  uint64 visible_after_sequence = 6 [json_name = "visible_after_sequence"];
+
+  // Общее число доступных записей с текущими фильтрами, без limit и offset.
+  // Подсчитывается в том же снимке данных, что и элементы страницы.
+  int64 total_count = 3 [json_name = "total_count"];
+}
+
+message SubscribeEventChatMessagesRequest {
+  string event_id = 1 [json_name = "event_id"];
+  // Исключительная нижняя граница сообщений. 0 — вся доступная история и затем новые сообщения.
+  // При первом подключении после загрузки истории — snapshot_sequence из ответа списка.
+  // При восстановлении — последний обработанный sequence; значение больше текущего
+  // последнего sequence чата означает InvalidArgument.
+  uint64 after_sequence = 2 [json_name = "after_sequence"];
+  // Сервер применяет max(after_sequence, текущая visible_after_sequence),
+  // так что 0 не раскрывает старую историю. Период клиент не передаёт.
+}
+
+message SubscribeEventChatMessagesResponse {
+  // Одно сохранённое сообщение чата; поле всегда заполнено.
+  EventChatMessage message = 1 [json_name = "message"];
+}

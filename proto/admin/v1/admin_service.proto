@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package admin.v1;
+
+option go_package = "github.com/Roum1212/hahaton/genproto/admin/v1;admin_v1";
+
+// Отдельный служебный интерфейс разработчиков; не публикуется на клиентском listener.
+// Требует служебной аутентификации. Обычная cookie участника этих прав не даёт.
+service AdminService {
+  // Ищет зарегистрированного волонтёра для выдачи координаторских прав.
+  // Точное совпадение; поиск сам по себе не создаёт Coordinator.
+  rpc FindVolunteers(FindVolunteersRequest) returns (FindVolunteersResponse) {}
+  // Создаёт Coordinator для существующего Volunteer с тем же внутренним ID.
+  // ФИО берётся из Volunteer; локальных логина и пароля нет.
+  // Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
+  rpc CreateCoordinator(CreateCoordinatorRequest) returns (CreateCoordinatorResponse) {}
+}
+
+message AdminVolunteer {
+  string id = 1 [json_name = "id"];
+
+  string first_name = 2 [json_name = "first_name"];
+  string last_name = 3 [json_name = "last_name"];
+  string middle_name = 4 [json_name = "middle_name"];
+
+  string email_address = 5 [json_name = "email_address"];
+  string phone_number = 6 [json_name = "phone_number"];
+
+  bool has_coordinator_profile = 7 [json_name = "has_coordinator_profile"];
+}
+
+message FindVolunteersRequest {
+  // Ровно один непустой критерий. Почта сравнивается без учёта регистра после trim,
+  // телефон — в нормализованном международном формате E.164.
+  // Контакт служит поиску; для создания Coordinator админ выбирает конкретный id.
+  oneof criterion {
+    string email_address = 1 [json_name = "email_address"];
+    string phone_number = 2 [json_name = "phone_number"];
+    string volunteer_id = 3 [json_name = "volunteer_id"];
+  }
+
+  // 0 означает 20; допустимы 1–100. offset >= 0.
+  int32 limit = 4 [json_name = "limit"];
+  int64 offset = 5 [json_name = "offset"];
+}
+
+message FindVolunteersResponse {
+  // По id по возрастанию. Нет совпадений — пустая страница.
+  repeated AdminVolunteer volunteers = 1 [json_name = "volunteers"];
+  // Тот же снимок и критерий, что у страницы, без limit/offset.
+  int64 total_count = 2 [json_name = "total_count"];
+}
+
+message CreateCoordinatorRequest {
+  // Обязательный внутренний ID существующего волонтёра.
+  string volunteer_id = 7 [json_name = "volunteer_id"];
+
+  // Пустой avatar_url означает отсутствие аватара; иначе абсолютный HTTPS URL.
+  string avatar_url = 5 [json_name = "avatar_url"];
+  string description = 4 [json_name = "description"];
+
+  // Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
+  optional int64 cooperation_request_cooldown_seconds = 6 [json_name = "cooperation_request_cooldown_seconds"];
+}
+
+message CreateCoordinatorResponse {
+  // Всегда равен volunteer_id из запроса.
+  string id = 1 [json_name = "id"];
+}
