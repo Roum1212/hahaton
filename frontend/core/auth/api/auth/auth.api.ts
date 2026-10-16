@@ -1,6 +1,6 @@
 import { createClient, type Client, type Transport } from '@connectrpc/connect';
 import { BaseRpcApi } from '~/core/app/rpc/base-api';
-import { AuthService } from '~/gen/auth/v1/auth_pb';
+import { AuthService } from '#genproto/auth/v1/auth_pb';
 import type { ApiAuth } from './auth.api.types';
 
 export class AuthApi extends BaseRpcApi<typeof AuthService> {

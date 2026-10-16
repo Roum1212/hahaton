@@ -1,9 +1,14 @@
 import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'node:url';
 import ThemeSettings from './theme.settings';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   ssr: false,
+
+  alias: {
+    '#genproto': fileURLToPath(new URL('./genproto', import.meta.url)),
+  },
 
   components: {
     dirs: ['~/components'],

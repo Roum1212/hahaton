@@ -15,15 +15,17 @@ pnpm dev
 
 ## Команды
 
-| Команда                                        | Назначение                                      |
-| ---------------------------------------------- | ----------------------------------------------- |
-| `pnpm dev`                                     | dev-сервер на `http://localhost:3000`           |
-| `pnpm build` / `pnpm preview`                  | production-сборка и её просмотр                 |
-| `pnpm start` / `pnpm stop`                     | запуск/остановка через pm2 (`build.config.cjs`) |
-| `pnpm proto:gen`                               | генерация TS-кода из `proto/` в `gen/`          |
-| `pnpm proto:lint`                              | `buf lint` для proto-контрактов                 |
-| `pnpm mock`                                    | mock Connect RPC сервер                         |
-| `pnpm typecheck` / `pnpm lint` / `pnpm format` | проверки и форматирование                       |
+| Команда                                        | Назначение                                               |
+| ---------------------------------------------- | -------------------------------------------------------- |
+| `pnpm dev`                                     | dev-сервер на `http://localhost:3000`                    |
+| `pnpm build` / `pnpm preview`                  | production-сборка и её просмотр                          |
+| `pnpm start` / `pnpm stop`                     | запуск/остановка через pm2 (`build.config.cjs`)          |
+| `pnpm proto:gen`                               | генерация TS-кода из `../proto/` в `genproto/`          |
+| `pnpm proto:lint`                              | `buf lint` для proto-контрактов                          |
+| `pnpm mock`                                    | mock Connect RPC сервер                                  |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format` | проверки и форматирование                                |
+
+Из корня репозитория `make proto-generate` генерирует одновременно Go-код в `../backend/genproto/` и TypeScript-код в `genproto/`. Для раздельной генерации доступны `make proto-generate-go` и `make proto-generate-ts`.
 
 ## Переменные окружения
 
@@ -43,8 +45,8 @@ pnpm dev
 ## Структура
 
 ```
-proto/                  контракты (*.proto), источник правды для API
-gen/                    сгенерированный код protobuf-es (не редактировать руками)
+../proto/               общие контракты (*.proto), источник правды для API
+genproto/               сгенерированный код protobuf-es (не редактировать руками)
 plugins/connect.ts      Connect-транспорты: $transport и $publicTransport
 core/
   app/rpc/              BaseRpcApi, интерсепторы (auth, refresh, errors), хранилище токена

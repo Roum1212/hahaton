@@ -1,4 +1,4 @@
-import { UserRole } from '~/gen/user/v1/user_pb';
+import { UserRole } from '#genproto/user/v1/user_pb';
 
 export { UserRole };
 

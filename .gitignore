@@ -1,24 +1,13 @@
-*
+.DS_Store
+.idea/
+.fleet/
+.vscode/
 
-!**/go.mod
-!**/go.sum
-!*.go
+*.log
+
+/.env
+/.env.*
 !/.env.example
-!/.gitignore
-!/.golangci.yml
-!/Dockerfile
-!/Makefile
-!/README.md
-!/buf.gen.yml
-!/buf.yml
-!/docker-compose.yml
-!/proto/**
-!/openapi/**
-!/vendor/**
 
-!*/
-!/frontend/**
-/frontend/node_modules/
-/frontend/.nuxt/
-/frontend/.output/
-/frontend/.env
+/bin/
+/.pnpm-store/
