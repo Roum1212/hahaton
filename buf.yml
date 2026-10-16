@@ -9,6 +9,7 @@ breaking:
 lint:
   use:
     - STANDARD
+  rpc_allow_google_protobuf_empty_requests: true
   rpc_allow_google_protobuf_empty_responses: true
   # Сохраняем выбранные имена директорий с дефисами; protobuf-пакеты используют подчёркивания.
   ignore_only:

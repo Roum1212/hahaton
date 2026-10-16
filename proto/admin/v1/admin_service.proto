@@ -19,6 +19,7 @@ service AdminService {
 message AdminVolunteer {
   string id = 1 [json_name = "id"];
 
+  string avatar_url = 8 [json_name = "avatar_url"];
   string first_name = 2 [json_name = "first_name"];
   string last_name = 3 [json_name = "last_name"];
   string middle_name = 4 [json_name = "middle_name"];
@@ -55,8 +56,9 @@ message CreateCoordinatorRequest {
   // Обязательный внутренний ID существующего волонтёра.
   string volunteer_id = 7 [json_name = "volunteer_id"];
 
-  // Пустой avatar_url означает отсутствие аватара; иначе абсолютный HTTPS URL.
-  string avatar_url = 5 [json_name = "avatar_url"];
+  // Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
+  // Файл обязан существовать и принадлежать этому участнику.
+  string avatar_path = 5 [json_name = "avatar_path"];
   string description = 4 [json_name = "description"];
 
   // Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.

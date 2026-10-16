@@ -88,86 +88,6 @@ func (x *Session) GetExpiresAt() *timestamppb.Timestamp {
 	return nil
 }
 
-type OpenSessionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OpenSessionRequest) Reset() {
-	*x = OpenSessionRequest{}
-	mi := &file_session_v1_session_service_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OpenSessionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OpenSessionRequest) ProtoMessage() {}
-
-func (x *OpenSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OpenSessionRequest.ProtoReflect.Descriptor instead.
-func (*OpenSessionRequest) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{1}
-}
-
-type OpenSessionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OpenSessionResponse) Reset() {
-	*x = OpenSessionResponse{}
-	mi := &file_session_v1_session_service_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OpenSessionResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OpenSessionResponse) ProtoMessage() {}
-
-func (x *OpenSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OpenSessionResponse.ProtoReflect.Descriptor instead.
-func (*OpenSessionResponse) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *OpenSessionResponse) GetSession() *Session {
-	if x != nil {
-		return x.Session
-	}
-	return nil
-}
-
 type AuthenticateSessionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательный внешний ID token Flida. Проверяются подпись, iss, aud, exp
@@ -182,7 +102,7 @@ type AuthenticateSessionRequest struct {
 
 func (x *AuthenticateSessionRequest) Reset() {
 	*x = AuthenticateSessionRequest{}
-	mi := &file_session_v1_session_service_proto_msgTypes[3]
+	mi := &file_session_v1_session_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -194,7 +114,7 @@ func (x *AuthenticateSessionRequest) String() string {
 func (*AuthenticateSessionRequest) ProtoMessage() {}
 
 func (x *AuthenticateSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[3]
+	mi := &file_session_v1_session_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,7 +127,7 @@ func (x *AuthenticateSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthenticateSessionRequest.ProtoReflect.Descriptor instead.
 func (*AuthenticateSessionRequest) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{3}
+	return file_session_v1_session_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AuthenticateSessionRequest) GetIdToken() string {
@@ -215,86 +135,6 @@ func (x *AuthenticateSessionRequest) GetIdToken() string {
 		return x.IdToken
 	}
 	return ""
-}
-
-type AuthenticateSessionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AuthenticateSessionResponse) Reset() {
-	*x = AuthenticateSessionResponse{}
-	mi := &file_session_v1_session_service_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AuthenticateSessionResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AuthenticateSessionResponse) ProtoMessage() {}
-
-func (x *AuthenticateSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AuthenticateSessionResponse.ProtoReflect.Descriptor instead.
-func (*AuthenticateSessionResponse) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *AuthenticateSessionResponse) GetSession() *Session {
-	if x != nil {
-		return x.Session
-	}
-	return nil
-}
-
-type GetSessionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetSessionRequest) Reset() {
-	*x = GetSessionRequest{}
-	mi := &file_session_v1_session_service_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetSessionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetSessionRequest) ProtoMessage() {}
-
-func (x *GetSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetSessionRequest.ProtoReflect.Descriptor instead.
-func (*GetSessionRequest) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{5}
 }
 
 type GetSessionResponse struct {
@@ -306,7 +146,7 @@ type GetSessionResponse struct {
 
 func (x *GetSessionResponse) Reset() {
 	*x = GetSessionResponse{}
-	mi := &file_session_v1_session_service_proto_msgTypes[6]
+	mi := &file_session_v1_session_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +158,7 @@ func (x *GetSessionResponse) String() string {
 func (*GetSessionResponse) ProtoMessage() {}
 
 func (x *GetSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[6]
+	mi := &file_session_v1_session_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +171,7 @@ func (x *GetSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSessionResponse.ProtoReflect.Descriptor instead.
 func (*GetSessionResponse) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{6}
+	return file_session_v1_session_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetSessionResponse) GetSession() *Session {
@@ -339,42 +179,6 @@ func (x *GetSessionResponse) GetSession() *Session {
 		return x.Session
 	}
 	return nil
-}
-
-type CloseSessionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CloseSessionRequest) Reset() {
-	*x = CloseSessionRequest{}
-	mi := &file_session_v1_session_service_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CloseSessionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CloseSessionRequest) ProtoMessage() {}
-
-func (x *CloseSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_session_v1_session_service_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CloseSessionRequest.ProtoReflect.Descriptor instead.
-func (*CloseSessionRequest) Descriptor() ([]byte, []int) {
-	return file_session_v1_session_service_proto_rawDescGZIP(), []int{7}
 }
 
 var File_session_v1_session_service_proto protoreflect.FileDescriptor
@@ -390,24 +194,17 @@ const file_session_v1_session_service_proto_rawDesc = "" +
 	"expires_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expires_atB\n" +
 	"\n" +
-	"\b_user_id\"\x14\n" +
-	"\x12OpenSessionRequest\"D\n" +
-	"\x13OpenSessionResponse\x12-\n" +
-	"\asession\x18\x01 \x01(\v2\x13.session.v1.SessionR\asession\"8\n" +
+	"\b_user_id\"8\n" +
 	"\x1aAuthenticateSessionRequest\x12\x1a\n" +
-	"\bid_token\x18\x03 \x01(\tR\bid_token\"L\n" +
-	"\x1bAuthenticateSessionResponse\x12-\n" +
-	"\asession\x18\x01 \x01(\v2\x13.session.v1.SessionR\asession\"\x13\n" +
-	"\x11GetSessionRequest\"C\n" +
+	"\bid_token\x18\x03 \x01(\tR\bid_token\"C\n" +
 	"\x12GetSessionResponse\x12-\n" +
-	"\asession\x18\x01 \x01(\v2\x13.session.v1.SessionR\asession\"\x15\n" +
-	"\x13CloseSessionRequest2\xe6\x02\n" +
-	"\x0eSessionService\x12P\n" +
-	"\vOpenSession\x12\x1e.session.v1.OpenSessionRequest\x1a\x1f.session.v1.OpenSessionResponse\"\x00\x12h\n" +
-	"\x13AuthenticateSession\x12&.session.v1.AuthenticateSessionRequest\x1a'.session.v1.AuthenticateSessionResponse\"\x00\x12M\n" +
+	"\asession\x18\x01 \x01(\v2\x13.session.v1.SessionR\asession2\xb4\x02\n" +
+	"\x0eSessionService\x12?\n" +
+	"\vOpenSession\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x12W\n" +
+	"\x13AuthenticateSession\x12&.session.v1.AuthenticateSessionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12F\n" +
 	"\n" +
-	"GetSession\x12\x1d.session.v1.GetSessionRequest\x1a\x1e.session.v1.GetSessionResponse\"\x00\x12I\n" +
-	"\fCloseSession\x12\x1f.session.v1.CloseSessionRequest\x1a\x16.google.protobuf.Empty\"\x00B<Z:github.com/Roum1212/hahaton/genproto/session/v1;session_v1b\x06proto3"
+	"GetSession\x12\x16.google.protobuf.Empty\x1a\x1e.session.v1.GetSessionResponse\"\x00\x12@\n" +
+	"\fCloseSession\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00B<Z:github.com/Roum1212/hahaton/genproto/session/v1;session_v1b\x06proto3"
 
 var (
 	file_session_v1_session_service_proto_rawDescOnce sync.Once
@@ -421,37 +218,30 @@ func file_session_v1_session_service_proto_rawDescGZIP() []byte {
 	return file_session_v1_session_service_proto_rawDescData
 }
 
-var file_session_v1_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_session_v1_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_session_v1_session_service_proto_goTypes = []any{
-	(*Session)(nil),                     // 0: session.v1.Session
-	(*OpenSessionRequest)(nil),          // 1: session.v1.OpenSessionRequest
-	(*OpenSessionResponse)(nil),         // 2: session.v1.OpenSessionResponse
-	(*AuthenticateSessionRequest)(nil),  // 3: session.v1.AuthenticateSessionRequest
-	(*AuthenticateSessionResponse)(nil), // 4: session.v1.AuthenticateSessionResponse
-	(*GetSessionRequest)(nil),           // 5: session.v1.GetSessionRequest
-	(*GetSessionResponse)(nil),          // 6: session.v1.GetSessionResponse
-	(*CloseSessionRequest)(nil),         // 7: session.v1.CloseSessionRequest
-	(*timestamppb.Timestamp)(nil),       // 8: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),               // 9: google.protobuf.Empty
+	(*Session)(nil),                    // 0: session.v1.Session
+	(*AuthenticateSessionRequest)(nil), // 1: session.v1.AuthenticateSessionRequest
+	(*GetSessionResponse)(nil),         // 2: session.v1.GetSessionResponse
+	(*timestamppb.Timestamp)(nil),      // 3: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),              // 4: google.protobuf.Empty
 }
 var file_session_v1_session_service_proto_depIdxs = []int32{
-	8, // 0: session.v1.Session.expires_at:type_name -> google.protobuf.Timestamp
-	0, // 1: session.v1.OpenSessionResponse.session:type_name -> session.v1.Session
-	0, // 2: session.v1.AuthenticateSessionResponse.session:type_name -> session.v1.Session
-	0, // 3: session.v1.GetSessionResponse.session:type_name -> session.v1.Session
-	1, // 4: session.v1.SessionService.OpenSession:input_type -> session.v1.OpenSessionRequest
-	3, // 5: session.v1.SessionService.AuthenticateSession:input_type -> session.v1.AuthenticateSessionRequest
-	5, // 6: session.v1.SessionService.GetSession:input_type -> session.v1.GetSessionRequest
-	7, // 7: session.v1.SessionService.CloseSession:input_type -> session.v1.CloseSessionRequest
-	2, // 8: session.v1.SessionService.OpenSession:output_type -> session.v1.OpenSessionResponse
-	4, // 9: session.v1.SessionService.AuthenticateSession:output_type -> session.v1.AuthenticateSessionResponse
-	6, // 10: session.v1.SessionService.GetSession:output_type -> session.v1.GetSessionResponse
-	9, // 11: session.v1.SessionService.CloseSession:output_type -> google.protobuf.Empty
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	3, // 0: session.v1.Session.expires_at:type_name -> google.protobuf.Timestamp
+	0, // 1: session.v1.GetSessionResponse.session:type_name -> session.v1.Session
+	4, // 2: session.v1.SessionService.OpenSession:input_type -> google.protobuf.Empty
+	1, // 3: session.v1.SessionService.AuthenticateSession:input_type -> session.v1.AuthenticateSessionRequest
+	4, // 4: session.v1.SessionService.GetSession:input_type -> google.protobuf.Empty
+	4, // 5: session.v1.SessionService.CloseSession:input_type -> google.protobuf.Empty
+	4, // 6: session.v1.SessionService.OpenSession:output_type -> google.protobuf.Empty
+	4, // 7: session.v1.SessionService.AuthenticateSession:output_type -> google.protobuf.Empty
+	2, // 8: session.v1.SessionService.GetSession:output_type -> session.v1.GetSessionResponse
+	4, // 9: session.v1.SessionService.CloseSession:output_type -> google.protobuf.Empty
+	6, // [6:10] is the sub-list for method output_type
+	2, // [2:6] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_session_v1_session_service_proto_init() }
@@ -466,7 +256,7 @@ func file_session_v1_session_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_session_v1_session_service_proto_rawDesc), len(file_session_v1_session_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

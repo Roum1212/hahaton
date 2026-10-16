@@ -25,7 +25,8 @@ message Coordinator {
   // Равен ID волонтёра, для которого админы создали этот профиль.
   string id = 1 [json_name = "id"];
 
-  // Пустая строка означает отсутствие аватара. Абсолютный HTTPS URL без учётных данных.
+  // Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
+  // Аватар независим от аватара Volunteer с тем же ID.
   string avatar_url = 4 [json_name = "avatar_url"];
   string description = 2 [json_name = "description"];
   // Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
@@ -60,8 +61,9 @@ message ListCoordinatorsResponse {
 }
 
 message UpdateCoordinatorRequest {
-  // Пустая строка удаляет аватар; иначе абсолютный HTTPS URL.
-  optional string avatar_url = 3 [json_name = "avatar_url"];
+  // Отсутствует — сохранить; пустая строка — убрать аватар.
+  // Иначе image_path из UploadImage текущего участника; файл обязан существовать.
+  optional string avatar_path = 3 [json_name = "avatar_path"];
   // Отсутствующее поле не меняется. Пустая строка очищает описание.
   optional string description = 1 [json_name = "description"];
 }

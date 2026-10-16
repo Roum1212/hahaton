@@ -26,7 +26,8 @@ type Coordinator struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Равен ID волонтёра, для которого админы создали этот профиль.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Пустая строка означает отсутствие аватара. Абсолютный HTTPS URL без учётных данных.
+	// Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
+	// Аватар независим от аватара Volunteer с тем же ID.
 	AvatarUrl   string `protobuf:"bytes,4,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
@@ -296,8 +297,9 @@ func (x *ListCoordinatorsResponse) GetTotalCount() int64 {
 
 type UpdateCoordinatorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Пустая строка удаляет аватар; иначе абсолютный HTTPS URL.
-	AvatarUrl *string `protobuf:"bytes,3,opt,name=avatar_url,proto3,oneof" json:"avatar_url,omitempty"`
+	// Отсутствует — сохранить; пустая строка — убрать аватар.
+	// Иначе image_path из UploadImage текущего участника; файл обязан существовать.
+	AvatarPath *string `protobuf:"bytes,3,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
 	// Отсутствующее поле не меняется. Пустая строка очищает описание.
 	Description   *string `protobuf:"bytes,1,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -334,9 +336,9 @@ func (*UpdateCoordinatorRequest) Descriptor() ([]byte, []int) {
 	return file_coordinator_v1_coordinator_service_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *UpdateCoordinatorRequest) GetAvatarUrl() string {
-	if x != nil && x.AvatarUrl != nil {
-		return *x.AvatarUrl
+func (x *UpdateCoordinatorRequest) GetAvatarPath() string {
+	if x != nil && x.AvatarPath != nil {
+		return *x.AvatarPath
 	}
 	return ""
 }
@@ -540,13 +542,11 @@ const file_coordinator_v1_coordinator_service_proto_rawDesc = "" +
 	"\x06offset\x18\x03 \x01(\x03R\x06offset\"}\n" +
 	"\x18ListCoordinatorsResponse\x12?\n" +
 	"\fcoordinators\x18\x01 \x03(\v2\x1b.coordinator.v1.CoordinatorR\fcoordinators\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\x85\x01\n" +
-	"\x18UpdateCoordinatorRequest\x12#\n" +
-	"\n" +
-	"avatar_url\x18\x03 \x01(\tH\x00R\n" +
-	"avatar_url\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tH\x01R\vdescription\x88\x01\x01B\r\n" +
-	"\v_avatar_urlB\x0e\n" +
+	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\x88\x01\n" +
+	"\x18UpdateCoordinatorRequest\x12%\n" +
+	"\vavatar_path\x18\x03 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x01 \x01(\tH\x01R\vdescription\x88\x01\x01B\x0e\n" +
+	"\f_avatar_pathB\x0e\n" +
 	"\f_description\"i\n" +
 	"\x13CoordinatorSettings\x12R\n" +
 	"$cooperation_request_cooldown_seconds\x18\x01 \x01(\x03R$cooperation_request_cooldown_seconds\"\x1f\n" +
