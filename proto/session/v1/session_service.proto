@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package session.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/Roum1212/hahaton/genproto/session/v1;session_v1";
+
+// Cookie-сессия содержит серверную привязку к единому user_id участника.
+// Connect interceptor проверяет cookie и сессию, помещает user_id в context.
+// Координаторские команды дополнительно проверяют наличие Coordinator и права на объект.
+// Режим кабинета выбирает фронт; роль и отдельные coordinator_id/volunteer_id в сессии не хранятся.
+// Cookie: HttpOnly, Secure, Path=/; собственных access/refresh JWT приложения нет.
+// Истечение/отзыв сессии даёт Unauthenticated, включая открытые стримы.
+service SessionService {
+  // Без авторизации. Ставит cookie анонимной сессии. Действующую сессию возвращает
+  // без замены и выхода из аккаунта.
+  rpc OpenSession(OpenSessionRequest) returns (OpenSessionResponse) {}
+  // Только действующая анонимная сессия. Проверяет Flida ID token и определяет
+  // общий user_id по (iss, sub), затем заменяет cookie; старое значение недействительно.
+  // Первый вход создаёт Volunteer и нулевой Wallet; Coordinator выдаётся только админами.
+  // Вход по произвольному ID невозможен. Для другого аккаунта сначала требуется выход;
+  // переключение режима волонтёр/координатор нового входа и отдельного RPC не требует.
+  rpc AuthenticateSession(AuthenticateSessionRequest) returns (AuthenticateSessionResponse) {}
+  // Текущая сессия. Наличие Coordinator вычисляется заново для доступных режимов кабинета.
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse) {}
+  // Отзывает только текущую сессию и удаляет cookie; повтор без cookie успешен.
+  rpc CloseSession(CloseSessionRequest) returns (google.protobuf.Empty) {}
+}
+
+message Session {
+  // Внутренний ID участника, равный Volunteer.id и при наличии Coordinator.id.
+  // Отсутствует у анонимной сессии; ID Flida sub сюда напрямую не копируется.
+  optional string user_id = 4 [json_name = "user_id"];
+
+  // Вычисляемый признак для интерфейса; false у анонимной сессии.
+  // Клиент не может установить его или выдать себе права выбором режима.
+  bool has_coordinator_profile = 5 [json_name = "has_coordinator_profile"];
+
+  // Абсолютный срок сессии; GetSession его не продлевает.
+  google.protobuf.Timestamp expires_at = 3 [json_name = "expires_at"];
+}
+
+message OpenSessionRequest {}
+
+message OpenSessionResponse {
+  Session session = 1 [json_name = "session"];
+}
+
+message AuthenticateSessionRequest {
+  // Обязательный внешний ID token Flida. Проверяются подпись, iss, aud, exp
+  // и применимые OIDC claims; не попадает в логи/ответы.
+  // (iss, sub) уникальны для Volunteer; aud проверяет получателя.
+  // Первый вход заполняет профиль, последующие не перезаписывают локальные правки.
+  // Отсутствие обязательных сведений при регистрации — FailedPrecondition.
+  string id_token = 3 [json_name = "id_token"];
+}
+
+message AuthenticateSessionResponse {
+  Session session = 1 [json_name = "session"];
+}
+
+message GetSessionRequest {}
+
+message GetSessionResponse {
+  Session session = 1 [json_name = "session"];
+}
+
+message CloseSessionRequest {}

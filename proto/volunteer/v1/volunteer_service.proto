@@ -1,0 +1,147 @@
+syntax = "proto3";
+
+package volunteer.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "github.com/Roum1212/hahaton/genproto/volunteer/v1;volunteer_v1";
+
+service VolunteerService {
+  // Регистрация выполняется при первом AuthenticateSession с проверенным ID token Flida.
+  // Имя, фамилия, полная дата рождения, email и телефон обязательны; отчество необязательно.
+  // Участник читает только свою полную карточку, в том числе при наличии Coordinator.
+  // Наличие Coordinator не даёт доступа к полной карточке другого участника.
+  rpc GetVolunteer(GetVolunteerRequest) returns (GetVolunteerResponse) {}
+  // Требует Coordinator с id = user_id сессии: ограниченная карточка связанного волонтёра.
+  // ФИО доступно при существующей Cooperation, участии в своём мероприятии или заказе
+  // на своё поощрение. Контакты — только при ACTIVE Cooperation.
+  // Результаты только своих мероприятий читаются через ParticipationService.
+  rpc GetCoordinatorVolunteer(GetCoordinatorVolunteerRequest) returns (GetCoordinatorVolunteerResponse) {}
+  // Только собственный Volunteer с id = user_id сессии. ФИО общее для обоих профилей.
+  // Email, телефон и привязка Flida
+  // через этот RPC не меняются. Начисления и баланс изменяются только бизнес-операциями.
+  rpc UpdateVolunteer(UpdateVolunteerRequest) returns (google.protobuf.Empty) {}
+  // Собственная неизменяемая история операций по user_id из сессии.
+  // Сохраняется после прекращения кооперации, содержит начисления, покупки и возвраты.
+  rpc ListVolunteerOperations(ListVolunteerOperationsRequest) returns (ListVolunteerOperationsResponse) {}
+}
+
+message Volunteer {
+  string id = 1 [json_name = "id"];
+
+  google.type.Date date_of_birth = 2 [json_name = "date_of_birth"];
+  string first_name = 3 [json_name = "first_name"];
+  string last_name = 4 [json_name = "last_name"];
+  string middle_name = 5 [json_name = "middle_name"];
+
+  string email_address = 6 [json_name = "email_address"];
+  string phone_number = 9 [json_name = "phone_number"];
+
+  int64 coin_balance = 7 [json_name = "coin_balance"];
+  int64 confirmed_minutes = 8 [json_name = "confirmed_minutes"];
+}
+
+message GetVolunteerRequest {
+  // Если отсутствует, берётся user_id из сессии. Переданный id обязан совпадать
+  // с ним; пустой id — InvalidArgument, чужой — PermissionDenied.
+  optional string id = 1 [json_name = "id"];
+}
+
+message GetVolunteerResponse {
+  Volunteer volunteer = 1 [json_name = "volunteer"];
+}
+
+// Не содержит общий баланс, минуты других координаторов, дату рождения и журнал покупок.
+message CoordinatorVolunteer {
+  string id = 1 [json_name = "id"];
+
+  string first_name = 2 [json_name = "first_name"];
+  string last_name = 3 [json_name = "last_name"];
+  string middle_name = 4 [json_name = "middle_name"];
+
+  optional string email_address = 5 [json_name = "email_address"];
+  optional string phone_number = 6 [json_name = "phone_number"];
+}
+
+message GetCoordinatorVolunteerRequest {
+  string volunteer_id = 1 [json_name = "volunteer_id"];
+}
+
+message GetCoordinatorVolunteerResponse {
+  CoordinatorVolunteer volunteer = 1 [json_name = "volunteer"];
+}
+
+message UpdateVolunteerRequest {
+  // Отсутствующее поле сохраняется. Дата должна быть полной и не в будущем.
+  // Имя и фамилия непустые; пустое middle_name очищает отчество.
+  optional google.type.Date date_of_birth = 1 [json_name = "date_of_birth"];
+  optional string first_name = 2 [json_name = "first_name"];
+  optional string last_name = 3 [json_name = "last_name"];
+  optional string middle_name = 4 [json_name = "middle_name"];
+}
+
+// Только результат чтения. Клиент не может создавать операции или задавать суммы.
+// Баланс и итог минут изменяются атомарно с записью операции; суммы не должны переполняться.
+message VolunteerOperation {
+  string id = 1 [json_name = "id"];
+
+  string coordinator_id = 2 [json_name = "coordinator_id"];
+  string volunteer_id = 3 [json_name = "volunteer_id"];
+
+  // Человекочитаемое основание со снимком названия мероприятия/поощрения.
+  string description = 4 [json_name = "description"];
+  VolunteerOperationType type = 5 [json_name = "type"];
+
+  // Для PARTICIPATION_ACCRUAL используется participation_id, для покупки/возврата — reward_order_id.
+  // Сервер всегда заполняет одну ссылку. Суммы для неё определяются бизнес-операцией.
+  oneof source {
+    string participation_id = 6 [json_name = "participation_id"];
+    string reward_order_id = 7 [json_name = "reward_order_id"];
+  }
+
+  // Начисление: индивидуальные минуты / 30 * 5; покупка: отрицательная цена;
+  // возврат: положительная исходная цена заказа. Суммы определяет сервер.
+  int64 coin_delta = 8 [json_name = "coin_delta"];
+  // Только начисление за участие меняет минуты; покупка и возврат имеют 0.
+  int64 minute_delta = 9 [json_name = "minute_delta"];
+
+  // Состояние сразу после этой операции, записанное в той же транзакции.
+  int64 coin_balance_after = 10 [json_name = "coin_balance_after"];
+  int64 confirmed_minutes_after = 11 [json_name = "confirmed_minutes_after"];
+
+  // Строго возрастающий номер операции внутри волонтёра, задаёт порядок баланса.
+  uint64 sequence = 12 [json_name = "sequence"];
+
+  google.protobuf.Timestamp created_at = 13 [json_name = "created_at"];
+}
+
+enum VolunteerOperationType {
+  VOLUNTEER_OPERATION_TYPE_UNSPECIFIED = 0;
+  // Не более одной операции на participation_id.
+  VOLUNTEER_OPERATION_TYPE_PARTICIPATION_ACCRUAL = 1;
+  // Не более одной операции каждого из этих типов на reward_order_id.
+  VOLUNTEER_OPERATION_TYPE_REWARD_PURCHASE = 2;
+  VOLUNTEER_OPERATION_TYPE_REWARD_REFUND = 3;
+}
+
+message ListVolunteerOperationsRequest {
+  // Отсутствует — все типы; UNSPECIFIED и неизвестные значения недопустимы.
+  optional VolunteerOperationType type = 1 [json_name = "type"];
+
+  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
+  int32 limit = 2 [json_name = "limit"];
+  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
+  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
+  // На каждом запросе применяются текущие права доступа и фильтры.
+  int64 offset = 4 [json_name = "offset"];
+}
+
+message ListVolunteerOperationsResponse {
+  // По sequence по убыванию.
+  repeated VolunteerOperation operations = 1 [json_name = "operations"];
+  // Общее число доступных записей с текущими фильтрами, без limit и offset.
+  // Подсчитывается в том же снимке данных, что и элементы страницы.
+  int64 total_count = 3 [json_name = "total_count"];
+}

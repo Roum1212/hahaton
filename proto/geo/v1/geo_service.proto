@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package geo.v1;
+
+option go_package = "github.com/Roum1212/hahaton/genproto/geo/v1;geo_v1";
+
+// Справочник городов и адресные подсказки. GeoService не создаёт мероприятия.
+service GeoService {
+  // Авторизованный клиент передаёт query/from_bound/to_bound; бэк обращается к
+  // POST https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address.
+  // API key только на сервере, выдаются подсказки по России. Ошибка провайдера не
+  // маскируется пустым успешным списком: Unavailable либо ResourceExhausted при лимите.
+  rpc SuggestAddresses(SuggestAddressesRequest) returns (SuggestAddressesResponse) {}
+  // Справочник доступен без авторизации. Подсказки не заменяют выгрузку всех городов.
+  // Пустой query и последовательный обход страниц возвращают весь справочник.
+  rpc ListCities(ListCitiesRequest) returns (ListCitiesResponse) {}
+  rpc GetCity(GetCityRequest) returns (GetCityResponse) {}
+}
+
+// WGS84, десятичные градусы. Обе координаты обязательны, конечны.
+message GeoPoint {
+  optional double latitude = 1 [json_name = "latitude"]; // [-90, 90].
+  optional double longitude = 2 [json_name = "longitude"]; // [-180, 180].
+}
+
+message City {
+  // ФИАС-код населённого пункта; совпадает с соответствующим city_fias_id или settlement_fias_id DaData.
+  string id = 1 [json_name = "id"];
+
+  string name = 2 [json_name = "name"];
+  string region_name = 3 [json_name = "region_name"];
+
+  // Отсутствует, если центр не проверен; не подменять координатами (0, 0).
+  GeoPoint center = 4 [json_name = "center"];
+  // Проверенная граница населённого пункта, а не городского округа.
+  // false: режим city_id недоступен; фронт предлагает явный выбор радиуса.
+  bool has_boundary = 5 [json_name = "has_boundary"];
+}
+
+message RadiusArea {
+  GeoPoint center = 1 [json_name = "center"];
+  // Целое число метров от 1 до 200000 включительно. Граница круга включается.
+  int32 radius_meters = 2 [json_name = "radius_meters"];
+}
+
+message SearchArea {
+  // Ровно один вариант обязателен. В city_id граница населённого пункта включается.
+  // Неизвестный город — NotFound; отсутствующий полигон — FailedPrecondition,
+  // без скрытой замены кругом или прямоугольником. В MVP viewport не поддерживается.
+  oneof area {
+    string city_id = 1 [json_name = "city_id"];
+    RadiusArea radius = 2 [json_name = "radius"];
+  }
+}
+
+message ListCitiesRequest {
+  // Подстрока имени без учёта регистра, trim; отсутствие/пустая строка — все города.
+  optional string query = 1 [json_name = "query"];
+
+  // 0 означает 100; допустимы 1–1000.
+  int32 limit = 2 [json_name = "limit"];
+  int64 offset = 3 [json_name = "offset"];
+}
+
+message ListCitiesResponse {
+  // Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
+  repeated City cities = 1 [json_name = "cities"];
+
+  string catalog_version = 3 [json_name = "catalog_version"];
+
+  int64 total_count = 2 [json_name = "total_count"];
+}
+
+message GetCityRequest {
+  string id = 1 [json_name = "id"];
+}
+
+message GetCityResponse {
+  City city = 1 [json_name = "city"];
+
+  string catalog_version = 2 [json_name = "catalog_version"];
+}
+
+message AddressBound {
+  // Значение гранулярности DaData, например city, settlement, street, house.
+  // Неподдерживаемое значение или обратный диапазон from/to — InvalidArgument.
+  string value = 1 [json_name = "value"];
+}
+
+message SuggestAddressesRequest {
+  // Все три поля задаёт фронт. query после trim непустой, не более 300 Unicode-символов.
+  string query = 1 [json_name = "query"];
+
+  AddressBound from_bound = 2 [json_name = "from_bound"];
+  AddressBound to_bound = 3 [json_name = "to_bound"];
+
+  // 0 означает 10; допустимы 1–20. После выбора подсказки фронт повторяет запрос
+  // с query = fias_id выбранного адреса и count = 1, чтобы получить координаты.
+  int32 count = 4 [json_name = "count"];
+}
+
+message AddressSuggestion {
+  string unrestricted_value = 2 [json_name = "unrestricted_value"];
+  string value = 1 [json_name = "value"];
+
+  AddressSuggestionData data = 3 [json_name = "data"];
+}
+
+// Нормализованная часть ответа DaData; остальные поля провайдера клиенту не нужны.
+message AddressSuggestionData {
+  optional string city_fias_id = 2 [json_name = "city_fias_id"];
+  optional string fias_id = 1 [json_name = "fias_id"];
+  optional string settlement_fias_id = 3 [json_name = "settlement_fias_id"];
+
+  optional string city_with_type = 6 [json_name = "city_with_type"];
+  optional string region_with_type = 7 [json_name = "region_with_type"];
+  optional string settlement_with_type = 8 [json_name = "settlement_with_type"];
+
+  // Из geo_lat/geo_lon DaData. При null/некорректных координатах отсутствует целиком.
+  // Фронт предлагает поставить точку вручную, нули не подставляются.
+  GeoPoint point = 4 [json_name = "point"];
+  // Исходный код DaData: 0 — точно, 1 — ближайший дом, 2 — улица,
+  // 3 — населённый пункт, 4 — город, 5 — не определены; null остаётся отсутствием.
+  optional int32 qc_geo = 5 [json_name = "qc_geo"];
+}
+
+message SuggestAddressesResponse {
+  // Порядок релевантности DaData, без локальной пересортировки.
+  repeated AddressSuggestion suggestions = 1 [json_name = "suggestions"];
+}
