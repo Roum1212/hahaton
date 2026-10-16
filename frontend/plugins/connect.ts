@@ -2,7 +2,7 @@ import { createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-web';
 import { createAuthInterceptor, createErrorInterceptor, createRefreshInterceptor } from '~/core/app/rpc/interceptors';
 import { accessToken } from '~/core/app/rpc/token';
-import { AuthService } from '~/gen/auth/v1/auth_pb';
+import { AuthService } from '#genproto/auth/v1/auth_pb';
 
 export default defineNuxtPlugin(() => {
   const baseUrl = useRuntimeConfig().public.rpcUrl;

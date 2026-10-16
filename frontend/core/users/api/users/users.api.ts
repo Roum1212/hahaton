@@ -1,6 +1,6 @@
 import type { Transport } from '@connectrpc/connect';
 import { BaseRpcApi } from '~/core/app/rpc/base-api';
-import { UserService } from '~/gen/user/v1/user_pb';
+import { UserService } from '#genproto/user/v1/user_pb';
 import type { ApiUser } from './users.api.types';
 
 export class UsersApi extends BaseRpcApi<typeof UserService> {

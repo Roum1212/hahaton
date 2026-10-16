@@ -1,20 +1,19 @@
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
+# Nuxt and build output
+.nuxt/
+.output/
+.nitro/
+.data/
+.cache/
+dist/
+coverage/
 
-node_modules
+# Dependencies
+node_modules/
 
-logs
-*.log
+# Runtime data
+logs/
 
-.DS_Store
-.fleet
-.idea
-.vscode
-
+# Frontend environment
 .env
 .env.*
 !.env.example

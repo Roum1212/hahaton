@@ -4,8 +4,8 @@ import { create } from '@bufbuild/protobuf';
 import { timestampNow } from '@bufbuild/protobuf/wkt';
 import { Code, ConnectError, type ConnectRouter, type HandlerContext } from '@connectrpc/connect';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
-import { AuthService } from '../gen/auth/v1/auth_pb';
-import { UserRole, UserSchema, UserService, type User } from '../gen/user/v1/user_pb';
+import { AuthService } from '../genproto/auth/v1/auth_pb';
+import { UserRole, UserSchema, UserService, type User } from '../genproto/user/v1/user_pb';
 
 const PORT = Number(process.env.MOCK_PORT || 8080);
 const FLIDA_USERINFO_URL = process.env.MOCK_FLIDA_USERINFO_URL || 'https://id.flida.ru/api/oidc/userinfo';

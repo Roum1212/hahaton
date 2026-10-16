@@ -5,7 +5,7 @@ import type {
   ListUsersResponse,
   UpdateUserRequestSchema,
   User,
-} from '~/gen/user/v1/user_pb';
+} from '#genproto/user/v1/user_pb';
 
 export namespace ApiUser {
   export type Response = User;
