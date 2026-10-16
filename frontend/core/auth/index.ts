@@ -1,10 +1,10 @@
-import { AuthApi } from './api/auth/auth.api';
+import { SessionApi } from './api/session/session.api';
 import { AuthSessionService } from './services/auth/auth.service';
 
 export const AUTH_API = () => {
-  const { $transport, $publicTransport } = useNuxtApp();
+  const { $transport } = useNuxtApp();
   return {
-    auth: new AuthApi($transport, $publicTransport),
+    session: new SessionApi($transport),
   };
 };
 

@@ -1,37 +1,17 @@
 import { Code, ConnectError, type Interceptor } from '@connectrpc/connect';
 
-export const createAuthInterceptor =
-  (getToken: () => string | null): Interceptor =>
-  (next) =>
-  async (req) => {
-    const token = getToken();
-    if (token) req.header.set('Authorization', `Bearer ${token}`);
-    return next(req);
-  };
-
-export const createRefreshInterceptor =
-  (refresh: () => Promise<string | null>): Interceptor =>
-  (next) =>
-  async (req) => {
-    try {
-      return await next(req);
-    } catch (e) {
-      if (req.stream || ConnectError.from(e).code !== Code.Unauthenticated) throw e;
-      const token = await refresh();
-      if (!token) throw e;
-      return next(req);
-    }
-  };
+const SILENT_CODES = [Code.Canceled, Code.Unauthenticated];
 
 export const createErrorInterceptor =
-  (onError: (error: ConnectError) => void): Interceptor =>
+  (onError: (error: ConnectError, method: string) => void, onUnauthenticated: () => void): Interceptor =>
   (next) =>
   async (req) => {
     try {
       return await next(req);
     } catch (e) {
       const error = ConnectError.from(e);
-      if (error.code !== Code.Canceled) onError(error);
+      if (error.code === Code.Unauthenticated) onUnauthenticated();
+      if (!SILENT_CODES.includes(error.code)) onError(error, req.method.name);
       throw error;
     }
   };

@@ -1,6 +1,7 @@
 import { ConnectError } from '@connectrpc/connect';
 import type { FlidaApi } from '~/core/auth/api/flida/flida.api';
 import type { IFlidaTokens } from '~/core/auth/services/auth/auth.types';
+import type { IDemoAccount } from '~/config/demo.config';
 
 const FLIDA_ERROR_MESSAGES: Partial<Record<string, string>> = {
   invalid_config: 'Флида ID не настроен: проверьте Client ID и Redirect URI',
@@ -19,7 +20,7 @@ export const useAuthActions = () => {
 
   const redirectAfterLogin = async () => {
     const redirectCookie = useCookie<string | null>('redirectAfterLogin');
-    const path = redirectCookie.value || ROUTES.cabinet;
+    const path = redirectCookie.value || useCabinetMode().homeFor();
     redirectCookie.value = null;
     await navigateTo(path, { replace: true });
   };
@@ -40,6 +41,31 @@ export const useAuthActions = () => {
   };
 
   return { redirectAfterLogin, logout };
+};
+
+export const useDemoAuth = () => {
+  const authStore = useAuthStore();
+  const { toast, loader } = useApp();
+  const { redirectAfterLogin } = useAuthActions();
+  const enabled = !!useRuntimeConfig().public.demoLogin;
+
+  const signIn = async (account: IDemoAccount) => {
+    loader.show();
+    try {
+      const ok = await handleAsyncOperation(async () => {
+        await authStore.loginWithFlida(authStore.service.createDemoIdToken(account.subject));
+        return true;
+      });
+      if (!ok) return;
+      useCabinetMode().setMode(account.mode);
+      toast.success(`Вы вошли как ${account.name}`);
+      await redirectAfterLogin();
+    } finally {
+      loader.hide();
+    }
+  };
+
+  return { enabled, signIn };
 };
 
 export const useFlidaAuth = () => {
@@ -66,9 +92,13 @@ export const useFlidaAuth = () => {
 
   const complete = async (tokens: IFlidaTokens | undefined): Promise<boolean> => {
     if (!tokens) return false;
+    if (!tokens.id_token) {
+      toast.error('Флида ID не передал данные для входа');
+      return false;
+    }
     loader.show();
     try {
-      await authStore.loginWithFlida(tokens.access_token);
+      await authStore.loginWithFlida(tokens.id_token);
       toast.success('Вы успешно вошли в систему');
       await redirectAfterLogin();
       return true;

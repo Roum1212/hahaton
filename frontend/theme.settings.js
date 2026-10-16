@@ -274,6 +274,16 @@ const PRIMARY = {
 };
 
 const THEME_PRESET = definePreset(Aura, {
+  primitive: {
+    borderRadius: {
+      none: '0',
+      xs: '4px',
+      sm: '8px',
+      md: '12px',
+      lg: '14px',
+      xl: '20px',
+    },
+  },
   semantic: {
     primary: PRIMARY,
     colorScheme: {

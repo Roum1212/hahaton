@@ -7,6 +7,11 @@ export interface ApiPagination {
   limit: number;
   offset: number;
 }
+
+export interface IListResult<T> {
+  list: T[];
+  total: number;
+}
 export type Image = string | null | undefined;
 
 export enum LogTypeEnum {

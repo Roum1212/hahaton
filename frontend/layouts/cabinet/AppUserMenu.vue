@@ -1,52 +1,47 @@
 <script setup lang="ts">
-import { USER_ROLE_LABELS } from '~/core/users/services/users/users.types';
+import type { MenuItem } from 'primevue/menuitem';
+import { CABINET_MODE_LABELS } from '~/config/menu.config';
 
-withDefaults(defineProps<{ compact?: boolean }>(), { compact: false });
-
-const authStore = useAuthStore();
+const volunteerStore = useVolunteerStore();
 const { logout } = useAuthActions();
+const { mode, canCoordinate, switchMode, homeFor } = useCabinetMode();
 
-const name = computed(() => authStore.user?.fullName || authStore.user?.email || 'Пользователь');
-const roleLabel = computed(() => (authStore.user ? USER_ROLE_LABELS[authStore.user.role] : ''));
+const name = computed(() => volunteerStore.profile?.fullName || 'Участник');
 const letter = computed(() => name.value.slice(0, 1).toLocaleUpperCase());
 
 const menu = ref();
 const menuId = useId();
 
-const items = [
-  {
-    label: 'Профиль',
-    icon: 'pi pi-user',
-    command: () => navigateTo(`${ROUTES.cabinet}/${ROUTES.settings}/${ROUTES.profile}`),
-  },
-  {
-    label: 'Выход',
-    icon: 'pi pi-sign-out',
-    command: () => logout(),
-  },
-];
+const items = computed<MenuItem[]>(() => {
+  const result: MenuItem[] = [
+    { label: name.value, items: [] },
+    { label: 'Мой профиль', icon: 'pi pi-user', command: () => navigateTo(homeFor('volunteer')) },
+  ];
+  if (canCoordinate.value) {
+    const target = mode.value === 'coordinator' ? 'volunteer' : 'coordinator';
+    result.push({
+      label: `Режим: ${CABINET_MODE_LABELS[target].toLocaleLowerCase()}`,
+      icon: target === 'coordinator' ? 'pi pi-briefcase' : 'pi pi-heart',
+      command: () => switchMode(target),
+    });
+  }
+  result.push(
+    { label: 'Анкета', icon: 'pi pi-pencil', command: () => navigateTo({ path: homeFor('volunteer'), query: { tab: 'about' } }) },
+    { separator: true },
+    { label: 'Выйти', icon: 'pi pi-sign-out', command: () => logout() },
+  );
+  return result;
+});
 
 const toggle = (event: Event) => menu.value.toggle(event);
 </script>
 
 <template>
-  <button
-    v-tooltip.right="compact ? name : undefined"
-    type="button"
-    class="app-user"
-    :class="{ 'app-user--compact': compact }"
-    aria-haspopup="true"
-    :aria-controls="menuId"
-    @click="toggle">
-    <span class="app-user__avatar">{{ letter }}</span>
-    <template v-if="!compact">
-      <span class="app-user__info">
-        <span class="app-user__name">{{ name }}</span>
-        <span class="app-user__role">{{ roleLabel }}</span>
-      </span>
-      <i class="app-user__caret pi pi-angle-up" />
-    </template>
+  <button type="button" class="app-user-button" aria-haspopup="true" :aria-controls="menuId" @click="toggle">
+    <span class="app-avatar app-avatar--sm">{{ letter }}</span>
+    <span class="app-user-button__name">{{ name }}</span>
+    <i class="pi pi-angle-down" />
   </button>
 
-  <Menu :id="menuId" ref="menu" :model="items" :popup="true" />
+  <Menu :id="menuId" ref="menu" :model="items" :popup="true" class="app-user-menu" />
 </template>

@@ -1,67 +1,80 @@
 import { defineStore } from 'pinia';
-import { accessToken } from '~/core/app/rpc/token';
-import { UserRole } from '~/core/users/services/users/users.types';
-import type { IAuthUser } from '../services/auth/auth.types';
+import type { ISession } from '../services/auth/auth.types';
 
 interface IAuthStore {
-  user: IAuthUser | null;
-  isLoggedIn: boolean;
+  session: ISession | null;
+  initialized: boolean;
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): IAuthStore => ({
-    user: null,
-    isLoggedIn: false,
+    session: null,
+    initialized: false,
   }),
   getters: {
     service: () => useServices().AUTH.AuthService,
-    hasToken: (): boolean => !!accessToken.get(),
-    isAdmin: (state): boolean => state.user?.role === UserRole.ADMIN,
-    roles: (state): string[] => (state.user?.role === UserRole.ADMIN ? ['admin', 'user'] : state.user ? ['user'] : []),
+    isLoggedIn: (state): boolean => !!state.session?.userId,
+    hasCoordinatorProfile: (state): boolean => !!state.session?.hasCoordinatorProfile,
+    roles: (state): string[] => {
+      if (!state.session?.userId) return [];
+      return state.session.hasCoordinatorProfile ? [ROLES.volunteer, ROLES.coordinator] : [ROLES.volunteer];
+    },
   },
   actions: {
-    async loginWithFlida(flidaAccessToken: string) {
-      accessToken.clear();
-      accessToken.set(await this.service.loginWithFlida(flidaAccessToken));
-      await this.checkAuth();
+    async init() {
+      if (this.initialized) return;
+      try {
+        this.session = await this.service.open();
+        if (this.isLoggedIn) await useVolunteerStore().fetchProfile();
+      } catch {
+        this.resetState();
+      } finally {
+        this.initialized = true;
+      }
     },
 
-    async checkAuth() {
-      if (!accessToken.get()) {
-        this.resetState();
-        return;
-      }
-      try {
-        this.setUser(await this.service.me());
-        this.isLoggedIn = true;
-      } catch (e) {
-        accessToken.clear();
-        this.resetState();
-        throw e;
-      }
+    async loginWithFlida(idToken: string) {
+      await this.service.open();
+      this.session = await this.service.authenticate(idToken);
+      await useVolunteerStore().fetchProfile();
+    },
+
+    async refreshSession() {
+      this.session = await this.service.get();
     },
 
     async logout() {
       try {
-        await this.service.logout();
+        await this.service.close();
       } finally {
-        accessToken.clear();
         this.resetState();
         this.resetUserScopedStores();
       }
     },
 
-    setUser(user: IAuthUser) {
-      this.user = { ...user };
+    expire() {
+      if (!this.isLoggedIn) return;
+      this.resetState();
+      this.resetUserScopedStores();
+      const route = useRouter().currentRoute.value;
+      if (GUEST_PAGES.includes(route.path.toLowerCase())) return;
+      useCookie('redirectAfterLogin').value = route.fullPath;
+      navigateTo(ROUTES.login);
     },
 
     resetUserScopedStores() {
-      useUsersStore().$reset();
+      useVolunteerStore().$reset();
+      useCoordinatorsStore().$reset();
+      useCooperationsStore().$reset();
+      useEventsStore().$reset();
+      useParticipationsStore().$reset();
+      useRewardsStore().$reset();
+      useRewardOrdersStore().$reset();
+      useEventChatsStore().$reset();
     },
 
     resetState() {
-      this.user = null;
-      this.isLoggedIn = false;
+      this.session = null;
     },
   },
 });
