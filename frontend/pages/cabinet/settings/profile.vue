@@ -7,6 +7,7 @@ definePageMeta({
 
 const authStore = useAuthStore();
 const { save } = useUsersActions();
+const { logout } = useAuthActions();
 const { generateInitialData } = useUsersForm();
 const { toast } = useApp();
 
@@ -59,6 +60,10 @@ const onSave = async () => {
           <Button type="submit" label="Сохранить" icon="pi pi-check" :loading="submitting" />
         </div>
       </form>
+    </div>
+
+    <div class="app-logout-mobile max-w-[720px]">
+      <Button label="Выйти" icon="pi pi-sign-out" severity="danger" fluid @click="logout" />
     </div>
   </AppPage>
 </template>

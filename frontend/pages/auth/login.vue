@@ -16,8 +16,8 @@ onMounted(() => {
 <template>
   <div class="box-border flex h-[100vh] w-full flex-col items-center justify-between bg-surface-0 p-[2rem] dark:bg-surface-950">
     <NuxtLink to="/" class="flex items-center gap-3">
-      <img src="/images/common/logo.svg" alt="logo" class="h-9 w-9" />
-      <span class="text-xl font-extrabold tracking-tight text-surface-900 dark:text-surface-0">{{ siteName }}</span>
+      <img src="/images/common/volonterim_logo_transparent.png" :alt="siteName" class="h-9 w-9" />
+      <img src="/images/common/wordmark.png" :alt="siteName" class="h-6 w-auto" />
     </NuxtLink>
 
     <div class="flex w-full max-w-[420px] flex-col gap-6">

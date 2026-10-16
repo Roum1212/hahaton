@@ -20,7 +20,7 @@ export default defineNuxtConfig({
 
   modules: ['@vueuse/nuxt', '@nuxt/eslint', '@primevue/nuxt-module', '@pinia/nuxt'],
 
-  css: ['@/assets/style.scss', '@/assets/tailwind.css'],
+  css: ['primeicons/primeicons.css', '@/assets/style.scss', '@/assets/tailwind.css'],
 
   runtimeConfig: {
     public: {
@@ -47,7 +47,7 @@ export default defineNuxtConfig({
     head: {
       title: process.env.APP_PUBLIC_SITE_NAME || 'Template',
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', href: '/images/common/volonterim_logo_transparent.png' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' },
       ],
       meta: [

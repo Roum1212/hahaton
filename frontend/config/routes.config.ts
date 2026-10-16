@@ -1,4 +1,5 @@
 export const ROUTES = {
+  home: '/',
   cabinet: '/cabinet',
   login: '/auth/login',
   authCallback: '/auth/callback',
