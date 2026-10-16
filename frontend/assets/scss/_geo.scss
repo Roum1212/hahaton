@@ -1,0 +1,143 @@
+.geo-map {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--app-radius);
+  background-color: var(--p-surface-100);
+
+  &__canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+  }
+
+  &__error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--app-ink-muted);
+  }
+
+  &__locate {
+    position: absolute;
+    right: 10px;
+    bottom: 34px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: #111111;
+    cursor: pointer;
+
+    i {
+      font-size: 15px;
+    }
+  }
+}
+
+.geo-area-dialog.p-dialog {
+  .p-dialog-title {
+    font-size: 24px;
+    font-weight: 800;
+  }
+}
+
+.geo-area {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &__section {
+    width: fit-content;
+    margin-top: 6px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--app-text);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  &__hint {
+    font-size: 12px;
+    color: var(--app-text-muted);
+  }
+
+  &__map {
+    height: 360px;
+
+    @media (max-width: 767px) {
+      height: 280px;
+    }
+  }
+
+  &__label {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__radius {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__chip {
+    flex-shrink: 0;
+    min-width: 44px;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 12px;
+    background-color: var(--p-surface-100);
+    font: inherit;
+    font-size: 15px;
+    color: var(--app-text);
+    cursor: pointer;
+    transition: background-color var(--app-transition);
+
+    &:hover {
+      background-color: var(--p-surface-200);
+    }
+
+    &--active,
+    &--active:hover {
+      background-color: #111111;
+      color: #ffffff;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    @media (max-width: 767px) {
+      width: 100%;
+
+      .p-button {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import type { ISearchArea } from '~/core/geo/services/geo/geo.types';
+
 export const useLanding = () => {
   const authStore = useAuthStore();
   const siteName = useRuntimeConfig().public.siteName;
@@ -11,4 +13,27 @@ export const useLanding = () => {
   };
 
   return { siteName, isLoggedIn, primaryRoute, scrollTo };
+};
+
+export const useLandingEvents = () => {
+  const authStore = useAuthStore();
+  const store = useEventsStore();
+  const loading = ref(true);
+
+  const load = async (area: ISearchArea) => {
+    loading.value = true;
+    if (!authStore.isLoggedIn) {
+      store.upcoming = [];
+      loading.value = false;
+      return;
+    }
+    await handleAsyncOperation(
+      () => store.findUpcoming(area),
+      () => {
+        loading.value = false;
+      },
+    );
+  };
+
+  return { store, loading, load };
 };

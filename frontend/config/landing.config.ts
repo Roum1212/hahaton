@@ -181,13 +181,6 @@ export const LANDING_PHOTOS = {
   },
 } satisfies Record<string, ILandingPhoto>;
 
-export interface ILandingCity {
-  name: string;
-  locative: string;
-}
-
-export const LANDING_CITIES: ILandingCity[] = [{ name: 'Обнинск', locative: 'Обнинске' }];
-
 export const LANDING_NAV: ILandingNavItem[] = [
   { label: 'О проекте', anchor: 'about' },
   { label: 'Как это работает', anchor: 'steps' },

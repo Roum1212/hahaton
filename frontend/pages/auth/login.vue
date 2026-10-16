@@ -5,6 +5,7 @@ definePageMeta({
 
 const siteName = useRuntimeConfig().public.siteName;
 const { configured, initializing, authorizing, init, signIn } = useFlidaAuth();
+const demo = useDemoAuth();
 
 useHead({ title: `Вход | ${siteName}` });
 
@@ -14,27 +15,50 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="box-border flex h-[100vh] w-full flex-col items-center justify-between bg-surface-0 p-[2rem] dark:bg-surface-950">
-    <NuxtLink to="/" class="flex items-center gap-3">
-      <img src="/images/common/volonterim_logo_transparent.png" :alt="siteName" class="h-9 w-9" />
-      <img src="/images/common/wordmark.png" :alt="siteName" class="h-6 w-auto" />
-    </NuxtLink>
+  <div class="app-auth">
+    <div class="app-auth__main">
+      <NuxtLink :to="ROUTES.home" class="app-auth__brand">
+        <img src="/images/common/volonterim_logo_transparent.png" :alt="siteName" />
+        <img src="/images/common/wordmark.png" :alt="siteName" />
+      </NuxtLink>
 
-    <div class="flex w-full max-w-[420px] flex-col gap-6">
-      <div class="flex flex-col gap-2">
-        <div class="text-[32px] font-bold text-surface-900 dark:text-surface-0">Вход в систему</div>
-        <span class="text-surface-500 dark:text-surface-400">Войдите с помощью аккаунта Флида ID</span>
+      <div class="app-auth__form">
+        <h1 class="app-auth__title">Вход</h1>
+        <p class="app-auth__note">Один аккаунт для волонтёров и координаторов. Войдите через Флида ID — регистрация не нужна.</p>
+        <Message v-if="!configured" severity="warn" size="small">Не задан APP_FLIDA_CLIENT_ID</Message>
+        <Button
+          label="Войти через Флида ID"
+          size="large"
+          fluid
+          :loading="initializing || authorizing"
+          :disabled="!configured"
+          @click="signIn" />
+        <div v-if="demo.enabled" class="app-auth__demo">
+          <span class="app-auth__divider">или демо-вход</span>
+          <button
+            v-for="account in DEMO_ACCOUNTS"
+            :key="account.subject"
+            type="button"
+            class="app-auth__demo-account"
+            @click="demo.signIn(account)">
+            <AppAvatar :name="account.name" />
+            <span class="app-auth__demo-text">
+              <b>{{ account.label }}</b>
+              <span>{{ account.name }}</span>
+            </span>
+            <i class="pi pi-arrow-right" />
+          </button>
+        </div>
+        <NuxtLink :to="ROUTES.home" class="app-link">Вернуться на главную</NuxtLink>
       </div>
-      <Message v-if="!configured" severity="warn" size="small">Не задан APP_FLIDA_CLIENT_ID</Message>
-      <Button
-        label="ВОЙТИ ЧЕРЕЗ ФЛИДА ID"
-        icon="pi pi-sign-in"
-        class="w-full !font-semibold !tracking-[0.08em]"
-        :loading="initializing || authorizing"
-        :disabled="!configured"
-        @click="signIn" />
+
+      <span class="app-auth__footer">© {{ new Date().getFullYear() }} {{ siteName }}</span>
     </div>
 
-    <div class="text-center text-sm text-surface-500 dark:text-surface-400">© {{ new Date().getFullYear() }} {{ siteName }}</div>
+    <div class="app-auth__aside">
+      <img src="/images/landing/feature-coins.webp" alt="" />
+      <h2>Помогайте городу —<br />копите часы волонтёрства</h2>
+      <p class="app-auth__note">1 час волонтёрства = 10 коинов, которые можно обменять на поощрения</p>
+    </div>
   </div>
 </template>

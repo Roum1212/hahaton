@@ -1,15 +1,14 @@
 import { ConnectError } from '@connectrpc/connect';
-import { USERS_SERVICES } from '~/core/users';
 import { AUTH_API } from '../..';
+import type { ApiSession } from '../../api/session/session.api.types';
 import { FlidaApi } from '../../api/flida/flida.api';
 import type { Flida } from '../../api/flida/flida.types';
-import type { IAuthUser } from './auth.types';
+import type { ISession } from './auth.types';
 
 const PASSIVE_DISABLED_KEY = 'flida_passive_disabled';
 
 export class AuthSessionService {
-  private service = AUTH_API().auth;
-  private users = USERS_SERVICES().UsersService;
+  private service = AUTH_API().session;
   private config = useRuntimeConfig().public.flida;
 
   async createFlidaClient(): Promise<FlidaApi> {
@@ -23,15 +22,29 @@ export class AuthSessionService {
     });
   }
 
-  async loginWithFlida(flidaAccessToken: string): Promise<string> {
-    const token = await this.service.loginWithFlida({ flidaAccessToken });
-    sessionStorage.removeItem(PASSIVE_DISABLED_KEY);
-    return token;
+  async open(): Promise<ISession> {
+    return this.toInterface(this.required(await this.service.open()));
   }
 
-  async logout(): Promise<void> {
+  async authenticate(idToken: string): Promise<ISession> {
+    const session = this.toInterface(this.required(await this.service.authenticate(idToken)));
+    sessionStorage.removeItem(PASSIVE_DISABLED_KEY);
+    return session;
+  }
+
+  async get(): Promise<ISession> {
+    return this.toInterface(this.required(await this.service.get()));
+  }
+
+  async close(): Promise<void> {
     sessionStorage.setItem(PASSIVE_DISABLED_KEY, '1');
-    await this.service.logout();
+    await this.service.close();
+  }
+
+  createDemoIdToken(subject: string): string {
+    const encode = (value: object) => btoa(JSON.stringify(value)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const claims = { iss: DEMO_ISSUER, sub: subject, exp: Math.floor(Date.now() / 1000) + 300 };
+    return `${encode({ alg: 'none', typ: 'JWT' })}.${encode(claims)}.`;
   }
 
   flidaLogoutUrl(): string | null {
@@ -39,9 +52,16 @@ export class AuthSessionService {
     return clientId && postLogoutRedirectUri ? FlidaApi.logoutUrl(clientId, postLogoutRedirectUri) : null;
   }
 
-  async me(): Promise<IAuthUser> {
-    const user = await this.service.me();
-    if (!user) throw new ConnectError('Пустой ответ сервера');
-    return this.users.toInterface(user);
+  toInterface(data: ApiSession.Response): ISession {
+    return {
+      userId: data.userId || null,
+      hasCoordinatorProfile: data.hasCoordinatorProfile,
+      expiresAt: fromTimestamp(data.expiresAt),
+    };
+  }
+
+  private required(session: ApiSession.Response | undefined): ApiSession.Response {
+    if (!session) throw new ConnectError('Пустой ответ сервера');
+    return session;
   }
 }

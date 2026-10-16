@@ -2,7 +2,7 @@
 import { LANDING_NAV } from '~/config/landing.config';
 
 const { siteName, isLoggedIn, primaryRoute, scrollTo } = useLanding();
-const { city, confirmed, confirm, openDialog } = useCity();
+const { city, label, confirmed, confirm, openDialog } = useSearchArea();
 const { y } = useWindowScroll();
 
 const menuOpen = ref(false);
@@ -25,11 +25,11 @@ const onNavigate = (anchor: string) => {
       <div class="landing-city">
         <button type="button" class="landing-city__button" @click="openDialog">
           <i class="pi pi-map-marker" />
-          <span>{{ city }}</span>
+          <span class="landing-city__label">{{ label }}</span>
         </button>
         <Transition name="landing-menu">
           <div v-if="!confirmed" class="landing-city__confirm">
-            <span class="landing-city__question">Ваш город — {{ city }}?</span>
+            <span class="landing-city__question">Ваш город — {{ city.name }}?</span>
             <div class="landing-city__actions">
               <Button label="Да" size="small" @click="confirm" />
               <Button label="Изменить" size="small" severity="secondary" outlined @click="openDialog" />
@@ -80,6 +80,6 @@ const onNavigate = (anchor: string) => {
       </nav>
     </Transition>
 
-    <LandingCityDialog />
+    <GeoSearchAreaDialog />
   </header>
 </template>

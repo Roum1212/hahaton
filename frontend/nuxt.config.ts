@@ -30,6 +30,8 @@ export default defineNuxtConfig({
       siteName: process.env.APP_PUBLIC_SITE_NAME || 'Template',
       siteDescription: process.env.APP_PUBLIC_SITE_DESCRIPTION || '',
       titleSeparator: '|',
+      demoLogin: process.env.APP_DEMO_LOGIN === 'true',
+      yandexMapsApiKey: process.env.APP_YANDEX_MAPS_API_KEY || '',
       flida: {
         clientId: process.env.APP_FLIDA_CLIENT_ID || '',
         redirectUri: process.env.APP_FLIDA_REDIRECT_URI || `${process.env.APP_PUBLIC_URL || 'http://localhost:3000'}/auth/callback`,
