@@ -55,10 +55,19 @@ func (x Notifier) Notify(ctx context.Context, r connect.AnyRequest, response con
 	x.hub.Notify(responseRecipients.GetRecipients())
 }
 
-func isMutation(procedure string) bool {
+func isAdminMutation(procedure string) bool {
 	switch procedure {
 	case admin_v1connect.AdminServiceCreateCoordinatorProcedure:
 		return true
+	case admin_v1connect.AdminServiceForceCompleteEventProcedure:
+		return true
+	default:
+		return false
+	}
+}
+
+func isMutation(procedure string) bool {
+	switch procedure {
 	case cooperation_v1connect.CooperationServiceRequestCooperationProcedure:
 		return true
 	case cooperation_v1connect.CooperationServiceApproveCooperationProcedure:
@@ -114,7 +123,7 @@ func isMutation(procedure string) bool {
 	case volunteer_v1connect.VolunteerServiceUpdateVolunteerProcedure:
 		return true
 	default:
-		return false
+		return isAdminMutation(procedure)
 	}
 }
 

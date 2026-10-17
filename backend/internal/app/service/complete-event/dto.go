@@ -17,6 +17,7 @@ type Request struct {
 	eventID   model_event_id.EventID
 	results   []model_event_result.EventResult
 	requestID string
+	force     bool
 }
 
 func (x Request) GetEventID() model_event_id.EventID {
@@ -35,9 +36,15 @@ func (x Request) GetUserID() model_user_id.UserID {
 	return x.userID
 }
 
+func (x Request) IsForced() bool {
+	return x.force
+}
+
 func (x Request) Validate() error {
-	if err := x.userID.Validate(); err != nil {
-		return fmt.Errorf("user id: %w", err)
+	if !x.force {
+		if err := x.userID.Validate(); err != nil {
+			return fmt.Errorf("user id: %w", err)
+		}
 	}
 
 	if err := x.eventID.Validate(); err != nil {
@@ -62,6 +69,19 @@ func (x Request) Validate() error {
 	}
 
 	return nil
+}
+
+func NewForceRequest(
+	eventID model_event_id.EventID,
+	results []model_event_result.EventResult,
+	requestID string,
+) Request {
+	return Request{
+		eventID:   eventID,
+		results:   results,
+		requestID: requestID,
+		force:     true,
+	}
 }
 
 func NewRequest(

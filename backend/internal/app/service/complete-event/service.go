@@ -50,6 +50,15 @@ func (x service) CompleteEvent(ctx context.Context, r Request) (Response, error)
 		return Response{}, fmt.Errorf("%w: %w", ErrInvalidRequest, err)
 	}
 
+	if r.IsForced() {
+		event, err := x.events.Load(ctx, r.GetEventID())
+		if err != nil {
+			return Response{}, err
+		}
+
+		r.userID = event.GetCoordinatorID()
+	}
+
 	if _, err := x.coordinators.Load(ctx, r.GetUserID()); err != nil {
 		switch {
 		case errors.Is(err, aggregate_coordinator.ErrNotFound):
@@ -106,7 +115,13 @@ func (x service) complete(ctx context.Context, r Request, event *aggregate_event
 	}
 
 	now := time.Now().UTC()
-	if err := event.Complete(aggregate_event_command.NewComplete(r.GetRequestID(), fingerprint, now)); err != nil {
+
+	command := aggregate_event_command.NewComplete(r.GetRequestID(), fingerprint, now)
+	if r.IsForced() {
+		command = aggregate_event_command.NewForceComplete(r.GetRequestID(), fingerprint, now)
+	}
+
+	if err := event.Complete(command); err != nil {
 		return err
 	}
 

@@ -7,6 +7,7 @@
 package admin_v1
 
 import (
+	v1 "github.com/Roum1212/hahaton/genproto/event/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -411,11 +412,115 @@ func (x *CreateCoordinatorResponse) GetId() string {
 	return ""
 }
 
+type ForceCompleteEventRequest struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Id            string                         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Results       []*v1.EventParticipationResult `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
+	RequestId     string                         `protobuf:"bytes,3,opt,name=request_id,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ForceCompleteEventRequest) Reset() {
+	*x = ForceCompleteEventRequest{}
+	mi := &file_admin_v1_admin_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ForceCompleteEventRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ForceCompleteEventRequest) ProtoMessage() {}
+
+func (x *ForceCompleteEventRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_v1_admin_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ForceCompleteEventRequest.ProtoReflect.Descriptor instead.
+func (*ForceCompleteEventRequest) Descriptor() ([]byte, []int) {
+	return file_admin_v1_admin_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ForceCompleteEventRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ForceCompleteEventRequest) GetResults() []*v1.EventParticipationResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+func (x *ForceCompleteEventRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+type ForceCompleteEventResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Event         *v1.Event              `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ForceCompleteEventResponse) Reset() {
+	*x = ForceCompleteEventResponse{}
+	mi := &file_admin_v1_admin_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ForceCompleteEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ForceCompleteEventResponse) ProtoMessage() {}
+
+func (x *ForceCompleteEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_v1_admin_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ForceCompleteEventResponse.ProtoReflect.Descriptor instead.
+func (*ForceCompleteEventResponse) Descriptor() ([]byte, []int) {
+	return file_admin_v1_admin_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ForceCompleteEventResponse) GetEvent() *v1.Event {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
 var File_admin_v1_admin_service_proto protoreflect.FileDescriptor
 
 const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1cadmin/v1/admin_service.proto\x12\badmin.v1\"\xa4\x02\n" +
+	"\x1cadmin/v1/admin_service.proto\x12\badmin.v1\x1a\x1cevent/v1/event_service.proto\"\xa4\x02\n" +
 	"\x0eAdminVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
@@ -448,10 +553,19 @@ const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"$cooperation_request_cooldown_seconds\x18\x04 \x01(\x03H\x00R$cooperation_request_cooldown_seconds\x88\x01\x01B'\n" +
 	"%_cooperation_request_cooldown_seconds\"+\n" +
 	"\x19CreateCoordinatorResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id2\xc5\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x89\x01\n" +
+	"\x19ForceCompleteEventRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12<\n" +
+	"\aresults\x18\x02 \x03(\v2\".event.v1.EventParticipationResultR\aresults\x12\x1e\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tR\n" +
+	"request_id\"C\n" +
+	"\x1aForceCompleteEventResponse\x12%\n" +
+	"\x05event\x18\x01 \x01(\v2\x0f.event.v1.EventR\x05event2\xa8\x02\n" +
 	"\fAdminService\x12U\n" +
 	"\x0eFindVolunteers\x12\x1f.admin.v1.FindVolunteersRequest\x1a .admin.v1.FindVolunteersResponse\"\x00\x12^\n" +
-	"\x11CreateCoordinator\x12\".admin.v1.CreateCoordinatorRequest\x1a#.admin.v1.CreateCoordinatorResponse\"\x00B8Z6github.com/Roum1212/hahaton/genproto/admin/v1;admin_v1b\x06proto3"
+	"\x11CreateCoordinator\x12\".admin.v1.CreateCoordinatorRequest\x1a#.admin.v1.CreateCoordinatorResponse\"\x00\x12a\n" +
+	"\x12ForceCompleteEvent\x12#.admin.v1.ForceCompleteEventRequest\x1a$.admin.v1.ForceCompleteEventResponse\"\x00B8Z6github.com/Roum1212/hahaton/genproto/admin/v1;admin_v1b\x06proto3"
 
 var (
 	file_admin_v1_admin_service_proto_rawDescOnce sync.Once
@@ -465,25 +579,33 @@ func file_admin_v1_admin_service_proto_rawDescGZIP() []byte {
 	return file_admin_v1_admin_service_proto_rawDescData
 }
 
-var file_admin_v1_admin_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_admin_v1_admin_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_admin_v1_admin_service_proto_goTypes = []any{
-	(*AdminVolunteer)(nil),            // 0: admin.v1.AdminVolunteer
-	(*FindVolunteersRequest)(nil),     // 1: admin.v1.FindVolunteersRequest
-	(*FindVolunteersResponse)(nil),    // 2: admin.v1.FindVolunteersResponse
-	(*CreateCoordinatorRequest)(nil),  // 3: admin.v1.CreateCoordinatorRequest
-	(*CreateCoordinatorResponse)(nil), // 4: admin.v1.CreateCoordinatorResponse
+	(*AdminVolunteer)(nil),              // 0: admin.v1.AdminVolunteer
+	(*FindVolunteersRequest)(nil),       // 1: admin.v1.FindVolunteersRequest
+	(*FindVolunteersResponse)(nil),      // 2: admin.v1.FindVolunteersResponse
+	(*CreateCoordinatorRequest)(nil),    // 3: admin.v1.CreateCoordinatorRequest
+	(*CreateCoordinatorResponse)(nil),   // 4: admin.v1.CreateCoordinatorResponse
+	(*ForceCompleteEventRequest)(nil),   // 5: admin.v1.ForceCompleteEventRequest
+	(*ForceCompleteEventResponse)(nil),  // 6: admin.v1.ForceCompleteEventResponse
+	(*v1.EventParticipationResult)(nil), // 7: event.v1.EventParticipationResult
+	(*v1.Event)(nil),                    // 8: event.v1.Event
 }
 var file_admin_v1_admin_service_proto_depIdxs = []int32{
 	0, // 0: admin.v1.FindVolunteersResponse.volunteers:type_name -> admin.v1.AdminVolunteer
-	1, // 1: admin.v1.AdminService.FindVolunteers:input_type -> admin.v1.FindVolunteersRequest
-	3, // 2: admin.v1.AdminService.CreateCoordinator:input_type -> admin.v1.CreateCoordinatorRequest
-	2, // 3: admin.v1.AdminService.FindVolunteers:output_type -> admin.v1.FindVolunteersResponse
-	4, // 4: admin.v1.AdminService.CreateCoordinator:output_type -> admin.v1.CreateCoordinatorResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 1: admin.v1.ForceCompleteEventRequest.results:type_name -> event.v1.EventParticipationResult
+	8, // 2: admin.v1.ForceCompleteEventResponse.event:type_name -> event.v1.Event
+	1, // 3: admin.v1.AdminService.FindVolunteers:input_type -> admin.v1.FindVolunteersRequest
+	3, // 4: admin.v1.AdminService.CreateCoordinator:input_type -> admin.v1.CreateCoordinatorRequest
+	5, // 5: admin.v1.AdminService.ForceCompleteEvent:input_type -> admin.v1.ForceCompleteEventRequest
+	2, // 6: admin.v1.AdminService.FindVolunteers:output_type -> admin.v1.FindVolunteersResponse
+	4, // 7: admin.v1.AdminService.CreateCoordinator:output_type -> admin.v1.CreateCoordinatorResponse
+	6, // 8: admin.v1.AdminService.ForceCompleteEvent:output_type -> admin.v1.ForceCompleteEventResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_admin_v1_admin_service_proto_init() }
@@ -503,7 +625,7 @@ func file_admin_v1_admin_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_admin_v1_admin_service_proto_rawDesc), len(file_admin_v1_admin_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

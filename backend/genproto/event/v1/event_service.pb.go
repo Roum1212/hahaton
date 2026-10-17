@@ -1117,7 +1117,7 @@ type CompleteEventRequest struct {
 	state   protoimpl.MessageState      `protogen:"open.v1"`
 	Id      string                      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Results []*EventParticipationResult `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
-	// Обязательный ключ, уникальный для координатора и RPC. Повтор того же содержимого
+	// Обязательный ключ, общий для обоих RPC завершения у координатора. Повтор того же содержимого
 	// (порядок строк незначим) возвращает исходный результат без новых начислений.
 	// Другой payload с тем же ключом — AlreadyExists.
 	// Другой ключ для уже COMPLETED мероприятия — FailedPrecondition.

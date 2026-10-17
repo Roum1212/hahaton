@@ -4,6 +4,7 @@ import (
 	rpc_service_admin "github.com/Roum1212/hahaton/internal/api/rpc/service/admin"
 	rpc_service_admin_rpc_create_coordinator "github.com/Roum1212/hahaton/internal/api/rpc/service/admin/rpc/create-coordinator"
 	rpc_service_admin_rpc_find_volunteers "github.com/Roum1212/hahaton/internal/api/rpc/service/admin/rpc/find-volunteers"
+	rpc_service_admin_rpc_force_complete_event "github.com/Roum1212/hahaton/internal/api/rpc/service/admin/rpc/force-complete-event"
 	rpc_service_cooperation "github.com/Roum1212/hahaton/internal/api/rpc/service/cooperation"
 	rpc_service_cooperation_rpc_accept_cooperation_invitation "github.com/Roum1212/hahaton/internal/api/rpc/service/cooperation/rpc/accept-cooperation-invitation"
 	rpc_service_cooperation_rpc_approve_cooperation "github.com/Roum1212/hahaton/internal/api/rpc/service/cooperation/rpc/approve-cooperation"
@@ -103,6 +104,7 @@ func initRPCServices(cfg config.Config, services serviceSet, supportServices sup
 		admin: rpc_service_admin.NewService(
 			rpc_service_admin_rpc_create_coordinator.NewRPC(services.createCoordinator),
 			rpc_service_admin_rpc_find_volunteers.NewRPC(services.findVolunteers),
+			rpc_service_admin_rpc_force_complete_event.NewRPC(services.completeEvent),
 		),
 		cooperation: rpc_service_cooperation.NewService(
 			rpc_service_cooperation_rpc_accept_cooperation_invitation.NewRPC(services.acceptCooperationInvitation),

@@ -1,6 +1,7 @@
 package rpc_updates_serde
 
 import (
+	admin_v1 "github.com/Roum1212/hahaton/genproto/admin/v1"
 	cooperation_v1 "github.com/Roum1212/hahaton/genproto/cooperation/v1"
 	coordinator_v1 "github.com/Roum1212/hahaton/genproto/coordinator/v1"
 	event_v1 "github.com/Roum1212/hahaton/genproto/event/v1"
@@ -35,6 +36,8 @@ func RequestFromRPC(
 	}
 
 	switch value := r.(type) {
+	case *admin_v1.ForceCompleteEventRequest:
+		rawEventID = value.GetId()
 	case *event_v1.CancelEventRequest:
 		rawEventID = value.GetId()
 	case *event_v1.CompleteEventRequest:
