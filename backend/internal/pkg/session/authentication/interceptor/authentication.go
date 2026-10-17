@@ -21,6 +21,7 @@ import (
 	"github.com/Roum1212/hahaton/genproto/reward-order/v1/reward_order_v1connect"
 	"github.com/Roum1212/hahaton/genproto/reward/v1/reward_v1connect"
 	"github.com/Roum1212/hahaton/genproto/session/v1/session_v1connect"
+	"github.com/Roum1212/hahaton/genproto/updates/v1/updates_v1connect"
 	"github.com/Roum1212/hahaton/genproto/volunteer/v1/volunteer_v1connect"
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
 	"github.com/Roum1212/hahaton/internal/pkg/cookies"
@@ -199,6 +200,8 @@ func authModeByProcedure(procedure string) (authMode, bool) {
 		reward_v1connect.RewardServiceGetRewardProcedure:    authModeAuthenticated,
 		reward_v1connect.RewardServiceListRewardsProcedure:  authModeAuthenticated,
 		reward_v1connect.RewardServiceUpdateRewardProcedure: authModeAuthenticated,
+
+		updates_v1connect.UpdatesServiceSubscribeUpdatesProcedure: authModeAuthenticated,
 
 		volunteer_v1connect.VolunteerServiceGetCoordinatorVolunteerProcedure: authModeAuthenticated,
 		volunteer_v1connect.VolunteerServiceGetVolunteerProcedure:            authModeAuthenticated,

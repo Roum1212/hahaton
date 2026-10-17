@@ -84,7 +84,7 @@ func (x *RPCTestSuite) TestAuthenticationForEveryProtectedRPC() {
 
 		return true
 	})
-	x.Require().Equal(50, checked)
+	x.Require().Equal(51, checked)
 }
 
 func (x *RPCTestSuite) TestListValidation() {

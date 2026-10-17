@@ -66,12 +66,16 @@ import (
 	rpc_service_session_rpc_close_session "github.com/Roum1212/hahaton/internal/api/rpc/service/session/rpc/close-session"
 	rpc_service_session_rpc_get_session "github.com/Roum1212/hahaton/internal/api/rpc/service/session/rpc/get-session"
 	rpc_service_session_rpc_open_session "github.com/Roum1212/hahaton/internal/api/rpc/service/session/rpc/open-session"
+	rpc_service_updates "github.com/Roum1212/hahaton/internal/api/rpc/service/updates"
+	rpc_service_updates_rpc_subscribe_updates "github.com/Roum1212/hahaton/internal/api/rpc/service/updates/rpc/subscribe-updates"
 	rpc_service_volunteer "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer"
 	rpc_service_volunteer_rpc_get_coordinator_volunteer "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer/rpc/get-coordinator-volunteer"
 	rpc_service_volunteer_rpc_get_volunteer "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer/rpc/get-volunteer"
 	rpc_service_volunteer_rpc_list_volunteer_operations "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer/rpc/list-volunteer-operations"
 	rpc_service_volunteer_rpc_update_volunteer "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer/rpc/update-volunteer"
+	rpc_updates "github.com/Roum1212/hahaton/internal/api/rpc/updates"
 	"github.com/Roum1212/hahaton/internal/config"
+	updates_interceptor "github.com/Roum1212/hahaton/internal/pkg/updates/interceptor"
 )
 
 type rpcServiceSet struct {
@@ -86,10 +90,15 @@ type rpcServiceSet struct {
 	reward        rpc_service_reward.Service
 	rewardOrder   rpc_service_reward_order.Service
 	session       rpc_service_session.Service
+	updates       rpc_service_updates.Service
 	volunteer     rpc_service_volunteer.Service
+
+	updatesInterceptor updates_interceptor.Interceptor
 }
 
 func initRPCServices(cfg config.Config, services serviceSet, supportServices supportServiceSet) rpcServiceSet {
+	notifier := rpc_updates.NewNotifier(supportServices.updates, services.getUpdateRecipients)
+
 	return rpcServiceSet{
 		admin: rpc_service_admin.NewService(
 			rpc_service_admin_rpc_create_coordinator.NewRPC(services.createCoordinator),
@@ -174,6 +183,10 @@ func initRPCServices(cfg config.Config, services serviceSet, supportServices sup
 			rpc_service_session_rpc_close_session.NewRPC(supportServices.expiredCookies, services.closeSession),
 			rpc_service_session_rpc_get_session.NewRPC(services.getSession),
 			rpc_service_session_rpc_open_session.NewRPC(supportServices.cookies, services.openSession)),
+		updates: rpc_service_updates.NewService(rpc_service_updates_rpc_subscribe_updates.NewRPC(
+			supportServices.updates, services.subscribeUpdates,
+		)),
+		updatesInterceptor: updates_interceptor.NewInterceptor(notifier.Notify),
 		volunteer: rpc_service_volunteer.NewService(
 			rpc_service_volunteer_rpc_get_coordinator_volunteer.NewRPC(services.getCoordinatorVolunteer),
 			rpc_service_volunteer_rpc_get_volunteer.NewRPC(services.getVolunteer),
