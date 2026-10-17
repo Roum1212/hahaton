@@ -11,8 +11,8 @@ export const useVolunteerCooperations = () => {
   const { toast, confirm, loader } = useApp();
   const loading = ref(true);
 
-  const load = async () => {
-    loading.value = true;
+  const load = async (silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       () => store.fetchAll(CooperationListScope.AS_VOLUNTEER),
       () => {
@@ -50,8 +50,8 @@ export const useCoordinatorCooperations = () => {
   const { toast, confirm, loader } = useApp();
   const loading = ref(true);
 
-  const load = async () => {
-    loading.value = true;
+  const load = async (silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await Promise.all([store.fetchAll(CooperationListScope.AS_COORDINATOR), store.fetchInvitations()]);

@@ -2,7 +2,6 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import type { IEventChat, IEventChatMessage } from '~/core/event-chat/services/event-chat/event-chat.types';
 
 const HISTORY_PAGE = 50;
-const RECONNECT_DELAY_MS = 2000;
 
 export const useEventChat = (eventId: Ref<string>) => {
   const service = useEventChatsStore().service;
@@ -17,8 +16,7 @@ export const useEventChat = (eventId: Ref<string>) => {
   const total = ref(0);
   const snapshot = ref<number | undefined>(undefined);
 
-  let controller: AbortController | null = null;
-  let stopped = false;
+  let stopped = true;
 
   const isOwn = (message: IEventChatMessage) => message.authorId === authStore.session?.userId;
   const hasOlder = computed(() => messages.value.length < total.value);
@@ -50,29 +48,39 @@ export const useEventChat = (eventId: Ref<string>) => {
     if (history) merge(history.list);
   };
 
-  const subscribe = async () => {
-    while (!stopped && chat.value && !chat.value.readOnly) {
-      controller = new AbortController();
-      try {
-        for await (const message of service.subscribe(eventId.value, lastSequence.value, controller.signal))
-          merge([message]);
-        chat.value = await service.get(eventId.value);
-        if (chat.value.readOnly) return;
-      } catch (e) {
-        const error = ConnectError.from(e);
-        if (stopped || error.code === Code.Canceled) return;
-        if (error.code === Code.PermissionDenied || error.code === Code.NotFound) {
-          accessLost.value = true;
-          messages.value = [];
-          return;
-        }
-        if (error.code === Code.Unauthenticated) {
-          authStore.expire();
-          return;
-        }
-      }
-      await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
+  const loseAccess = (e: unknown) => {
+    const { code } = ConnectError.from(e);
+    if (code !== Code.PermissionDenied && code !== Code.NotFound) return;
+    accessLost.value = true;
+    messages.value = [];
+  };
+
+  const loadNewer = async () => {
+    const after = lastSequence.value;
+    let snapshotSequence: number | undefined;
+    let offset = 0;
+    while (true) {
+      const history = await service.findMessages(eventId.value, snapshotSequence, { limit: HISTORY_PAGE, offset });
+      snapshotSequence = history.snapshotSequence;
+      snapshot.value = history.snapshotSequence;
+      total.value = history.total;
+      merge(history.list);
+      offset += history.list.length;
+      const oldest = Math.min(...history.list.map((item) => item.sequence));
+      if (history.list.length < HISTORY_PAGE || oldest <= after || offset >= history.total) return;
     }
+  };
+
+  const sync = async () => {
+    if (stopped || !chat.value || accessLost.value) return;
+    await handleAsyncOperation(
+      async () => {
+        chat.value = await service.get(eventId.value);
+        await loadNewer();
+      },
+      undefined,
+      loseAccess,
+    );
   };
 
   const open = async () => {
@@ -89,17 +97,13 @@ export const useEventChat = (eventId: Ref<string>) => {
       () => {
         loading.value = false;
       },
-      (e) => {
-        if (ConnectError.from(e).code === Code.PermissionDenied) accessLost.value = true;
-        return false;
-      },
+      loseAccess,
     );
-    if (ok) subscribe();
+    if (!ok) stopped = true;
   };
 
   const close = () => {
     stopped = true;
-    controller?.abort();
   };
 
   const send = async (text: string) => {
@@ -117,6 +121,8 @@ export const useEventChat = (eventId: Ref<string>) => {
     merge([message]);
     return true;
   };
+
+  useLiveRefresh(sync);
 
   onBeforeUnmount(close);
 

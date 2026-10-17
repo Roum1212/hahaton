@@ -38,7 +38,7 @@ const stats = computed(() => [
   { label: 'Ждут вас', value: attention.value },
 ]);
 
-onMounted(async () => {
+const load = async () => {
   await handleAsyncOperation(
     async () => {
       const page = { limit: 5, offset: 0 };
@@ -67,7 +67,10 @@ onMounted(async () => {
       loading.value = false;
     },
   );
-});
+};
+
+onMounted(load);
+useLiveRefresh(load);
 </script>
 
 <template>

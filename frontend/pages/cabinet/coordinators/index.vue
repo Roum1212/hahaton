@@ -20,19 +20,22 @@ const coordinators = computed(() => coordinatorsStore.list.filter((item) => item
 
 const cooperationOf = (coordinatorId: string): ICooperation | undefined => cooperationsStore.withCoordinator(coordinatorId);
 
-onMounted(async () => {
-  loading.value = true;
+const load = async (silent = false) => {
+  if (!silent) loading.value = true;
   await handleAsyncOperation(
     async () => {
       await coordinatorsStore.find(1);
       while (!coordinatorsStore.pagination.loadAll) await coordinatorsStore.find(coordinatorsStore.pagination.page);
-      await loadCooperations();
+      await loadCooperations(silent);
     },
     () => {
       loading.value = false;
     },
   );
-});
+};
+
+onMounted(() => load());
+useLiveRefresh(() => load(true));
 </script>
 
 <template>

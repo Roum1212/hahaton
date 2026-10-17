@@ -52,7 +52,8 @@ const onSave = async () => {
   if (await save(editingId.value, { ...form.value, title: form.value.title.trim() })) dialogVisible.value = false;
 };
 
-onMounted(load);
+onMounted(() => load());
+useLiveRefresh(() => load(true));
 </script>
 
 <template>

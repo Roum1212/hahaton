@@ -14,6 +14,8 @@ onMounted(() => {
   load();
   handleAsyncOperation(() => volunteerStore.fetchProfile());
 });
+
+useLiveRefresh(() => load(undefined, true));
 </script>
 
 <template>

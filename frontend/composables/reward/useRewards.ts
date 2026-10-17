@@ -7,8 +7,8 @@ export const useRewardCatalog = () => {
   const { ensure: ensureCoordinators } = useCoordinatorNames();
   const loading = ref(true);
 
-  const load = async (coordinatorId?: string) => {
-    loading.value = true;
+  const load = async (coordinatorId?: string, silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(1, { scope: RewardListScope.CATALOG, coordinatorId });
@@ -54,9 +54,9 @@ export const useMyPurchases = () => {
   const loading = ref(true);
   const fetching = ref(false);
 
-  const load = async (page = 1) => {
-    if (page === 1) loading.value = true;
-    else fetching.value = true;
+  const load = async (page = 1, silent = false) => {
+    if (page > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(page, { scope: RewardOrderListScope.MY_PURCHASES });
@@ -91,8 +91,8 @@ export const useOwnedRewards = () => {
   const { toast, confirm, loader } = useApp();
   const loading = ref(true);
 
-  const load = async () => {
-    loading.value = true;
+  const load = async (silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(1, { scope: RewardListScope.OWNED });
@@ -135,9 +135,9 @@ export const useIncomingOrders = () => {
   const loading = ref(true);
   const fetching = ref(false);
 
-  const load = async (status?: RewardOrderStatus, page = 1) => {
-    if (page === 1) loading.value = true;
-    else fetching.value = true;
+  const load = async (status?: RewardOrderStatus, page = 1, silent = false) => {
+    if (page > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(page, { scope: RewardOrderListScope.INCOMING, status });

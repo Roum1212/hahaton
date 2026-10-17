@@ -43,8 +43,8 @@ const loadUpcoming = async () => {
   upcoming.value = approved.list.filter((item) => !isPast(event(item.eventId)?.endsAt)).slice(0, 4);
 };
 
-onMounted(async () => {
-  loading.value = true;
+const load = async (silent = false) => {
+  if (!silent) loading.value = true;
   await handleAsyncOperation(
     async () => {
       const [, confirmed, purchases] = await Promise.all([
@@ -54,7 +54,7 @@ onMounted(async () => {
           { limit: 1, offset: 0 },
         ),
         ordersStore.service.find({ scope: RewardOrderListScope.MY_PURCHASES }, { limit: 1, offset: 0 }),
-        loadCooperations(),
+        loadCooperations(silent),
         loadUpcoming(),
       ]);
       doneCount.value = confirmed.total;
@@ -65,7 +65,10 @@ onMounted(async () => {
       loading.value = false;
     },
   );
-});
+};
+
+onMounted(() => load());
+useLiveRefresh(() => load(true));
 
 watch(
   () => participationsStore.list.map((item) => `${item.id}:${item.status}`).join(),

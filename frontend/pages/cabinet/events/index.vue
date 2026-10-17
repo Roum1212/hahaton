@@ -16,6 +16,7 @@ const periodOptions: { label: string; value: CatalogPeriod }[] = [
 ];
 
 watch([area, period], () => load(area.value, period.value), { immediate: true, deep: true });
+useLiveRefresh(() => load(area.value, period.value, 1, undefined, true));
 </script>
 
 <template>

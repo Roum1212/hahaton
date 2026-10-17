@@ -68,7 +68,7 @@ export const RPC_METHOD_ERROR_MESSAGES: Record<string, Partial<Record<Code, stri
     [Code.PermissionDenied]: 'Это изображение загружено другим участником',
   },
   SendEventChatMessage: { [Code.FailedPrecondition]: 'Чат доступен только для чтения' },
-  SubscribeEventChatMessages: { [Code.PermissionDenied]: 'Доступ к чату закрыт' },
+  GetEventChat: { [Code.PermissionDenied]: 'Доступ к чату закрыт' },
   UploadImage: {
     [Code.InvalidArgument]: 'Файл не подходит: нужен JPEG или PNG до 5 МиБ и не больше 4096 пикселей по стороне',
     [Code.Unauthenticated]: 'Войдите, чтобы загрузить изображение',

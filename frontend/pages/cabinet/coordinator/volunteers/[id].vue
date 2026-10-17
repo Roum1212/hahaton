@@ -37,7 +37,8 @@ const onApprove = async () => {
   await load();
 };
 
-onMounted(load);
+onMounted(() => load());
+useLiveRefresh(() => load(true));
 </script>
 
 <template>

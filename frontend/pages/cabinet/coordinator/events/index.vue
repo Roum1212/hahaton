@@ -13,6 +13,7 @@ const { open: openCreate } = useEventCreateDialog();
 const filter = ref<OwnedEventsFilter>((route.query.filter as OwnedEventsFilter) || 'upcoming');
 
 watch(filter, (value) => load(value), { immediate: true });
+useLiveRefresh(() => load(filter.value, 1, true));
 </script>
 
 <template>

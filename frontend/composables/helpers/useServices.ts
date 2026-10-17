@@ -8,6 +8,7 @@ import { IMAGE_SERVICES } from '~/core/image';
 import { PARTICIPATION_SERVICES } from '~/core/participation';
 import { REWARD_SERVICES } from '~/core/reward';
 import { REWARD_ORDER_SERVICES } from '~/core/reward-order';
+import { UPDATES_SERVICES } from '~/core/updates';
 import { VOLUNTEER_SERVICES } from '~/core/volunteer';
 
 export const useServices = () => {
@@ -23,5 +24,6 @@ export const useServices = () => {
     REWARD: REWARD_SERVICES(),
     REWARD_ORDER: REWARD_ORDER_SERVICES(),
     EVENT_CHAT: EVENT_CHAT_SERVICES(),
+    UPDATES: UPDATES_SERVICES(),
   };
 };

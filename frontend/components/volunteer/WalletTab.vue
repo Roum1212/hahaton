@@ -3,11 +3,16 @@ import type { IVolunteerOperation } from '~/core/volunteer/services/volunteer/vo
 import { VOLUNTEER_OPERATION_TYPE_LABELS } from '~/core/volunteer/services/volunteer/volunteer.types';
 
 const volunteerStore = useVolunteerStore();
-const { list, loading, fetching, isLoadAll, load } = usePagination<IVolunteerOperation>({ page: 1, limit: 30 });
+const { list, loading, fetching, isLoadAll, load, reset } = usePagination<IVolunteerOperation>({ page: 1, limit: 30 });
 
 const fetchPage = (limit: number, offset: number) => volunteerStore.service.listOperations(undefined, { limit, offset });
 
 onMounted(() => handleAsyncOperation(() => load(fetchPage)));
+
+useLiveRefresh(() => {
+  reset();
+  return handleAsyncOperation(() => load(fetchPage, true));
+});
 </script>
 
 <template>

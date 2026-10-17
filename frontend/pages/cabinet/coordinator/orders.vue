@@ -24,6 +24,7 @@ const options = [
 ];
 
 watch(status, (value) => load(value ?? undefined), { immediate: true });
+useLiveRefresh(() => load(status.value ?? undefined, 1, true));
 </script>
 
 <template>

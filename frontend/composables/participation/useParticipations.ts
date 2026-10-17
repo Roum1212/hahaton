@@ -39,9 +39,9 @@ export const useMyParticipations = () => {
   const loading = ref(true);
   const fetching = ref(false);
 
-  const load = async (status?: ParticipationStatus, page = 1) => {
-    if (page === 1) loading.value = true;
-    else fetching.value = true;
+  const load = async (status?: ParticipationStatus, page = 1, silent = false) => {
+    if (page > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(page, { scope: ParticipationListScope.MY_APPLICATIONS, status });
@@ -93,8 +93,8 @@ export const useEventApplications = () => {
   const loading = ref(true);
   const list = ref<IParticipation[]>([]);
 
-  const load = async (eventId: string) => {
-    loading.value = true;
+  const load = async (eventId: string, silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         const result: IParticipation[] = [];

@@ -37,7 +37,8 @@ const onCreate = async () => {
   expiresAt.value = null;
 };
 
-onMounted(load);
+onMounted(() => load());
+useLiveRefresh(() => load(true));
 </script>
 
 <template>

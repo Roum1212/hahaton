@@ -9,6 +9,7 @@ const { store, loading, fetching, load, cancel, canCancel } = useMyPurchases();
 const { name: coordinatorName } = useCoordinatorNames();
 
 onMounted(() => load());
+useLiveRefresh(() => load(1, true));
 </script>
 
 <template>

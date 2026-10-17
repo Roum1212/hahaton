@@ -31,6 +31,7 @@ const isUpcoming = (item: IParticipation) => {
 const reload = () => load(status.value ?? undefined);
 
 watch(status, reload, { immediate: true });
+useLiveRefresh(() => load(status.value ?? undefined, 1, true));
 </script>
 
 <template>

@@ -30,10 +30,4 @@ export class EventChatApi extends BaseRpcApi<typeof EventChatService> {
   ): Promise<ApiEventChat.MessagesResponse> {
     return this.client.listEventChatMessages({ eventId, snapshotSequence, ...page }, this.options(signal));
   }
-
-  async *subscribe(eventId: string, afterSequence: bigint, signal?: AbortSignal): AsyncGenerator<ApiEventChat.Message> {
-    for await (const item of this.client.subscribeEventChatMessages({ eventId, afterSequence }, this.options(signal))) {
-      if (item.message) yield item.message;
-    }
-  }
 }

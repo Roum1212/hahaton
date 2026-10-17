@@ -44,12 +44,6 @@ export class EventChatService {
     };
   }
 
-  async *subscribe(eventId: string, afterSequence: number, signal?: AbortSignal): AsyncGenerator<IEventChatMessage> {
-    for await (const message of this.service.subscribe(eventId, BigInt(afterSequence), signal)) {
-      yield this.toMessage(message);
-    }
-  }
-
   toChat(data: ApiEventChat.Chat): IEventChat {
     return {
       eventId: data.eventId,
