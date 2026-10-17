@@ -4,6 +4,7 @@ definePageMeta({
 });
 
 const { init } = useFlidaAuth();
+const { isShow: globalLoaderShown } = useLoader();
 
 onMounted(async () => {
   const success = await init({
@@ -15,7 +16,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex min-h-screen flex-col items-center justify-center gap-4 bg-surface-0 p-4 dark:bg-surface-950">
-    <ProgressSpinner />
+    <ProgressSpinner v-if="!globalLoaderShown" />
     <span class="text-surface-500 dark:text-surface-400">Выполняется вход…</span>
   </div>
 </template>
