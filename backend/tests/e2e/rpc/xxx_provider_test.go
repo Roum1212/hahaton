@@ -87,8 +87,9 @@ func newIdentityProvider(t *testing.T) *identityProvider {
 			require.Equal(t, "Token e2e-dadata", r.Header.Get("Authorization"))
 
 			var request struct {
-				Query     string `json:"query"`
-				FromBound struct {
+				Query        string          `json:"query"`
+				LocationsGeo json.RawMessage `json:"locations_geo"`
+				FromBound    struct {
 					Value string `json:"value"`
 				} `json:"from_bound"`
 				ToBound struct {
@@ -100,23 +101,44 @@ func newIdentityProvider(t *testing.T) *identityProvider {
 				} `json:"locations"`
 			}
 			require.NoError(t, json.NewDecoder(r.Body).Decode(&request))
-			require.Equal(t, "Обнинск", request.Query)
+			require.NotEmpty(t, request.Query)
+			require.Empty(t, request.LocationsGeo)
 			require.Equal(t, "city", request.FromBound.Value)
 			require.Equal(t, "settlement", request.ToBound.Value)
-			require.EqualValues(t, 10, request.Count)
+			require.GreaterOrEqual(t, request.Count, int32(1))
+			require.LessOrEqual(t, request.Count, int32(20))
 			require.Len(t, request.Locations, 1)
 			require.Equal(t, "RU", request.Locations[0].Country)
 			w.WriteHeader(int(x.addressStatus.Load()))
-			_, err := w.Write([]byte(`{
+
+			body := `{
  "suggestions": [{
   "value": "Обнинск",
   "unrestricted_value": "Калужская обл, г Обнинск",
   "data": {
-   "fias_id": "obninsk", "city_fias_id": "obninsk", "city_with_type": "г Обнинск",
+   "fias_id": "obninsk", "city_fias_id": "obninsk", "city": "Обнинск", "city_with_type": "г Обнинск",
    "region_with_type": "Калужская обл", "geo_lat": "55.1", "geo_lon": "36.6", "qc_geo": "4"
   }
  }]
-}`))
+}`
+
+			switch request.Query {
+			case "Москва", "0c5b2444-70a0-4932-980c-b4dc0d3f02b5":
+				body = `{"suggestions":[{"data":{
+					"fias_id":"0c5b2444-70a0-4932-980c-b4dc0d3f02b5",
+					"region":"Москва","region_type":"г","region_with_type":"г Москва",
+					"geo_lat":"55.7540471","geo_lon":"37.620405"
+				}}]}`
+			case "Лесная":
+				body = `{"suggestions":[{"data":{
+					"fias_id":"settlement","city":"Родительский город","settlement":"Лесная",
+					"region_with_type":"Московская обл","geo_lat":null,"geo_lon":null
+				}}]}`
+			case "missing":
+				body = `{"suggestions":[]}`
+			}
+
+			_, err := w.Write([]byte(body))
 			require.NoError(t, err)
 		default:
 			http.NotFound(w, r)

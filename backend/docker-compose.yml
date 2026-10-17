@@ -20,7 +20,6 @@ services:
     env_file: .env
     environment:
       POSTGRESQL_DSN: postgres://${POSTGRES_USER:-hackathon}:${POSTGRES_PASSWORD:-hackathon}@postgres:5432/${POSTGRES_DB:-hackathon}?sslmode=disable
-      CITY_CATALOG_CSV_PATH: /app/data/city.csv
       STORAGE_DIRECTORY: /app/storage
     depends_on:
       postgres:
@@ -29,7 +28,6 @@ services:
       - '8080:8080'
     volumes:
       - storage-data:/app/storage
-      - ./data:/app/data:ro
 volumes:
   postgres-data:
   storage-data:

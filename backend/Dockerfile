@@ -16,7 +16,6 @@ WORKDIR /app
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /out/server /out/goose /app/
 COPY migrations /app/migrations
-COPY data /app/data
 RUN mkdir /app/storage && chown 65532:65532 /app/storage
 USER 65532:65532
 EXPOSE 8080

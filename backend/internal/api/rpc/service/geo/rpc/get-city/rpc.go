@@ -10,6 +10,7 @@ import (
 	geo_v1 "github.com/Roum1212/hahaton/genproto/geo/v1"
 	rpc_service_geo_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/geo/serde"
 	service_get_city "github.com/Roum1212/hahaton/internal/app/service/get-city"
+	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
 	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 )
 
@@ -41,6 +42,10 @@ func (x RPC) GetCity(
 				ResourceName: "id:" + cityID,
 				Description:  "city not found",
 			})
+		case errors.Is(err, service_suggest_addresses.ErrUnavailable):
+			return nil, rpc_error.NewUnavailableError()
+		case errors.Is(err, service_suggest_addresses.ErrQuota):
+			return nil, rpc_error.NewResourceExhaustedError(nil)
 		default:
 			return nil, rpc_error.NewInternalError()
 		}

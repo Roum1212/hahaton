@@ -22,55 +22,30 @@ func checkGeoImages(x *fixture) {
 	require(x.t, info.GetResourceName() == "id:unknown-city", "missing city id not included")
 	cities := x.call(actor{}, "geo.v1.GeoService/ListCities", map[string]any{"query": "  обн  "})
 	require(x.t, len(list(x.t, cities, "cities")) == 1, "city search did not normalize query")
-	cities = x.call(actor{}, "geo.v1.GeoService/ListCities", map[string]any{
-		"limit":  1000,
-		"offset": "1",
-	})
-	require(x.t, len(list(x.t, cities, "cities")) == 1, "city-specific pagination limit was lost")
 
 	for _, paging := range []map[string]any{
 		{"limit": -1},
-		{"limit": 1001},
+		{"limit": 21},
+		{"offset": "1"},
 		{"offset": "-1"},
 	} {
 		x.fail(actor{}, "geo.v1.GeoService/ListCities", paging, "invalid_argument")
 	}
 
 	city := object(x.t, x.call(actor{}, "geo.v1.GeoService/GetCity", map[string]any{"id": "city"}), "city")
-	require(x.t, city["has_boundary"] == true, "persisted boundary flag missing")
+	require(x.t, city["has_boundary"] != true, "city boundary was fabricated")
 	noBoundary := object(x.t, x.call(actor{}, "geo.v1.GeoService/GetCity", map[string]any{"id": "no-boundary"}), "city")
 	require(x.t, noBoundary["center"] == nil && noBoundary["has_boundary"] != true, "missing geometry was fabricated")
 	id := x.event(c, "Геопоиск", 1)
 	area := map[string]any{"city_id": "city"}
-	catalog := x.call(a, "event.v1.EventService/ListEvents", map[string]any{
+	x.fail(a, "event.v1.EventService/ListEvents", map[string]any{
 		"scope":       1,
 		"search_area": area,
-	})
-	require(x.t, len(list(x.t, catalog, "events")) == 1, "city polygon failed")
+	}, "failed_precondition")
 	x.call(c, "event.v1.EventService/UpdateEvent", map[string]any{
-		"id": id,
-		"point": map[string]any{
-			"latitude":  55.85,
-			"longitude": 36.85,
-		},
+		"id":    id,
+		"point": map[string]any{"latitude": 55, "longitude": 36.5},
 	})
-	hole := x.call(a, "event.v1.EventService/ListEvents", map[string]any{
-		"scope":       1,
-		"search_area": area,
-	})
-	require(x.t, len(list(x.t, hole, "events")) == 0, "polygon hole was not excluded")
-	x.call(c, "event.v1.EventService/UpdateEvent", map[string]any{
-		"id": id,
-		"point": map[string]any{
-			"latitude":  55,
-			"longitude": 36.5,
-		},
-	})
-	boundary := x.call(a, "event.v1.EventService/ListEvents", map[string]any{
-		"scope":       1,
-		"search_area": area,
-	})
-	require(x.t, len(list(x.t, boundary, "events")) == 1, "polygon boundary excluded")
 
 	radius := map[string]any{"radius": map[string]any{
 		"center": map[string]any{

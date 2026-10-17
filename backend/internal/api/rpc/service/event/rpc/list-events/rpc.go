@@ -12,6 +12,7 @@ import (
 	rpc_service_event_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/event/serde"
 	rpc_service_geo_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/geo/serde"
 	service_list_events "github.com/Roum1212/hahaton/internal/app/service/list-events"
+	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
 	aggregate_coordinator "github.com/Roum1212/hahaton/internal/domain/aggregate/coordinator"
 	model_page "github.com/Roum1212/hahaton/internal/domain/model/page"
 	model_user_id "github.com/Roum1212/hahaton/internal/domain/model/user-id"
@@ -191,6 +192,10 @@ func (x RPC) ListEvents(
 				ResourceName: "id:" + session.GetUserID().String(),
 				Description:  "coordinator not found",
 			})
+		case errors.Is(err, service_suggest_addresses.ErrUnavailable):
+			return nil, rpc_error.NewUnavailableError()
+		case errors.Is(err, service_suggest_addresses.ErrQuota):
+			return nil, rpc_error.NewResourceExhaustedError(nil)
 		default:
 			return nil, rpc_error.NewInternalError()
 		}

@@ -10,9 +10,11 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
 	model_address_suggestion "github.com/Roum1212/hahaton/internal/domain/model/address-suggestion"
+	model_city "github.com/Roum1212/hahaton/internal/domain/model/city"
 	model_geo_point "github.com/Roum1212/hahaton/internal/domain/model/geo-point"
 )
 
@@ -26,13 +28,76 @@ type Client struct {
 	httpClient *http.Client
 }
 
+func (x Client) FindCities(ctx context.Context, query string, count int32) ([]model_city.City, error) {
+	rows, err := x.request(ctx, query, "city", "settlement", count)
+	if err != nil {
+		return nil, err
+	}
+
+	cities := make([]model_city.City, 0, len(rows))
+	for _, row := range rows {
+		city, err := parseCity(row)
+		if err != nil {
+			return nil, fmt.Errorf("%w: decode city: %w", service_suggest_addresses.ErrUnavailable, err)
+		}
+
+		cities = append(cities, city)
+	}
+
+	return cities, nil
+}
+
+func (x Client) GetCity(ctx context.Context, id string) (model_city.City, bool, error) {
+	cities, err := x.FindCities(ctx, id, 1)
+	if err != nil {
+		return model_city.City{}, false, err
+	}
+
+	for _, city := range cities {
+		if city.GetID() == id {
+			return city, true, nil
+		}
+	}
+
+	return model_city.City{}, false, nil
+}
+
+func (x Client) GetVersion() string {
+	return "dadata"
+}
+
 func (x Client) Suggest(
 	ctx context.Context,
 	query string,
 	fromBound string,
 	toBound string,
 	count int32,
-) (_ []model_address_suggestion.AddressSuggestion, err error) {
+) ([]model_address_suggestion.AddressSuggestion, error) {
+	rows, err := x.request(ctx, query, fromBound, toBound, count)
+	if err != nil {
+		return nil, err
+	}
+
+	values := make([]model_address_suggestion.AddressSuggestion, 0, len(rows))
+	for _, row := range rows {
+		value, err := parseSuggestion(row)
+		if err != nil {
+			return nil, fmt.Errorf("%w: %w", service_suggest_addresses.ErrUnavailable, err)
+		}
+
+		values = append(values, value)
+	}
+
+	return values, nil
+}
+
+func (x Client) request(
+	ctx context.Context,
+	query string,
+	fromBound string,
+	toBound string,
+	count int32,
+) (_ []map[string]json.RawMessage, err error) {
 	if len(x.apiKey) == 0 {
 		return nil, service_suggest_addresses.ErrUnavailable
 	}
@@ -98,17 +163,31 @@ func (x Client) Suggest(
 		return nil, fmt.Errorf("%w: decode address suggestions: %w", service_suggest_addresses.ErrUnavailable, err)
 	}
 
-	values := make([]model_address_suggestion.AddressSuggestion, 0, len(rows))
-	for _, row := range rows {
-		value, err := parseSuggestion(row)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", service_suggest_addresses.ErrUnavailable, err)
-		}
+	return rows, nil
+}
 
-		values = append(values, value)
+func parseCity(row map[string]json.RawMessage) (model_city.City, error) {
+	var data map[string]json.RawMessage
+	if err := json.Unmarshal(row["data"], &data); err != nil {
+		return model_city.City{}, err
 	}
 
-	return values, nil
+	name := stringValue(data["city"])
+	if value := stringValue(data["settlement"]); len(value) != 0 {
+		name = value
+	}
+
+	if len(name) == 0 && stringValue(data["region_type"]) == "г" {
+		name = stringValue(data["region"])
+	}
+
+	return model_city.NewCity(
+		stringValue(data["fias_id"]),
+		name,
+		stringValue(data["region_with_type"]),
+		parsePoint(data["geo_lat"], data["geo_lon"]),
+		nil,
+	)
 }
 
 func parsePoint(latitudeRaw, longitudeRaw json.RawMessage) *model_geo_point.GeoPoint {
@@ -184,6 +263,15 @@ func stringPointer(raw json.RawMessage) *string {
 	}
 
 	return value
+}
+
+func stringValue(raw json.RawMessage) string {
+	value := stringPointer(raw)
+	if value == nil {
+		return ""
+	}
+
+	return strings.TrimSpace(*value)
 }
 
 func NewClient(apiKey, endpoint string, httpClient *http.Client) (Client, error) {

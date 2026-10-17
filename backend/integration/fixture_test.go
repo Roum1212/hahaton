@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -380,6 +379,7 @@ func newFixture(t *testing.T) *fixture {
         "fias_id": "city",
         "city_fias_id": "city",
         "city_with_type": "г Обнинск",
+        "city": "Обнинск",
         "region_with_type": "Калужская обл",
         "geo_lat": "55.1",
         "geo_lon": "36.6",
@@ -429,17 +429,25 @@ func newFixture(t *testing.T) *fixture {
 
 		body := make(map[string]any)
 		must(t, json.NewDecoder(r.Body).Decode(&body))
-		require(t, body["query"] == "Обнинск", "query was not normalized")
 		require(t, object(t, body, "from_bound")["value"] == "city", "from_bound missing")
 		require(t, object(t, body, "to_bound")["value"] == "settlement", "to_bound missing")
 		locations := list(t, body, "locations")
 		require(t, len(locations) == 1, "Russia filter missing")
 		require(t, dictionary(t, locations[0])["country_iso_code"] == "RU", "wrong DaData country filter")
-		require(t, integer(t, body, "count") == 10, "default DaData count is not 10")
+		require(t, integer(t, body, "count") > 0 && integer(t, body, "count") <= 20, "invalid DaData count")
+		require(t, body["locations_geo"] == nil, "address search is restricted by radius")
 
 		w := httptest.NewRecorder()
 		w.WriteHeader(int(x.dadataStatus.Load()))
-		_, err := w.WriteString(x.dadataBody)
+		response := x.dadataBody
+
+		if body["query"] == "no-boundary" {
+			response = `{"suggestions":[{"data":{
+				"fias_id":"no-boundary","city":"Без границы","region_with_type":"Регион"
+			}}]}`
+		}
+
+		_, err := w.WriteString(response)
 		must(t, err)
 
 		return w.Result(), nil
@@ -449,64 +457,6 @@ func newFixture(t *testing.T) *fixture {
 		http.DefaultTransport = original
 	})
 	directory := t.TempDir()
-	csvPath := filepath.Join(directory, "cities.csv")
-	must(t, os.WriteFile(csvPath, []byte(
-		"fias_id,city,region,geo_lat,geo_lon\ncity,Обнинск,Калужская область,55.1,36.6\nno-boundary,Без границы,Регион,,\n",
-	), 0o600))
-
-	boundaryPath := filepath.Join(directory, "boundaries.json")
-	must(t, os.WriteFile(boundaryPath, []byte(
-		`{
-  "city": [
-    [
-      [
-        [
-          36,
-          55
-        ],
-        [
-          37,
-          55
-        ],
-        [
-          37,
-          56
-        ],
-        [
-          36,
-          56
-        ],
-        [
-          36,
-          55
-        ]
-      ],
-      [
-        [
-          36.8,
-          55.8
-        ],
-        [
-          36.9,
-          55.8
-        ],
-        [
-          36.9,
-          55.9
-        ],
-        [
-          36.8,
-          55.9
-        ],
-        [
-          36.8,
-          55.8
-        ]
-      ]
-    ]
-  ]
-}`,
-	), 0o600))
 
 	for name, value := range map[string]string{
 		"POSTGRESQL_DSN":                 databaseURL,
@@ -518,9 +468,6 @@ func newFixture(t *testing.T) *fixture {
 		"SESSION_TOKEN_V4_SYMMETRIC_KEY": strings.Repeat("01", 32),
 		"DATA_ENCRYPTION_KEY":            strings.Repeat("02", 32),
 		"STORAGE_DIRECTORY":              directory,
-		"CITY_CATALOG_CSV_PATH":          csvPath,
-		"CITY_CATALOG_VERSION":           "integration",
-		"CITY_CATALOG_BOUNDARIES_PATH":   boundaryPath,
 		"DADATA_API_KEY":                 "demo-dadata",
 	} {
 		t.Setenv(name, value)

@@ -82,8 +82,8 @@ type City struct {
 	RegionName string `protobuf:"bytes,3,opt,name=region_name,proto3" json:"region_name,omitempty"`
 	// Отсутствует, если центр не проверен; не подменять координатами (0, 0).
 	Center *GeoPoint `protobuf:"bytes,4,opt,name=center,proto3" json:"center,omitempty"`
-	// Проверенная граница населённого пункта, а не городского округа.
-	// false: режим city_id недоступен; фронт предлагает явный выбор радиуса.
+	// DaData не возвращает проверенные полигоны: всегда false.
+	// Режим city_id недоступен; фронт предлагает явный выбор радиуса.
 	HasBoundary   bool `protobuf:"varint,5,opt,name=has_boundary,proto3" json:"has_boundary,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -295,10 +295,12 @@ func (*SearchArea_Radius) isSearchArea_Area() {}
 
 type ListCitiesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Подстрока имени без учёта регистра, trim; отсутствие/пустая строка — все города.
+	// Поисковый запрос DaData, trim, не более 300 Unicode-символов.
+	// Отсутствие/пустая строка — пустой список без обращения к провайдеру.
 	Query *string `protobuf:"bytes,1,opt,name=query,proto3,oneof" json:"query,omitempty"`
-	// 0 означает 100; допустимы 1–1000.
-	Limit         int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	// 0 означает 10; допустимы 1–20.
+	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	// Допустим только 0: DaData не поддерживает страницы подсказок.
 	Offset        int64 `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -357,12 +359,14 @@ func (x *ListCitiesRequest) GetOffset() int64 {
 
 type ListCitiesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
-	Cities         []*City `protobuf:"bytes,1,rep,name=cities,proto3" json:"cities,omitempty"`
-	CatalogVersion string  `protobuf:"bytes,2,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
-	TotalCount     int64   `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// В порядке релевантности DaData; города и населённые пункты.
+	Cities []*City `protobuf:"bytes,1,rep,name=cities,proto3" json:"cities,omitempty"`
+	// Идентификатор источника: dadata; не версия полной выгрузки.
+	CatalogVersion string `protobuf:"bytes,2,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
+	// Число возвращённых подсказок, а не общее число совпадений у провайдера.
+	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListCitiesResponse) Reset() {
@@ -461,9 +465,10 @@ func (x *GetCityRequest) GetId() string {
 }
 
 type GetCityResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	City           *City                  `protobuf:"bytes,1,opt,name=city,proto3" json:"city,omitempty"`
-	CatalogVersion string                 `protobuf:"bytes,2,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	City  *City                  `protobuf:"bytes,1,opt,name=city,proto3" json:"city,omitempty"`
+	// Идентификатор источника: dadata; не версия полной выгрузки.
+	CatalogVersion string `protobuf:"bytes,2,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }

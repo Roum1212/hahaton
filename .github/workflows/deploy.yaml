@@ -23,9 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download city catalog
-        run: sh backend/scripts/fetch-cities.sh
-
       - uses: docker/setup-buildx-action@v3
 
       - name: Build backend

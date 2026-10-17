@@ -132,8 +132,6 @@ func checkRuntime(x *fixture) {
 
 	var cfg config.Config
 
-	x.t.Setenv("CITY_CATALOG_CSV_PATH", "/missing-catalog.csv")
-
 	originalKey := os.Getenv("SESSION_TOKEN_V4_SYMMETRIC_KEY")
 
 	x.t.Setenv("SESSION_TOKEN_V4_SYMMETRIC_KEY", "invalid")

@@ -40,9 +40,6 @@ services:
       SESSION_TOKEN_TTL: ${SESSION_TOKEN_TTL:-24h}
       DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?Set the data encryption key in .env}
       STORAGE_DIRECTORY: /app/storage
-      CITY_CATALOG_CSV_PATH: /app/data/city.csv
-      CITY_CATALOG_BOUNDARIES_PATH: ${CITY_CATALOG_BOUNDARIES_PATH:-}
-      CITY_CATALOG_VERSION: ${CITY_CATALOG_VERSION:-hflabs-local}
       DADATA_ENDPOINT: ${DADATA_ENDPOINT:-https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address}
       DADATA_API_KEY: ${DADATA_API_KEY:-}
     depends_on:
