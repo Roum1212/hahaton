@@ -12,6 +12,15 @@ import (
 	model_session_id "github.com/Roum1212/hahaton/internal/domain/model/session-id"
 )
 
+const (
+	idColumn     = "id"
+	userIDColumn = "user_id"
+
+	createdAtColumn = "created_at"
+	updatedAtColumn = "updated_at"
+	expiresAtColumn = "expires_at"
+)
+
 type Sessions struct {
 	database Database
 	queries  squirrel.StatementBuilderType
@@ -26,7 +35,7 @@ func (x Sessions) Create(ctx context.Context, session *aggregate_session.Session
 }
 
 func (x Sessions) Delete(ctx context.Context, sessionID model_session_id.SessionID) error {
-	query := x.queries.Delete("sessions").Where(squirrel.Eq{"id": sessionID.String()})
+	query := x.queries.Delete("sessions").Where(squirrel.Eq{idColumn: sessionID.String()})
 	_, err := execute(ctx, x.database, query)
 
 	return err
@@ -34,8 +43,15 @@ func (x Sessions) Delete(ctx context.Context, sessionID model_session_id.Session
 
 func (x Sessions) Load(ctx context.Context, sessionID model_session_id.SessionID) (*aggregate_session.Session, error) {
 	query := x.queries.Select(
-		"COALESCE(user_id::text, '')", "created_at", "updated_at", "expires_at",
-	).From("sessions").Where(squirrel.Eq{"id": sessionID.String()})
+		"COALESCE("+userIDColumn+"::text, '')",
+		createdAtColumn,
+		updatedAtColumn,
+		expiresAtColumn,
+	).From(
+		"sessions",
+	).Where(
+		squirrel.Eq{idColumn: sessionID.String()},
+	)
 
 	sql, arguments, err := query.ToSql()
 	if err != nil {
@@ -58,11 +74,38 @@ func (x Sessions) Load(ctx context.Context, sessionID model_session_id.SessionID
 	return row.toSession(sessionID)
 }
 
+func (x Sessions) Replace(
+	ctx context.Context,
+	sessionID model_session_id.SessionID,
+	replace func(
+		ctx context.Context,
+		current *aggregate_session.Session,
+	) (*aggregate_session.Session, error),
+) error {
+	return x.database.InTx(ctx, func(ctx context.Context) error {
+		current, err := x.Load(ctx, sessionID)
+		if err != nil {
+			return err
+		}
+
+		session, err := replace(ctx, current)
+		if err != nil {
+			return err
+		}
+
+		if err := x.Delete(ctx, sessionID); err != nil {
+			return err
+		}
+
+		return x.Create(ctx, session)
+	})
+}
+
 func (x Sessions) Save(ctx context.Context, session *aggregate_session.Session) error {
 	values := sessionValues(session)
-	delete(values, "id")
+	delete(values, idColumn)
 
-	query := x.queries.Update("sessions").SetMap(values).Where(squirrel.Eq{"id": session.GetSessionID().String()})
+	query := x.queries.Update("sessions").SetMap(values).Where(squirrel.Eq{idColumn: session.GetSessionID().String()})
 
 	result, err := execute(ctx, x.database, query)
 	if err != nil {
@@ -78,15 +121,15 @@ func (x Sessions) Save(ctx context.Context, session *aggregate_session.Session) 
 
 func sessionValues(session *aggregate_session.Session) map[string]any {
 	values := map[string]any{
-		"id":         session.GetSessionID().String(),
-		"user_id":    nil,
-		"created_at": session.GetCreatedAt(),
-		"updated_at": session.GetUpdatedAt(),
-		"expires_at": session.GetExpiresAt(),
+		idColumn:        session.GetSessionID().String(),
+		userIDColumn:    nil,
+		createdAtColumn: session.GetCreatedAt(),
+		updatedAtColumn: session.GetUpdatedAt(),
+		expiresAtColumn: session.GetExpiresAt(),
 	}
 
 	if !session.GetUserID().IsZero() {
-		values["user_id"] = session.GetUserID().String()
+		values[userIDColumn] = session.GetUserID().String()
 	}
 
 	return values

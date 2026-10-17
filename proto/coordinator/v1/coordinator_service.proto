@@ -27,10 +27,10 @@ message Coordinator {
 
   // Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
   // Аватар независим от аватара Volunteer с тем же ID.
-  string avatar_url = 4 [json_name = "avatar_url"];
-  string description = 2 [json_name = "description"];
+  string avatar_url = 2 [json_name = "avatar_url"];
+  string description = 3 [json_name = "description"];
   // Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
-  string display_name = 3 [json_name = "display_name"];
+  string display_name = 4 [json_name = "display_name"];
 }
 
 message GetCoordinatorRequest {
@@ -49,7 +49,7 @@ message ListCoordinatorsRequest {
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
-  int64 offset = 3 [json_name = "offset"];
+  int64 offset = 2 [json_name = "offset"];
 }
 
 message ListCoordinatorsResponse {
@@ -57,15 +57,15 @@ message ListCoordinatorsResponse {
   repeated Coordinator coordinators = 1 [json_name = "coordinators"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 message UpdateCoordinatorRequest {
   // Отсутствует — сохранить; пустая строка — убрать аватар.
   // Иначе image_path из UploadImage текущего участника; файл обязан существовать.
-  optional string avatar_path = 3 [json_name = "avatar_path"];
+  optional string avatar_path = 1 [json_name = "avatar_path"];
   // Отсутствующее поле не меняется. Пустая строка очищает описание.
-  optional string description = 1 [json_name = "description"];
+  optional string description = 2 [json_name = "description"];
 }
 
 message CoordinatorSettings {

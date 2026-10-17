@@ -18,6 +18,10 @@ func (x Client) Exec(ctx context.Context, query string, arguments ...any) (pgcon
 }
 
 func (x Client) InTx(ctx context.Context, fn func(ctx context.Context) error) error {
+	if _, ok := ctx.Value(transactionKey{}).(pgx.Tx); ok {
+		return fn(ctx)
+	}
+
 	if err := pgx.BeginFunc(ctx, x.pool, func(transaction pgx.Tx) error {
 		return fn(context.WithValue(ctx, transactionKey{}, transaction))
 	}); err != nil {

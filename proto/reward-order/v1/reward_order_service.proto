@@ -51,8 +51,8 @@ message RewardOrder {
   string reward_title = 6 [json_name = "reward_title"];
 
   // UNSPECIFIED для PENDING и ISSUED; причина выбирается сервером при отмене.
-  RewardOrderCancellationReason cancellation_reason = 8 [json_name = "cancellation_reason"];
-  RewardOrderStatus status = 7 [json_name = "status"];
+  RewardOrderCancellationReason cancellation_reason = 7 [json_name = "cancellation_reason"];
+  RewardOrderStatus status = 8 [json_name = "status"];
 
   google.protobuf.Timestamp created_at = 9 [json_name = "created_at"];
   google.protobuf.Timestamp updated_at = 10 [json_name = "updated_at"];
@@ -113,17 +113,17 @@ enum RewardOrderListScope {
 
 message ListRewardOrdersRequest {
   // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-  RewardOrderListScope scope = 8 [json_name = "scope"];
+  RewardOrderListScope scope = 1 [json_name = "scope"];
 
   // Дополнительные непустые фильтры внутри доступных заказов, не расширяют права.
-  optional string coordinator_id = 1 [json_name = "coordinator_id"];
-  optional string reward_id = 2 [json_name = "reward_id"];
-  optional string volunteer_id = 3 [json_name = "volunteer_id"];
+  optional string coordinator_id = 2 [json_name = "coordinator_id"];
+  optional string reward_id = 3 [json_name = "reward_id"];
   // Отсутствует — все статусы; UNSPECIFIED и неизвестные значения недопустимы.
   optional RewardOrderStatus status = 4 [json_name = "status"];
+  optional string volunteer_id = 5 [json_name = "volunteer_id"];
 
   // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-  int32 limit = 5 [json_name = "limit"];
+  int32 limit = 6 [json_name = "limit"];
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
@@ -135,7 +135,7 @@ message ListRewardOrdersResponse {
   repeated RewardOrder reward_orders = 1 [json_name = "reward_orders"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 message IssueRewardOrderRequest {

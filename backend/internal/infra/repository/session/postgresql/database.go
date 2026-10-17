@@ -11,6 +11,7 @@ import (
 
 type Database interface {
 	Exec(ctx context.Context, sql string, arguments ...any) (pgconn.CommandTag, error)
+	InTx(ctx context.Context, fn func(ctx context.Context) error) error
 	QueryRow(ctx context.Context, sql string, arguments ...any) pgx.Row
 }
 

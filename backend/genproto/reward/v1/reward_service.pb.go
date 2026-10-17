@@ -125,16 +125,16 @@ type Reward struct {
 	CoordinatorId string                 `protobuf:"bytes,2,opt,name=coordinator_id,proto3" json:"coordinator_id,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
-	ImageUrl string `protobuf:"bytes,9,opt,name=image_url,proto3" json:"image_url,omitempty"`
-	Title    string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	ImageUrl string `protobuf:"bytes,4,opt,name=image_url,proto3" json:"image_url,omitempty"`
+	Title    string `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
 	// Целое положительное число коинов за одну единицу.
-	PriceCoins int64 `protobuf:"varint,5,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
+	PriceCoins int64 `protobuf:"varint,6,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
 	// Вычисляется сервером: quantity_limit минус выданные единицы и резервы.
 	// Ноль означает отсутствие свободных единиц, а не архивирование.
 	AvailableQuantity int32 `protobuf:"varint,7,opt,name=available_quantity,proto3" json:"available_quantity,omitempty"`
 	// Общее количество, включая уже выданные единицы и резервы невыданных заказов.
-	QuantityLimit int32        `protobuf:"varint,6,opt,name=quantity_limit,proto3" json:"quantity_limit,omitempty"`
-	Status        RewardStatus `protobuf:"varint,8,opt,name=status,proto3,enum=reward.v1.RewardStatus" json:"status,omitempty"`
+	QuantityLimit int32        `protobuf:"varint,8,opt,name=quantity_limit,proto3" json:"quantity_limit,omitempty"`
+	Status        RewardStatus `protobuf:"varint,9,opt,name=status,proto3,enum=reward.v1.RewardStatus" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -237,13 +237,13 @@ type CreateRewardRequest struct {
 	Description string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
 	// Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
 	// Файл обязан существовать и принадлежать ему.
-	ImagePath string `protobuf:"bytes,5,opt,name=image_path,proto3" json:"image_path,omitempty"`
+	ImagePath string `protobuf:"bytes,2,opt,name=image_path,proto3" json:"image_path,omitempty"`
 	// Непустое название.
-	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	// Строго больше нуля.
-	PriceCoins int64 `protobuf:"varint,3,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
+	PriceCoins int64 `protobuf:"varint,4,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
 	// Строго больше нуля.
-	QuantityLimit int32 `protobuf:"varint,4,opt,name=quantity_limit,proto3" json:"quantity_limit,omitempty"`
+	QuantityLimit int32 `protobuf:"varint,5,opt,name=quantity_limit,proto3" json:"quantity_limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -448,15 +448,15 @@ func (x *GetRewardResponse) GetReward() *Reward {
 type ListRewardsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-	Scope RewardListScope `protobuf:"varint,6,opt,name=scope,proto3,enum=reward.v1.RewardListScope" json:"scope,omitempty"`
+	Scope RewardListScope `protobuf:"varint,1,opt,name=scope,proto3,enum=reward.v1.RewardListScope" json:"scope,omitempty"`
 	// Необязательный непустой фильтр внутри доступных поощрений; не расширяет права.
-	CoordinatorId *string `protobuf:"bytes,1,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
+	CoordinatorId *string `protobuf:"bytes,2,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
 	// 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
 	Limit int32 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
-	Offset        int64 `protobuf:"varint,5,opt,name=offset,proto3" json:"offset,omitempty"`
+	Offset        int64 `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -525,7 +525,7 @@ type ListRewardsResponse struct {
 	Rewards []*Reward `protobuf:"bytes,1,rep,name=rewards,proto3" json:"rewards,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -581,14 +581,14 @@ type UpdateRewardRequest struct {
 	Description *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	// Отсутствует — сохранить; пустая строка — убрать изображение.
 	// Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
-	ImagePath *string `protobuf:"bytes,6,opt,name=image_path,proto3,oneof" json:"image_path,omitempty"`
+	ImagePath *string `protobuf:"bytes,3,opt,name=image_path,proto3,oneof" json:"image_path,omitempty"`
 	// Непустое название.
-	Title *string `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	Title *string `protobuf:"bytes,4,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	// Строго больше нуля. Новая цена применяется только к новым заказам.
-	PriceCoins *int64 `protobuf:"varint,4,opt,name=price_coins,proto3,oneof" json:"price_coins,omitempty"`
+	PriceCoins *int64 `protobuf:"varint,5,opt,name=price_coins,proto3,oneof" json:"price_coins,omitempty"`
 	// Неотрицательное число, не меньше суммы выданных единиц и текущих резервов.
 	// Нарушение ограничения по резервам/выдачам означает FailedPrecondition.
-	QuantityLimit *int32 `protobuf:"varint,5,opt,name=quantity_limit,proto3,oneof" json:"quantity_limit,omitempty"`
+	QuantityLimit *int32 `protobuf:"varint,6,opt,name=quantity_limit,proto3,oneof" json:"quantity_limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -718,20 +718,20 @@ const file_reward_v1_reward_service_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
 	"\x0ecoordinator_id\x18\x02 \x01(\tR\x0ecoordinator_id\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1c\n" +
-	"\timage_url\x18\t \x01(\tR\timage_url\x12\x14\n" +
-	"\x05title\x18\x04 \x01(\tR\x05title\x12 \n" +
-	"\vprice_coins\x18\x05 \x01(\x03R\vprice_coins\x12.\n" +
+	"\timage_url\x18\x04 \x01(\tR\timage_url\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12 \n" +
+	"\vprice_coins\x18\x06 \x01(\x03R\vprice_coins\x12.\n" +
 	"\x12available_quantity\x18\a \x01(\x05R\x12available_quantity\x12&\n" +
-	"\x0equantity_limit\x18\x06 \x01(\x05R\x0equantity_limit\x12/\n" +
-	"\x06status\x18\b \x01(\x0e2\x17.reward.v1.RewardStatusR\x06status\"\xb7\x01\n" +
+	"\x0equantity_limit\x18\b \x01(\x05R\x0equantity_limit\x12/\n" +
+	"\x06status\x18\t \x01(\x0e2\x17.reward.v1.RewardStatusR\x06status\"\xb7\x01\n" +
 	"\x13CreateRewardRequest\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x1e\n" +
 	"\n" +
-	"image_path\x18\x05 \x01(\tR\n" +
+	"image_path\x18\x02 \x01(\tR\n" +
 	"image_path\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
-	"\vprice_coins\x18\x03 \x01(\x03R\vprice_coins\x12&\n" +
-	"\x0equantity_limit\x18\x04 \x01(\x05R\x0equantity_limit\"&\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
+	"\vprice_coins\x18\x04 \x01(\x03R\vprice_coins\x12&\n" +
+	"\x0equantity_limit\x18\x05 \x01(\x05R\x0equantity_limit\"&\n" +
 	"\x14CreateRewardResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\"\n" +
 	"\x10GetRewardRequest\x12\x0e\n" +
@@ -739,23 +739,23 @@ const file_reward_v1_reward_service_proto_rawDesc = "" +
 	"\x11GetRewardResponse\x12)\n" +
 	"\x06reward\x18\x01 \x01(\v2\x11.reward.v1.RewardR\x06reward\"\xb4\x01\n" +
 	"\x12ListRewardsRequest\x120\n" +
-	"\x05scope\x18\x06 \x01(\x0e2\x1a.reward.v1.RewardListScopeR\x05scope\x12+\n" +
-	"\x0ecoordinator_id\x18\x01 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x12\x14\n" +
+	"\x05scope\x18\x01 \x01(\x0e2\x1a.reward.v1.RewardListScopeR\x05scope\x12+\n" +
+	"\x0ecoordinator_id\x18\x02 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x05 \x01(\x03R\x06offsetB\x11\n" +
+	"\x06offset\x18\x04 \x01(\x03R\x06offsetB\x11\n" +
 	"\x0f_coordinator_id\"d\n" +
 	"\x13ListRewardsResponse\x12+\n" +
 	"\arewards\x18\x01 \x03(\v2\x11.reward.v1.RewardR\arewards\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\xac\x02\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\xac\x02\n" +
 	"\x13UpdateRewardRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12#\n" +
 	"\n" +
-	"image_path\x18\x06 \x01(\tH\x01R\n" +
+	"image_path\x18\x03 \x01(\tH\x01R\n" +
 	"image_path\x88\x01\x01\x12\x19\n" +
-	"\x05title\x18\x03 \x01(\tH\x02R\x05title\x88\x01\x01\x12%\n" +
-	"\vprice_coins\x18\x04 \x01(\x03H\x03R\vprice_coins\x88\x01\x01\x12+\n" +
-	"\x0equantity_limit\x18\x05 \x01(\x05H\x04R\x0equantity_limit\x88\x01\x01B\x0e\n" +
+	"\x05title\x18\x04 \x01(\tH\x02R\x05title\x88\x01\x01\x12%\n" +
+	"\vprice_coins\x18\x05 \x01(\x03H\x03R\vprice_coins\x88\x01\x01\x12+\n" +
+	"\x0equantity_limit\x18\x06 \x01(\x05H\x04R\x0equantity_limit\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\r\n" +
 	"\v_image_pathB\b\n" +
 	"\x06_titleB\x0e\n" +

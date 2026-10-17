@@ -16,15 +16,35 @@ type ImagePath struct {
 	extension string
 }
 
+func (x ImagePath) GetURL() string {
+	if x.IsZero() {
+		return ""
+	}
+
+	return "/storage/" + x.String()
+}
+
 func (x ImagePath) GetUserID() model_user_id.UserID {
 	return x.userID
 }
 
+func (x ImagePath) IsZero() bool {
+	return x.userID.IsZero() && x.imageID.IsZero() && len(x.extension) == 0
+}
+
 func (x ImagePath) String() string {
+	if x.IsZero() {
+		return ""
+	}
+
 	return x.userID.String() + "/" + x.imageID.String() + x.extension
 }
 
 func (x ImagePath) Validate() error {
+	if x.IsZero() {
+		return nil
+	}
+
 	if err := x.userID.Validate(); err != nil {
 		return fmt.Errorf("image owner id: %w", err)
 	}
@@ -41,6 +61,10 @@ func (x ImagePath) Validate() error {
 }
 
 func NewImagePath(value string) (ImagePath, error) {
+	if len(value) == 0 {
+		return NewImagePathFromFields(model_user_id.UserID{}, types_uuid_v7.UUIDv7{}, "")
+	}
+
 	owner, fileName, found := strings.Cut(value, "/")
 	if !found {
 		return ImagePath{}, errors.New("image path must contain owner id and file name")
@@ -58,6 +82,14 @@ func NewImagePath(value string) (ImagePath, error) {
 		return ImagePath{}, fmt.Errorf("parse image id: %w", err)
 	}
 
+	return NewImagePathFromFields(userID, imageID, extension)
+}
+
+func NewImagePathFromFields(
+	userID model_user_id.UserID,
+	imageID types_uuid_v7.UUIDv7,
+	extension string,
+) (ImagePath, error) {
 	x := ImagePath{
 		userID:    userID,
 		imageID:   imageID,

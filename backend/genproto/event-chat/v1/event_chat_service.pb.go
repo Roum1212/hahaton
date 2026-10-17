@@ -24,16 +24,16 @@ const (
 
 // Координатор-создатель видит весь свой чат; для него visible_after_sequence = 0.
 // У волонтёра срез последовательности фиксируется атомарно при APPROVED.
-// Отмена заявки/мероприятия и прекращение Cooperation закрывают период навсегда.
+// Отмена/отклонение заявки, отмена мероприятия и прекращение Cooperation закрывают период навсегда.
 // Открытый старый стрим закрывается даже при быстром новом вступлении.
 type EventChat struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	EventId        string                 `protobuf:"bytes,1,opt,name=event_id,proto3" json:"event_id,omitempty"`
 	EventTitle     string                 `protobuf:"bytes,2,opt,name=event_title,proto3" json:"event_title,omitempty"`
-	ReadOnly       bool                   `protobuf:"varint,6,opt,name=read_only,proto3" json:"read_only,omitempty"`
-	LatestSequence uint64                 `protobuf:"varint,5,opt,name=latest_sequence,proto3" json:"latest_sequence,omitempty"`
+	ReadOnly       bool                   `protobuf:"varint,3,opt,name=read_only,proto3" json:"read_only,omitempty"`
+	LatestSequence uint64                 `protobuf:"varint,4,opt,name=latest_sequence,proto3" json:"latest_sequence,omitempty"`
 	// Доступны только сообщения со sequence строго больше этой границы.
-	VisibleAfterSequence uint64 `protobuf:"varint,4,opt,name=visible_after_sequence,proto3" json:"visible_after_sequence,omitempty"`
+	VisibleAfterSequence uint64 `protobuf:"varint,5,opt,name=visible_after_sequence,proto3" json:"visible_after_sequence,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -316,8 +316,8 @@ type EventChatMessage struct {
 	// Положительный уникальный возрастающий номер внутри event_id, назначаемый сервером.
 	// Нумерация и сохранение сериализуются по чату: нельзя позже зафиксировать сообщение
 	// с sequence ниже уже видимой границы. Это обеспечивает восстановление без пропусков.
-	Sequence      uint64                 `protobuf:"varint,8,opt,name=sequence,proto3" json:"sequence,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,proto3" json:"created_at,omitempty"`
+	Sequence      uint64                 `protobuf:"varint,7,opt,name=sequence,proto3" json:"sequence,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -552,9 +552,9 @@ type ListEventChatMessagesRequest struct {
 	// Для следующих страниц клиент повторяет snapshot_sequence из первого ответа:
 	// новые сообщения стрима не сдвигают offset в этой выборке.
 	// Граница вне [visible_after_sequence, latest_sequence] означает InvalidArgument.
-	SnapshotSequence *uint64 `protobuf:"varint,5,opt,name=snapshot_sequence,proto3,oneof" json:"snapshot_sequence,omitempty"`
+	SnapshotSequence *uint64 `protobuf:"varint,2,opt,name=snapshot_sequence,proto3,oneof" json:"snapshot_sequence,omitempty"`
 	// 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Limit int32 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
@@ -628,11 +628,11 @@ type ListEventChatMessagesResponse struct {
 	// Верхняя граница выбранной истории, а не sequence последнего элемента страницы.
 	// Клиент загружает историю, затем открывает стрим с after_sequence = snapshot_sequence.
 	// Сообщения, появившиеся между этими запросами, будут доставлены стримом.
-	SnapshotSequence     uint64 `protobuf:"varint,4,opt,name=snapshot_sequence,proto3" json:"snapshot_sequence,omitempty"`
-	VisibleAfterSequence uint64 `protobuf:"varint,6,opt,name=visible_after_sequence,proto3" json:"visible_after_sequence,omitempty"`
+	SnapshotSequence     uint64 `protobuf:"varint,2,opt,name=snapshot_sequence,proto3" json:"snapshot_sequence,omitempty"`
+	VisibleAfterSequence uint64 `protobuf:"varint,3,opt,name=visible_after_sequence,proto3" json:"visible_after_sequence,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,4,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -804,9 +804,9 @@ const file_event_chat_v1_event_chat_service_proto_rawDesc = "" +
 	"\tEventChat\x12\x1a\n" +
 	"\bevent_id\x18\x01 \x01(\tR\bevent_id\x12 \n" +
 	"\vevent_title\x18\x02 \x01(\tR\vevent_title\x12\x1c\n" +
-	"\tread_only\x18\x06 \x01(\bR\tread_only\x12(\n" +
-	"\x0flatest_sequence\x18\x05 \x01(\x04R\x0flatest_sequence\x126\n" +
-	"\x16visible_after_sequence\x18\x04 \x01(\x04R\x16visible_after_sequence\"1\n" +
+	"\tread_only\x18\x03 \x01(\bR\tread_only\x12(\n" +
+	"\x0flatest_sequence\x18\x04 \x01(\x04R\x0flatest_sequence\x126\n" +
+	"\x16visible_after_sequence\x18\x05 \x01(\x04R\x16visible_after_sequence\"1\n" +
 	"\x13GetEventChatRequest\x12\x1a\n" +
 	"\bevent_id\x18\x01 \x01(\tR\bevent_id\"D\n" +
 	"\x14GetEventChatResponse\x12,\n" +
@@ -824,9 +824,9 @@ const file_event_chat_v1_event_chat_service_proto_rawDesc = "" +
 	"\fvolunteer_id\x18\x04 \x01(\tH\x00R\fvolunteer_id\x120\n" +
 	"\x13author_display_name\x18\x05 \x01(\tR\x13author_display_name\x12\x12\n" +
 	"\x04text\x18\x06 \x01(\tR\x04text\x12\x1a\n" +
-	"\bsequence\x18\b \x01(\x04R\bsequence\x12:\n" +
+	"\bsequence\x18\a \x01(\x04R\bsequence\x12:\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_atB\b\n" +
 	"\x06author\"m\n" +
 	"\x1bSendEventChatMessageRequest\x12\x1a\n" +
@@ -839,15 +839,15 @@ const file_event_chat_v1_event_chat_service_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x01(\v2\x1f.event_chat.v1.EventChatMessageR\amessage\"\xb1\x01\n" +
 	"\x1cListEventChatMessagesRequest\x12\x1a\n" +
 	"\bevent_id\x18\x01 \x01(\tR\bevent_id\x121\n" +
-	"\x11snapshot_sequence\x18\x05 \x01(\x04H\x00R\x11snapshot_sequence\x88\x01\x01\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x11snapshot_sequence\x18\x02 \x01(\x04H\x00R\x11snapshot_sequence\x88\x01\x01\x12\x14\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x04 \x01(\x03R\x06offsetB\x14\n" +
 	"\x12_snapshot_sequence\"\xe4\x01\n" +
 	"\x1dListEventChatMessagesResponse\x12;\n" +
 	"\bmessages\x18\x01 \x03(\v2\x1f.event_chat.v1.EventChatMessageR\bmessages\x12,\n" +
-	"\x11snapshot_sequence\x18\x04 \x01(\x04R\x11snapshot_sequence\x126\n" +
-	"\x16visible_after_sequence\x18\x06 \x01(\x04R\x16visible_after_sequence\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"g\n" +
+	"\x11snapshot_sequence\x18\x02 \x01(\x04R\x11snapshot_sequence\x126\n" +
+	"\x16visible_after_sequence\x18\x03 \x01(\x04R\x16visible_after_sequence\x12 \n" +
+	"\vtotal_count\x18\x04 \x01(\x03R\vtotal_count\"g\n" +
 	"!SubscribeEventChatMessagesRequest\x12\x1a\n" +
 	"\bevent_id\x18\x01 \x01(\tR\bevent_id\x12&\n" +
 	"\x0eafter_sequence\x18\x02 \x01(\x04R\x0eafter_sequence\"_\n" +

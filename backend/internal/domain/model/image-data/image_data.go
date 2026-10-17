@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"slices"
 
 	_ "image/jpeg"
 	_ "image/png"
@@ -24,7 +25,7 @@ type ImageData struct {
 }
 
 func (x ImageData) GetData() []byte {
-	return x.data
+	return slices.Clone(x.data)
 }
 
 func (x ImageData) GetExtension() string {
@@ -71,7 +72,7 @@ func NewImageData(data []byte) (ImageData, error) {
 	}
 
 	x := ImageData{
-		data:   data,
+		data:   slices.Clone(data),
 		format: format,
 	}
 	if err = x.Validate(); err != nil {

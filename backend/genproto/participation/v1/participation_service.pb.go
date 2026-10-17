@@ -198,16 +198,16 @@ type Participation struct {
 	Id                 string                          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	EventId            string                          `protobuf:"bytes,2,opt,name=event_id,proto3" json:"event_id,omitempty"`
 	VolunteerId        string                          `protobuf:"bytes,3,opt,name=volunteer_id,proto3" json:"volunteer_id,omitempty"`
-	CancellationReason ParticipationCancellationReason `protobuf:"varint,13,opt,name=cancellation_reason,proto3,enum=participation.v1.ParticipationCancellationReason" json:"cancellation_reason,omitempty"`
+	CancellationReason ParticipationCancellationReason `protobuf:"varint,4,opt,name=cancellation_reason,proto3,enum=participation.v1.ParticipationCancellationReason" json:"cancellation_reason,omitempty"`
 	// Необязательная причина отказа; только сам адресат и создатель мероприятия.
-	RejectionReason *string             `protobuf:"bytes,11,opt,name=rejection_reason,proto3,oneof" json:"rejection_reason,omitempty"`
-	Status          ParticipationStatus `protobuf:"varint,4,opt,name=status,proto3,enum=participation.v1.ParticipationStatus" json:"status,omitempty"`
+	RejectionReason *string             `protobuf:"bytes,5,opt,name=rejection_reason,proto3,oneof" json:"rejection_reason,omitempty"`
+	Status          ParticipationStatus `protobuf:"varint,6,opt,name=status,proto3,enum=participation.v1.ParticipationStatus" json:"status,omitempty"`
 	// Все три поля присутствуют только у CONFIRMED, записываются синхронно в CompleteEvent.
-	AccrualOperationId *string                `protobuf:"bytes,8,opt,name=accrual_operation_id,proto3,oneof" json:"accrual_operation_id,omitempty"`
-	AwardedCoins       *int64                 `protobuf:"varint,9,opt,name=awarded_coins,proto3,oneof" json:"awarded_coins,omitempty"`
-	AwardedMinutes     *int64                 `protobuf:"varint,10,opt,name=awarded_minutes,proto3,oneof" json:"awarded_minutes,omitempty"`
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,proto3" json:"created_at,omitempty"`
-	UpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
+	AccrualOperationId *string                `protobuf:"bytes,7,opt,name=accrual_operation_id,proto3,oneof" json:"accrual_operation_id,omitempty"`
+	AwardedCoins       *int64                 `protobuf:"varint,8,opt,name=awarded_coins,proto3,oneof" json:"awarded_coins,omitempty"`
+	AwardedMinutes     *int64                 `protobuf:"varint,9,opt,name=awarded_minutes,proto3,oneof" json:"awarded_minutes,omitempty"`
+	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,proto3" json:"created_at,omitempty"`
+	UpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -497,7 +497,9 @@ func (x *ApproveParticipationRequest) GetId() string {
 
 type RejectParticipationRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Заявка своего мероприятия в PENDING или APPROVED, мероприятие — PUBLISHED.
+	// Иное состояние — FailedPrecondition; заявка чужого мероприятия — PermissionDenied.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Если передано — от 1 до 2000 Unicode-символов после trim.
 	Reason        *string `protobuf:"bytes,2,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -683,13 +685,13 @@ func (x *GetParticipationResponse) GetParticipation() *Participation {
 type ListParticipationsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-	Scope       ParticipationListScope `protobuf:"varint,7,opt,name=scope,proto3,enum=participation.v1.ParticipationListScope" json:"scope,omitempty"`
-	EventId     *string                `protobuf:"bytes,1,opt,name=event_id,proto3,oneof" json:"event_id,omitempty"`
-	VolunteerId *string                `protobuf:"bytes,2,opt,name=volunteer_id,proto3,oneof" json:"volunteer_id,omitempty"`
+	Scope   ParticipationListScope `protobuf:"varint,1,opt,name=scope,proto3,enum=participation.v1.ParticipationListScope" json:"scope,omitempty"`
+	EventId *string                `protobuf:"bytes,2,opt,name=event_id,proto3,oneof" json:"event_id,omitempty"`
 	// Отсутствует — все; UNSPECIFIED/неизвестный статус недопустимы.
-	Status *ParticipationStatus `protobuf:"varint,3,opt,name=status,proto3,enum=participation.v1.ParticipationStatus,oneof" json:"status,omitempty"`
+	Status      *ParticipationStatus `protobuf:"varint,3,opt,name=status,proto3,enum=participation.v1.ParticipationStatus,oneof" json:"status,omitempty"`
+	VolunteerId *string              `protobuf:"bytes,4,opt,name=volunteer_id,proto3,oneof" json:"volunteer_id,omitempty"`
 	// 0 означает 20; допустимы 1–100. offset >= 0. Проверки доступа до пагинации.
-	Limit         int32 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	Limit         int32 `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int64 `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -739,18 +741,18 @@ func (x *ListParticipationsRequest) GetEventId() string {
 	return ""
 }
 
-func (x *ListParticipationsRequest) GetVolunteerId() string {
-	if x != nil && x.VolunteerId != nil {
-		return *x.VolunteerId
-	}
-	return ""
-}
-
 func (x *ListParticipationsRequest) GetStatus() ParticipationStatus {
 	if x != nil && x.Status != nil {
 		return *x.Status
 	}
 	return ParticipationStatus_PARTICIPATION_STATUS_UNSPECIFIED
+}
+
+func (x *ListParticipationsRequest) GetVolunteerId() string {
+	if x != nil && x.VolunteerId != nil {
+		return *x.VolunteerId
+	}
+	return ""
 }
 
 func (x *ListParticipationsRequest) GetLimit() int32 {
@@ -772,7 +774,7 @@ type ListParticipationsResponse struct {
 	// По created_at, id по возрастанию; отменённые записи также сохраняются.
 	Participations []*Participation `protobuf:"bytes,1,rep,name=participations,proto3" json:"participations,omitempty"`
 	// Тот же снимок данных/права/фильтры, что и страница, без limit/offset.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -825,9 +827,9 @@ type ParticipationChange struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Порядок аудита; не используется как условие команды.
 	Sequence           uint64                          `protobuf:"varint,1,opt,name=sequence,proto3" json:"sequence,omitempty"`
-	CancellationReason ParticipationCancellationReason `protobuf:"varint,7,opt,name=cancellation_reason,proto3,enum=participation.v1.ParticipationCancellationReason" json:"cancellation_reason,omitempty"`
-	RejectionReason    *string                         `protobuf:"bytes,6,opt,name=rejection_reason,proto3,oneof" json:"rejection_reason,omitempty"`
-	Status             ParticipationStatus             `protobuf:"varint,2,opt,name=status,proto3,enum=participation.v1.ParticipationStatus" json:"status,omitempty"`
+	CancellationReason ParticipationCancellationReason `protobuf:"varint,2,opt,name=cancellation_reason,proto3,enum=participation.v1.ParticipationCancellationReason" json:"cancellation_reason,omitempty"`
+	RejectionReason    *string                         `protobuf:"bytes,3,opt,name=rejection_reason,proto3,oneof" json:"rejection_reason,omitempty"`
+	Status             ParticipationStatus             `protobuf:"varint,4,opt,name=status,proto3,enum=participation.v1.ParticipationStatus" json:"status,omitempty"`
 	// Автор для пользовательского действия; отсутствие означает системный переход.
 	//
 	// Types that are valid to be assigned to Actor:
@@ -835,7 +837,7 @@ type ParticipationChange struct {
 	//	*ParticipationChange_CoordinatorId
 	//	*ParticipationChange_VolunteerId
 	Actor         isParticipationChange_Actor `protobuf_oneof:"actor"`
-	CreatedAt     *timestamppb.Timestamp      `protobuf:"bytes,3,opt,name=created_at,proto3" json:"created_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp      `protobuf:"bytes,7,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -935,11 +937,11 @@ type isParticipationChange_Actor interface {
 }
 
 type ParticipationChange_CoordinatorId struct {
-	CoordinatorId string `protobuf:"bytes,4,opt,name=coordinator_id,proto3,oneof"`
+	CoordinatorId string `protobuf:"bytes,5,opt,name=coordinator_id,proto3,oneof"`
 }
 
 type ParticipationChange_VolunteerId struct {
-	VolunteerId string `protobuf:"bytes,5,opt,name=volunteer_id,proto3,oneof"`
+	VolunteerId string `protobuf:"bytes,6,opt,name=volunteer_id,proto3,oneof"`
 }
 
 func (*ParticipationChange_CoordinatorId) isParticipationChange_Actor() {}
@@ -1068,18 +1070,18 @@ const file_participation_v1_participation_service_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bevent_id\x18\x02 \x01(\tR\bevent_id\x12\"\n" +
 	"\fvolunteer_id\x18\x03 \x01(\tR\fvolunteer_id\x12c\n" +
-	"\x13cancellation_reason\x18\r \x01(\x0e21.participation.v1.ParticipationCancellationReasonR\x13cancellation_reason\x12/\n" +
-	"\x10rejection_reason\x18\v \x01(\tH\x00R\x10rejection_reason\x88\x01\x01\x12=\n" +
-	"\x06status\x18\x04 \x01(\x0e2%.participation.v1.ParticipationStatusR\x06status\x127\n" +
-	"\x14accrual_operation_id\x18\b \x01(\tH\x01R\x14accrual_operation_id\x88\x01\x01\x12)\n" +
-	"\rawarded_coins\x18\t \x01(\x03H\x02R\rawarded_coins\x88\x01\x01\x12-\n" +
-	"\x0fawarded_minutes\x18\n" +
-	" \x01(\x03H\x03R\x0fawarded_minutes\x88\x01\x01\x12:\n" +
+	"\x13cancellation_reason\x18\x04 \x01(\x0e21.participation.v1.ParticipationCancellationReasonR\x13cancellation_reason\x12/\n" +
+	"\x10rejection_reason\x18\x05 \x01(\tH\x00R\x10rejection_reason\x88\x01\x01\x12=\n" +
+	"\x06status\x18\x06 \x01(\x0e2%.participation.v1.ParticipationStatusR\x06status\x127\n" +
+	"\x14accrual_operation_id\x18\a \x01(\tH\x01R\x14accrual_operation_id\x88\x01\x01\x12)\n" +
+	"\rawarded_coins\x18\b \x01(\x03H\x02R\rawarded_coins\x88\x01\x01\x12-\n" +
+	"\x0fawarded_minutes\x18\t \x01(\x03H\x03R\x0fawarded_minutes\x88\x01\x01\x12:\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_at\x12:\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"updated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updated_atB\x13\n" +
 	"\x11_rejection_reasonB\x17\n" +
 	"\x15_accrual_operation_idB\x10\n" +
@@ -1104,27 +1106,27 @@ const file_participation_v1_participation_service_proto_rawDesc = "" +
 	"\x18GetParticipationResponse\x12E\n" +
 	"\rparticipation\x18\x01 \x01(\v2\x1f.participation.v1.ParticipationR\rparticipation\"\xc0\x02\n" +
 	"\x19ListParticipationsRequest\x12>\n" +
-	"\x05scope\x18\a \x01(\x0e2(.participation.v1.ParticipationListScopeR\x05scope\x12\x1f\n" +
-	"\bevent_id\x18\x01 \x01(\tH\x00R\bevent_id\x88\x01\x01\x12'\n" +
-	"\fvolunteer_id\x18\x02 \x01(\tH\x01R\fvolunteer_id\x88\x01\x01\x12B\n" +
-	"\x06status\x18\x03 \x01(\x0e2%.participation.v1.ParticipationStatusH\x02R\x06status\x88\x01\x01\x12\x14\n" +
-	"\x05limit\x18\x04 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x05scope\x18\x01 \x01(\x0e2(.participation.v1.ParticipationListScopeR\x05scope\x12\x1f\n" +
+	"\bevent_id\x18\x02 \x01(\tH\x00R\bevent_id\x88\x01\x01\x12B\n" +
+	"\x06status\x18\x03 \x01(\x0e2%.participation.v1.ParticipationStatusH\x01R\x06status\x88\x01\x01\x12'\n" +
+	"\fvolunteer_id\x18\x04 \x01(\tH\x02R\fvolunteer_id\x88\x01\x01\x12\x14\n" +
+	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x06 \x01(\x03R\x06offsetB\v\n" +
-	"\t_event_idB\x0f\n" +
-	"\r_volunteer_idB\t\n" +
-	"\a_status\"\x87\x01\n" +
+	"\t_event_idB\t\n" +
+	"\a_statusB\x0f\n" +
+	"\r_volunteer_id\"\x87\x01\n" +
 	"\x1aListParticipationsResponse\x12G\n" +
 	"\x0eparticipations\x18\x01 \x03(\v2\x1f.participation.v1.ParticipationR\x0eparticipations\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\xb0\x03\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\xb0\x03\n" +
 	"\x13ParticipationChange\x12\x1a\n" +
 	"\bsequence\x18\x01 \x01(\x04R\bsequence\x12c\n" +
-	"\x13cancellation_reason\x18\a \x01(\x0e21.participation.v1.ParticipationCancellationReasonR\x13cancellation_reason\x12/\n" +
-	"\x10rejection_reason\x18\x06 \x01(\tH\x01R\x10rejection_reason\x88\x01\x01\x12=\n" +
-	"\x06status\x18\x02 \x01(\x0e2%.participation.v1.ParticipationStatusR\x06status\x12(\n" +
-	"\x0ecoordinator_id\x18\x04 \x01(\tH\x00R\x0ecoordinator_id\x12$\n" +
-	"\fvolunteer_id\x18\x05 \x01(\tH\x00R\fvolunteer_id\x12:\n" +
+	"\x13cancellation_reason\x18\x02 \x01(\x0e21.participation.v1.ParticipationCancellationReasonR\x13cancellation_reason\x12/\n" +
+	"\x10rejection_reason\x18\x03 \x01(\tH\x01R\x10rejection_reason\x88\x01\x01\x12=\n" +
+	"\x06status\x18\x04 \x01(\x0e2%.participation.v1.ParticipationStatusR\x06status\x12(\n" +
+	"\x0ecoordinator_id\x18\x05 \x01(\tH\x00R\x0ecoordinator_id\x12$\n" +
+	"\fvolunteer_id\x18\x06 \x01(\tH\x00R\fvolunteer_id\x12:\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_atB\a\n" +
 	"\x05actorB\x13\n" +
 	"\x11_rejection_reason\"{\n" +

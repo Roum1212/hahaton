@@ -36,11 +36,11 @@ service SessionService {
 message Session {
   // Внутренний ID участника, равный Volunteer.id и при наличии Coordinator.id.
   // Отсутствует у анонимной сессии; ID Flida sub сюда напрямую не копируется.
-  optional string user_id = 4 [json_name = "user_id"];
+  optional string user_id = 1 [json_name = "user_id"];
 
   // Вычисляемый признак для интерфейса; false у анонимной сессии.
   // Клиент не может установить его или выдать себе права выбором режима.
-  bool has_coordinator_profile = 5 [json_name = "has_coordinator_profile"];
+  bool has_coordinator_profile = 2 [json_name = "has_coordinator_profile"];
 
   // Абсолютный срок сессии; GetSession его не продлевает.
   google.protobuf.Timestamp expires_at = 3 [json_name = "expires_at"];
@@ -52,7 +52,7 @@ message AuthenticateSessionRequest {
   // (iss, sub) уникальны для Volunteer; aud проверяет получателя.
   // Первый вход заполняет профиль, последующие не перезаписывают локальные правки.
   // Отсутствие обязательных сведений при регистрации — FailedPrecondition.
-  string id_token = 3 [json_name = "id_token"];
+  string id_token = 1 [json_name = "id_token"];
 }
 
 message GetSessionResponse {

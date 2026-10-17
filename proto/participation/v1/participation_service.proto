@@ -24,7 +24,9 @@ service ParticipationService {
   // и свободном месте. Ручной выбор из резерва, без автоматического продвижения/FIFO.
   // Лимит нельзя превысить конкурентными одобрениями. Открывается новый период чата.
   rpc ApproveParticipation(ApproveParticipationRequest) returns (google.protobuf.Empty) {}
-  // Создатель: PENDING -> REJECTED пока Event PUBLISHED, в том числе после начала.
+  // Создатель: PENDING/APPROVED -> REJECTED пока Event PUBLISHED, в том числе после начала.
+  // Для APPROVED освобождает место и отзывает весь доступ к чату, включая действующий стрим.
+  // Начислений нет; отклонённый участник исключается из итогового списка CompleteEvent.
   // Отклонение окончательно: повторная подача на это мероприятие запрещена.
   rpc RejectParticipation(RejectParticipationRequest) returns (google.protobuf.Empty) {}
   // Волонтёр: PENDING/APPROVED -> CANCELLED строго до starts_at.
@@ -46,18 +48,18 @@ message Participation {
   string event_id = 2 [json_name = "event_id"];
   string volunteer_id = 3 [json_name = "volunteer_id"];
 
-  ParticipationCancellationReason cancellation_reason = 13 [json_name = "cancellation_reason"];
+  ParticipationCancellationReason cancellation_reason = 4 [json_name = "cancellation_reason"];
   // Необязательная причина отказа; только сам адресат и создатель мероприятия.
-  optional string rejection_reason = 11 [json_name = "rejection_reason"];
-  ParticipationStatus status = 4 [json_name = "status"];
+  optional string rejection_reason = 5 [json_name = "rejection_reason"];
+  ParticipationStatus status = 6 [json_name = "status"];
 
   // Все три поля присутствуют только у CONFIRMED, записываются синхронно в CompleteEvent.
-  optional string accrual_operation_id = 8 [json_name = "accrual_operation_id"];
-  optional int64 awarded_coins = 9 [json_name = "awarded_coins"];
-  optional int64 awarded_minutes = 10 [json_name = "awarded_minutes"];
+  optional string accrual_operation_id = 7 [json_name = "accrual_operation_id"];
+  optional int64 awarded_coins = 8 [json_name = "awarded_coins"];
+  optional int64 awarded_minutes = 9 [json_name = "awarded_minutes"];
 
-  google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
-  google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
+  google.protobuf.Timestamp created_at = 10 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 11 [json_name = "updated_at"];
 }
 
 enum ParticipationStatus {
@@ -98,6 +100,8 @@ message ApproveParticipationRequest {
 }
 
 message RejectParticipationRequest {
+  // Заявка своего мероприятия в PENDING или APPROVED, мероприятие — PUBLISHED.
+  // Иное состояние — FailedPrecondition; заявка чужого мероприятия — PermissionDenied.
   string id = 1 [json_name = "id"];
 
   // Если передано — от 1 до 2000 Unicode-символов после trim.
@@ -126,14 +130,15 @@ enum ParticipationListScope {
 
 message ListParticipationsRequest {
   // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-  ParticipationListScope scope = 7 [json_name = "scope"];
+  ParticipationListScope scope = 1 [json_name = "scope"];
 
-  optional string event_id = 1 [json_name = "event_id"];
-  optional string volunteer_id = 2 [json_name = "volunteer_id"];
+  optional string event_id = 2 [json_name = "event_id"];
   // Отсутствует — все; UNSPECIFIED/неизвестный статус недопустимы.
   optional ParticipationStatus status = 3 [json_name = "status"];
+  optional string volunteer_id = 4 [json_name = "volunteer_id"];
+
   // 0 означает 20; допустимы 1–100. offset >= 0. Проверки доступа до пагинации.
-  int32 limit = 4 [json_name = "limit"];
+  int32 limit = 5 [json_name = "limit"];
   int64 offset = 6 [json_name = "offset"];
 }
 
@@ -141,24 +146,24 @@ message ListParticipationsResponse {
   // По created_at, id по возрастанию; отменённые записи также сохраняются.
   repeated Participation participations = 1 [json_name = "participations"];
   // Тот же снимок данных/права/фильтры, что и страница, без limit/offset.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 message ParticipationChange {
   // Порядок аудита; не используется как условие команды.
   uint64 sequence = 1 [json_name = "sequence"];
 
-  ParticipationCancellationReason cancellation_reason = 7 [json_name = "cancellation_reason"];
-  optional string rejection_reason = 6 [json_name = "rejection_reason"];
-  ParticipationStatus status = 2 [json_name = "status"];
+  ParticipationCancellationReason cancellation_reason = 2 [json_name = "cancellation_reason"];
+  optional string rejection_reason = 3 [json_name = "rejection_reason"];
+  ParticipationStatus status = 4 [json_name = "status"];
 
   // Автор для пользовательского действия; отсутствие означает системный переход.
   oneof actor {
-    string coordinator_id = 4 [json_name = "coordinator_id"];
-    string volunteer_id = 5 [json_name = "volunteer_id"];
+    string coordinator_id = 5 [json_name = "coordinator_id"];
+    string volunteer_id = 6 [json_name = "volunteer_id"];
   }
 
-  google.protobuf.Timestamp created_at = 3 [json_name = "created_at"];
+  google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
 }
 
 message ListParticipationChangesRequest {

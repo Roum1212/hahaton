@@ -28,10 +28,10 @@ type Coordinator struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
 	// Аватар независим от аватара Volunteer с тем же ID.
-	AvatarUrl   string `protobuf:"bytes,4,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
-	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	AvatarUrl   string `protobuf:"bytes,2,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
-	DisplayName   string `protobuf:"bytes,3,opt,name=display_name,proto3" json:"display_name,omitempty"`
+	DisplayName   string `protobuf:"bytes,4,opt,name=display_name,proto3" json:"display_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -191,7 +191,7 @@ type ListCoordinatorsRequest struct {
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
-	Offset        int64 `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	Offset        int64 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -246,7 +246,7 @@ type ListCoordinatorsResponse struct {
 	Coordinators []*Coordinator `protobuf:"bytes,1,rep,name=coordinators,proto3" json:"coordinators,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,9 +299,9 @@ type UpdateCoordinatorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Отсутствует — сохранить; пустая строка — убрать аватар.
 	// Иначе image_path из UploadImage текущего участника; файл обязан существовать.
-	AvatarPath *string `protobuf:"bytes,3,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
+	AvatarPath *string `protobuf:"bytes,1,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
 	// Отсутствующее поле не меняется. Пустая строка очищает описание.
-	Description   *string `protobuf:"bytes,1,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Description   *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -528,10 +528,10 @@ const file_coordinator_v1_coordinator_service_proto_rawDesc = "" +
 	"\vCoordinator\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\n" +
+	"avatar_url\x18\x02 \x01(\tR\n" +
 	"avatar_url\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\"\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\fdisplay_name\"3\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\"\n" +
+	"\fdisplay_name\x18\x04 \x01(\tR\fdisplay_name\"3\n" +
 	"\x15GetCoordinatorRequest\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x88\x01\x01B\x05\n" +
 	"\x03_id\"W\n" +
@@ -539,13 +539,13 @@ const file_coordinator_v1_coordinator_service_proto_rawDesc = "" +
 	"\vcoordinator\x18\x01 \x01(\v2\x1b.coordinator.v1.CoordinatorR\vcoordinator\"G\n" +
 	"\x17ListCoordinatorsRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x03R\x06offset\"}\n" +
+	"\x06offset\x18\x02 \x01(\x03R\x06offset\"}\n" +
 	"\x18ListCoordinatorsResponse\x12?\n" +
 	"\fcoordinators\x18\x01 \x03(\v2\x1b.coordinator.v1.CoordinatorR\fcoordinators\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\x88\x01\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\x88\x01\n" +
 	"\x18UpdateCoordinatorRequest\x12%\n" +
-	"\vavatar_path\x18\x03 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tH\x01R\vdescription\x88\x01\x01B\x0e\n" +
+	"\vavatar_path\x18\x01 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x02 \x01(\tH\x01R\vdescription\x88\x01\x01B\x0e\n" +
 	"\f_avatar_pathB\x0e\n" +
 	"\f_description\"i\n" +
 	"\x13CoordinatorSettings\x12R\n" +

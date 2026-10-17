@@ -66,9 +66,9 @@ message ListCitiesResponse {
   // Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
   repeated City cities = 1 [json_name = "cities"];
 
-  string catalog_version = 3 [json_name = "catalog_version"];
+  string catalog_version = 2 [json_name = "catalog_version"];
 
-  int64 total_count = 2 [json_name = "total_count"];
+  int64 total_count = 3 [json_name = "total_count"];
 }
 
 message GetCityRequest {
@@ -100,28 +100,28 @@ message SuggestAddressesRequest {
 }
 
 message AddressSuggestion {
-  string unrestricted_value = 2 [json_name = "unrestricted_value"];
-  string value = 1 [json_name = "value"];
+  string unrestricted_value = 1 [json_name = "unrestricted_value"];
+  string value = 2 [json_name = "value"];
 
   AddressSuggestionData data = 3 [json_name = "data"];
 }
 
 // Нормализованная часть ответа DaData; остальные поля провайдера клиенту не нужны.
 message AddressSuggestionData {
-  optional string city_fias_id = 2 [json_name = "city_fias_id"];
-  optional string fias_id = 1 [json_name = "fias_id"];
+  optional string city_fias_id = 1 [json_name = "city_fias_id"];
+  optional string fias_id = 2 [json_name = "fias_id"];
   optional string settlement_fias_id = 3 [json_name = "settlement_fias_id"];
 
-  optional string city_with_type = 6 [json_name = "city_with_type"];
-  optional string region_with_type = 7 [json_name = "region_with_type"];
-  optional string settlement_with_type = 8 [json_name = "settlement_with_type"];
+  optional string city_with_type = 4 [json_name = "city_with_type"];
+  optional string region_with_type = 5 [json_name = "region_with_type"];
+  optional string settlement_with_type = 6 [json_name = "settlement_with_type"];
 
   // Из geo_lat/geo_lon DaData. При null/некорректных координатах отсутствует целиком.
   // Фронт предлагает поставить точку вручную, нули не подставляются.
-  GeoPoint point = 4 [json_name = "point"];
+  GeoPoint point = 7 [json_name = "point"];
   // Исходный код DaData: 0 — точно, 1 — ближайший дом, 2 — улица,
   // 3 — населённый пункт, 4 — город, 5 — не определены; null остаётся отсутствием.
-  optional int32 qc_geo = 5 [json_name = "qc_geo"];
+  optional int32 qc_geo = 8 [json_name = "qc_geo"];
 }
 
 message SuggestAddressesResponse {

@@ -19,15 +19,15 @@ service AdminService {
 message AdminVolunteer {
   string id = 1 [json_name = "id"];
 
-  string avatar_url = 8 [json_name = "avatar_url"];
-  string first_name = 2 [json_name = "first_name"];
-  string last_name = 3 [json_name = "last_name"];
-  string middle_name = 4 [json_name = "middle_name"];
+  string avatar_url = 2 [json_name = "avatar_url"];
+  string first_name = 3 [json_name = "first_name"];
+  string last_name = 4 [json_name = "last_name"];
+  string middle_name = 5 [json_name = "middle_name"];
 
-  string email_address = 5 [json_name = "email_address"];
-  string phone_number = 6 [json_name = "phone_number"];
+  string email_address = 6 [json_name = "email_address"];
+  string phone_number = 7 [json_name = "phone_number"];
 
-  bool has_coordinator_profile = 7 [json_name = "has_coordinator_profile"];
+  bool has_coordinator_profile = 8 [json_name = "has_coordinator_profile"];
 }
 
 message FindVolunteersRequest {
@@ -54,15 +54,15 @@ message FindVolunteersResponse {
 
 message CreateCoordinatorRequest {
   // Обязательный внутренний ID существующего волонтёра.
-  string volunteer_id = 7 [json_name = "volunteer_id"];
+  string volunteer_id = 1 [json_name = "volunteer_id"];
 
   // Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
   // Файл обязан существовать и принадлежать этому участнику.
-  string avatar_path = 5 [json_name = "avatar_path"];
-  string description = 4 [json_name = "description"];
+  string avatar_path = 2 [json_name = "avatar_path"];
+  string description = 3 [json_name = "description"];
 
   // Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
-  optional int64 cooperation_request_cooldown_seconds = 6 [json_name = "cooperation_request_cooldown_seconds"];
+  optional int64 cooperation_request_cooldown_seconds = 4 [json_name = "cooperation_request_cooldown_seconds"];
 }
 
 message CreateCoordinatorResponse {

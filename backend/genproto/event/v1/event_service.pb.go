@@ -206,22 +206,24 @@ type Event struct {
 	// Неизменяемый идентификатор создавшего мероприятие координатора.
 	CoordinatorId string `protobuf:"bytes,2,opt,name=coordinator_id,proto3" json:"coordinator_id,omitempty"`
 	Description   string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Title         string `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	// Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
+	ImageUrl string `protobuf:"bytes,4,opt,name=image_url,proto3" json:"image_url,omitempty"`
+	Title    string `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
 	// Дополнительное текстовое описание места; область поиска определяется точкой.
-	Location string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
+	Location string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
 	// Обязательная точка на карте, WGS84; не выводится из location на сервере.
-	Point    *v1.GeoPoint           `protobuf:"bytes,16,opt,name=point,proto3" json:"point,omitempty"`
-	StartsAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=starts_at,proto3" json:"starts_at,omitempty"`
-	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=ends_at,proto3" json:"ends_at,omitempty"`
+	Point    *v1.GeoPoint           `protobuf:"bytes,7,opt,name=point,proto3" json:"point,omitempty"`
+	StartsAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=starts_at,proto3" json:"starts_at,omitempty"`
+	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=ends_at,proto3" json:"ends_at,omitempty"`
 	// Все перечисленные требования обязательны одновременно; пустой список означает отсутствие требований.
 	// Не более одного возрастного порога. Повторы, неизвестные значения и UNSPECIFIED недопустимы.
-	CandidateRequirements []EventCandidateRequirement `protobuf:"varint,13,rep,packed,name=candidate_requirements,proto3,enum=event.v1.EventCandidateRequirement" json:"candidate_requirements,omitempty"`
+	CandidateRequirements []EventCandidateRequirement `protobuf:"varint,10,rep,packed,name=candidate_requirements,proto3,enum=event.v1.EventCandidateRequirement" json:"candidate_requirements,omitempty"`
 	// Больше нуля. Ожидающие одобрения заявки места не занимают.
-	VolunteerLimit int32       `protobuf:"varint,8,opt,name=volunteer_limit,proto3" json:"volunteer_limit,omitempty"`
+	VolunteerLimit int32       `protobuf:"varint,11,opt,name=volunteer_limit,proto3" json:"volunteer_limit,omitempty"`
 	Status         EventStatus `protobuf:"varint,12,opt,name=status,proto3,enum=event.v1.EventStatus" json:"status,omitempty"`
 	// Вычисляемые счётчики текущих записей; клиент не может их изменять.
-	ApprovedParticipantCount int32 `protobuf:"varint,14,opt,name=approved_participant_count,proto3" json:"approved_participant_count,omitempty"`
-	PendingApplicationCount  int32 `protobuf:"varint,15,opt,name=pending_application_count,proto3" json:"pending_application_count,omitempty"`
+	ApprovedParticipantCount int32 `protobuf:"varint,13,opt,name=approved_participant_count,proto3" json:"approved_participant_count,omitempty"`
+	PendingApplicationCount  int32 `protobuf:"varint,14,opt,name=pending_application_count,proto3" json:"pending_application_count,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -273,6 +275,13 @@ func (x *Event) GetCoordinatorId() string {
 func (x *Event) GetDescription() string {
 	if x != nil {
 		return x.Description
+	}
+	return ""
+}
+
+func (x *Event) GetImageUrl() string {
+	if x != nil {
+		return x.ImageUrl
 	}
 	return ""
 }
@@ -397,20 +406,23 @@ func (x *EventCandidateRequirements) GetValues() []EventCandidateRequirement {
 type CreateEventRequest struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Description string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	// Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
+	// Файл обязан существовать и принадлежать ему.
+	ImagePath string `protobuf:"bytes,2,opt,name=image_path,proto3" json:"image_path,omitempty"`
 	// Обязательное непустое название.
 	Title    string       `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	Location string       `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
-	Point    *v1.GeoPoint `protobuf:"bytes,11,opt,name=point,proto3" json:"point,omitempty"`
+	Location string       `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
+	Point    *v1.GeoPoint `protobuf:"bytes,5,opt,name=point,proto3" json:"point,omitempty"`
 	// Обе даты обязательны. Начало в будущем и строго раньше окончания.
 	// Разность ends_at - starts_at положительна и кратна ровно 1800 секундам.
-	StartsAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=starts_at,proto3" json:"starts_at,omitempty"`
-	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=ends_at,proto3" json:"ends_at,omitempty"`
+	StartsAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=starts_at,proto3" json:"starts_at,omitempty"`
+	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=ends_at,proto3" json:"ends_at,omitempty"`
 	// Пустой список означает отсутствие требований; все заданные требования применяются одновременно.
 	// Допустим не более одного возрастного порога.
 	// Повторы, неизвестные значения и UNSPECIFIED означают InvalidArgument.
-	CandidateRequirements []EventCandidateRequirement `protobuf:"varint,10,rep,packed,name=candidate_requirements,proto3,enum=event.v1.EventCandidateRequirement" json:"candidate_requirements,omitempty"`
+	CandidateRequirements []EventCandidateRequirement `protobuf:"varint,8,rep,packed,name=candidate_requirements,proto3,enum=event.v1.EventCandidateRequirement" json:"candidate_requirements,omitempty"`
 	// Больше нуля.
-	VolunteerLimit int32 `protobuf:"varint,6,opt,name=volunteer_limit,proto3" json:"volunteer_limit,omitempty"`
+	VolunteerLimit int32 `protobuf:"varint,9,opt,name=volunteer_limit,proto3" json:"volunteer_limit,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -448,6 +460,13 @@ func (*CreateEventRequest) Descriptor() ([]byte, []int) {
 func (x *CreateEventRequest) GetDescription() string {
 	if x != nil {
 		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateEventRequest) GetImagePath() string {
+	if x != nil {
+		return x.ImagePath
 	}
 	return ""
 }
@@ -637,31 +656,31 @@ type ListEventsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательно: UNSPECIFIED/неизвестное значение — InvalidArgument.
 	// Наличие Coordinator не меняет scope автоматически.
-	Scope EventListScope `protobuf:"varint,11,opt,name=scope,proto3,enum=event.v1.EventListScope" json:"scope,omitempty"`
+	Scope EventListScope `protobuf:"varint,1,opt,name=scope,proto3,enum=event.v1.EventListScope" json:"scope,omitempty"`
 	// Дополнительный фильтр внутри доступного каталога; не расширяет права доступа.
 	// При передаче должен быть непустым.
-	CoordinatorId *string `protobuf:"bytes,1,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
+	CoordinatorId *string `protobuf:"bytes,2,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
 	// Для CATALOG обязательно; для OWNED необязательный фильтр своих мероприятий.
 	// Сервер применяет область вместе с правами и всеми остальными фильтрами до пагинации.
-	SearchArea *v1.SearchArea `protobuf:"bytes,8,opt,name=search_area,proto3" json:"search_area,omitempty"`
+	SearchArea *v1.SearchArea `protobuf:"bytes,3,opt,name=search_area,proto3" json:"search_area,omitempty"`
 	// Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
-	Status *EventStatus `protobuf:"varint,2,opt,name=status,proto3,enum=event.v1.EventStatus,oneof" json:"status,omitempty"`
+	Status *EventStatus `protobuf:"varint,4,opt,name=status,proto3,enum=event.v1.EventStatus,oneof" json:"status,omitempty"`
 	// Интервал начала мероприятия: from включительно, to исключительно.
 	// Каждая граница необязательна; при наличии обеих from должен быть меньше to.
-	StartsAtFrom *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=starts_at_from,proto3,oneof" json:"starts_at_from,omitempty"`
-	StartsAtTo   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=starts_at_to,proto3,oneof" json:"starts_at_to,omitempty"`
+	StartsAtFrom *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=starts_at_from,proto3,oneof" json:"starts_at_from,omitempty"`
+	StartsAtTo   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=starts_at_to,proto3,oneof" json:"starts_at_to,omitempty"`
 	// Интервал окончания: from включительно, to исключительно.
 	// Каждая граница необязательна; при наличии обеих from должен быть меньше to.
 	// Например, ends_at_to = now выбирает уже закончившиеся по времени мероприятия,
 	// в том числе PUBLISHED без подведённых итогов. Все заданные фильтры применяются вместе.
-	EndsAtFrom *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=ends_at_from,proto3,oneof" json:"ends_at_from,omitempty"`
-	EndsAtTo   *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=ends_at_to,proto3,oneof" json:"ends_at_to,omitempty"`
+	EndsAtFrom *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=ends_at_from,proto3,oneof" json:"ends_at_from,omitempty"`
+	EndsAtTo   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=ends_at_to,proto3,oneof" json:"ends_at_to,omitempty"`
 	// 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-	Limit int32 `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	Limit int32 `protobuf:"varint,9,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
-	Offset        int64 `protobuf:"varint,7,opt,name=offset,proto3" json:"offset,omitempty"`
+	Offset        int64 `protobuf:"varint,10,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -772,7 +791,7 @@ type ListEventsResponse struct {
 	Events []*Event `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -831,22 +850,26 @@ type UpdateEventRequest struct {
 	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Пустая строка очищает описание или место проведения.
 	Description *string `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// Отсутствует — сохранить; пустая строка — убрать изображение.
+	// Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
+	// Действует общий запрет правок при наличии PENDING/APPROVED или после начала.
+	ImagePath *string `protobuf:"bytes,3,opt,name=image_path,proto3,oneof" json:"image_path,omitempty"`
 	// Пустая строка недопустима.
 	Title    *string      `protobuf:"bytes,4,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	Location *string      `protobuf:"bytes,3,opt,name=location,proto3,oneof" json:"location,omitempty"`
-	Point    *v1.GeoPoint `protobuf:"bytes,12,opt,name=point,proto3" json:"point,omitempty"`
+	Location *string      `protobuf:"bytes,5,opt,name=location,proto3,oneof" json:"location,omitempty"`
+	Point    *v1.GeoPoint `protobuf:"bytes,6,opt,name=point,proto3" json:"point,omitempty"`
 	// Даты нельзя менять при наличии PENDING или APPROVED.
 	// Итоговое начало должно оставаться в будущем и строго раньше окончания.
 	// После применения всех изменений разность ends_at - starts_at должна быть
 	// положительной и кратной ровно 1800 секундам, как при создании. Проверяются
 	// итоговые даты, даже если передана только одна граница; нарушение — InvalidArgument.
-	StartsAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=starts_at,proto3,oneof" json:"starts_at,omitempty"`
-	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=ends_at,proto3,oneof" json:"ends_at,omitempty"`
+	StartsAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=starts_at,proto3,oneof" json:"starts_at,omitempty"`
+	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=ends_at,proto3,oneof" json:"ends_at,omitempty"`
 	// Отсутствие поля оставляет требования без изменений; переданный объект полностью заменяет список.
 	// Объект с пустым values очищает требования. Нельзя менять при наличии PENDING или APPROVED.
-	CandidateRequirements *EventCandidateRequirements `protobuf:"bytes,11,opt,name=candidate_requirements,proto3,oneof" json:"candidate_requirements,omitempty"`
+	CandidateRequirements *EventCandidateRequirements `protobuf:"bytes,9,opt,name=candidate_requirements,proto3,oneof" json:"candidate_requirements,omitempty"`
 	// Больше нуля. Вся команда запрещена при наличии PENDING/APPROVED.
-	VolunteerLimit *int32 `protobuf:"varint,7,opt,name=volunteer_limit,proto3,oneof" json:"volunteer_limit,omitempty"`
+	VolunteerLimit *int32 `protobuf:"varint,10,opt,name=volunteer_limit,proto3,oneof" json:"volunteer_limit,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -891,6 +914,13 @@ func (x *UpdateEventRequest) GetId() string {
 func (x *UpdateEventRequest) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateEventRequest) GetImagePath() string {
+	if x != nil && x.ImagePath != nil {
+		return *x.ImagePath
 	}
 	return ""
 }
@@ -1070,13 +1100,13 @@ type isEventParticipationResult_Outcome interface {
 }
 
 type EventParticipationResult_Absent struct {
-	Absent bool `protobuf:"varint,3,opt,name=absent,proto3,oneof"`
+	Absent bool `protobuf:"varint,2,opt,name=absent,proto3,oneof"`
 }
 
 type EventParticipationResult_ConfirmedMinutes struct {
 	// Положительное кратное 30; может превышать плановую длительность мероприятия.
 	// Сервер начисляет confirmed_minutes / 30 * 5 целых коинов, проверяя переполнение.
-	ConfirmedMinutes int64 `protobuf:"varint,2,opt,name=confirmed_minutes,proto3,oneof"`
+	ConfirmedMinutes int64 `protobuf:"varint,3,opt,name=confirmed_minutes,proto3,oneof"`
 }
 
 func (*EventParticipationResult_Absent) isEventParticipationResult_Outcome() {}
@@ -1086,12 +1116,12 @@ func (*EventParticipationResult_ConfirmedMinutes) isEventParticipationResult_Out
 type CompleteEventRequest struct {
 	state   protoimpl.MessageState      `protogen:"open.v1"`
 	Id      string                      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Results []*EventParticipationResult `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	Results []*EventParticipationResult `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
 	// Обязательный ключ, уникальный для координатора и RPC. Повтор того же содержимого
 	// (порядок строк незначим) возвращает исходный результат без новых начислений.
 	// Другой payload с тем же ключом — AlreadyExists.
 	// Другой ключ для уже COMPLETED мероприятия — FailedPrecondition.
-	RequestId     string `protobuf:"bytes,4,opt,name=request_id,proto3" json:"request_id,omitempty"`
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1195,33 +1225,37 @@ var File_event_v1_event_service_proto protoreflect.FileDescriptor
 
 const file_event_v1_event_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1cevent/v1/event_service.proto\x12\bevent.v1\x1a\x18geo/v1/geo_service.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x04\n" +
+	"\x1cevent/v1/event_service.proto\x12\bevent.v1\x1a\x18geo/v1/geo_service.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x04\n" +
 	"\x05Event\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
 	"\x0ecoordinator_id\x18\x02 \x01(\tR\x0ecoordinator_id\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1c\n" +
+	"\timage_url\x18\x04 \x01(\tR\timage_url\x12\x14\n" +
 	"\x05title\x18\x05 \x01(\tR\x05title\x12\x1a\n" +
-	"\blocation\x18\x04 \x01(\tR\blocation\x12&\n" +
-	"\x05point\x18\x10 \x01(\v2\x10.geo.v1.GeoPointR\x05point\x128\n" +
-	"\tstarts_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tstarts_at\x124\n" +
-	"\aends_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\aends_at\x12[\n" +
-	"\x16candidate_requirements\x18\r \x03(\x0e2#.event.v1.EventCandidateRequirementR\x16candidate_requirements\x12(\n" +
-	"\x0fvolunteer_limit\x18\b \x01(\x05R\x0fvolunteer_limit\x12-\n" +
-	"\x06status\x18\f \x01(\x0e2\x15.event.v1.EventStatusR\x06status\x12>\n" +
-	"\x1aapproved_participant_count\x18\x0e \x01(\x05R\x1aapproved_participant_count\x12<\n" +
-	"\x19pending_application_count\x18\x0f \x01(\x05R\x19pending_application_count\"Y\n" +
-	"\x1aEventCandidateRequirements\x12;\n" +
-	"\x06values\x18\x01 \x03(\x0e2#.event.v1.EventCandidateRequirementR\x06values\"\x87\x03\n" +
-	"\x12CreateEventRequest\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05title\x18\x03 \x01(\tR\x05title\x12\x1a\n" +
-	"\blocation\x18\x02 \x01(\tR\blocation\x12&\n" +
-	"\x05point\x18\v \x01(\v2\x10.geo.v1.GeoPointR\x05point\x128\n" +
-	"\tstarts_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstarts_at\x124\n" +
-	"\aends_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aends_at\x12[\n" +
+	"\blocation\x18\x06 \x01(\tR\blocation\x12&\n" +
+	"\x05point\x18\a \x01(\v2\x10.geo.v1.GeoPointR\x05point\x128\n" +
+	"\tstarts_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tstarts_at\x124\n" +
+	"\aends_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\aends_at\x12[\n" +
 	"\x16candidate_requirements\x18\n" +
 	" \x03(\x0e2#.event.v1.EventCandidateRequirementR\x16candidate_requirements\x12(\n" +
-	"\x0fvolunteer_limit\x18\x06 \x01(\x05R\x0fvolunteer_limit\"%\n" +
+	"\x0fvolunteer_limit\x18\v \x01(\x05R\x0fvolunteer_limit\x12-\n" +
+	"\x06status\x18\f \x01(\x0e2\x15.event.v1.EventStatusR\x06status\x12>\n" +
+	"\x1aapproved_participant_count\x18\r \x01(\x05R\x1aapproved_participant_count\x12<\n" +
+	"\x19pending_application_count\x18\x0e \x01(\x05R\x19pending_application_count\"Y\n" +
+	"\x1aEventCandidateRequirements\x12;\n" +
+	"\x06values\x18\x01 \x03(\x0e2#.event.v1.EventCandidateRequirementR\x06values\"\xa7\x03\n" +
+	"\x12CreateEventRequest\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x1e\n" +
+	"\n" +
+	"image_path\x18\x02 \x01(\tR\n" +
+	"image_path\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x1a\n" +
+	"\blocation\x18\x04 \x01(\tR\blocation\x12&\n" +
+	"\x05point\x18\x05 \x01(\v2\x10.geo.v1.GeoPointR\x05point\x128\n" +
+	"\tstarts_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tstarts_at\x124\n" +
+	"\aends_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\aends_at\x12[\n" +
+	"\x16candidate_requirements\x18\b \x03(\x0e2#.event.v1.EventCandidateRequirementR\x16candidate_requirements\x12(\n" +
+	"\x0fvolunteer_limit\x18\t \x01(\x05R\x0fvolunteer_limit\"%\n" +
 	"\x13CreateEventResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"!\n" +
 	"\x0fGetEventRequest\x12\x0e\n" +
@@ -1229,19 +1263,19 @@ const file_event_v1_event_service_proto_rawDesc = "" +
 	"\x10GetEventResponse\x12%\n" +
 	"\x05event\x18\x01 \x01(\v2\x0f.event.v1.EventR\x05event\"\xfe\x04\n" +
 	"\x11ListEventsRequest\x12.\n" +
-	"\x05scope\x18\v \x01(\x0e2\x18.event.v1.EventListScopeR\x05scope\x12+\n" +
-	"\x0ecoordinator_id\x18\x01 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x124\n" +
-	"\vsearch_area\x18\b \x01(\v2\x12.geo.v1.SearchAreaR\vsearch_area\x122\n" +
-	"\x06status\x18\x02 \x01(\x0e2\x15.event.v1.EventStatusH\x01R\x06status\x88\x01\x01\x12G\n" +
-	"\x0estarts_at_from\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\x0estarts_at_from\x88\x01\x01\x12C\n" +
-	"\fstarts_at_to\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\fstarts_at_to\x88\x01\x01\x12C\n" +
-	"\fends_at_from\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x04R\fends_at_from\x88\x01\x01\x12?\n" +
+	"\x05scope\x18\x01 \x01(\x0e2\x18.event.v1.EventListScopeR\x05scope\x12+\n" +
+	"\x0ecoordinator_id\x18\x02 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x124\n" +
+	"\vsearch_area\x18\x03 \x01(\v2\x12.geo.v1.SearchAreaR\vsearch_area\x122\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x15.event.v1.EventStatusH\x01R\x06status\x88\x01\x01\x12G\n" +
+	"\x0estarts_at_from\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\x0estarts_at_from\x88\x01\x01\x12C\n" +
+	"\fstarts_at_to\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\fstarts_at_to\x88\x01\x01\x12C\n" +
+	"\fends_at_from\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x04R\fends_at_from\x88\x01\x01\x12?\n" +
 	"\n" +
-	"ends_at_to\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampH\x05R\n" +
+	"ends_at_to\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x05R\n" +
 	"ends_at_to\x88\x01\x01\x12\x14\n" +
-	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\a \x01(\x03R\x06offsetB\x11\n" +
+	"\x05limit\x18\t \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\n" +
+	" \x01(\x03R\x06offsetB\x11\n" +
 	"\x0f_coordinator_idB\t\n" +
 	"\a_statusB\x11\n" +
 	"\x0f_starts_at_fromB\x0f\n" +
@@ -1250,18 +1284,23 @@ const file_event_v1_event_service_proto_rawDesc = "" +
 	"\v_ends_at_to\"_\n" +
 	"\x12ListEventsResponse\x12'\n" +
 	"\x06events\x18\x01 \x03(\v2\x0f.event.v1.EventR\x06events\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\xab\x04\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\xdf\x04\n" +
 	"\x12UpdateEventRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x19\n" +
-	"\x05title\x18\x04 \x01(\tH\x01R\x05title\x88\x01\x01\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tH\x02R\blocation\x88\x01\x01\x12&\n" +
-	"\x05point\x18\f \x01(\v2\x10.geo.v1.GeoPointR\x05point\x12=\n" +
-	"\tstarts_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\tstarts_at\x88\x01\x01\x129\n" +
-	"\aends_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x04R\aends_at\x88\x01\x01\x12a\n" +
-	"\x16candidate_requirements\x18\v \x01(\v2$.event.v1.EventCandidateRequirementsH\x05R\x16candidate_requirements\x88\x01\x01\x12-\n" +
-	"\x0fvolunteer_limit\x18\a \x01(\x05H\x06R\x0fvolunteer_limit\x88\x01\x01B\x0e\n" +
-	"\f_descriptionB\b\n" +
+	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12#\n" +
+	"\n" +
+	"image_path\x18\x03 \x01(\tH\x01R\n" +
+	"image_path\x88\x01\x01\x12\x19\n" +
+	"\x05title\x18\x04 \x01(\tH\x02R\x05title\x88\x01\x01\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tH\x03R\blocation\x88\x01\x01\x12&\n" +
+	"\x05point\x18\x06 \x01(\v2\x10.geo.v1.GeoPointR\x05point\x12=\n" +
+	"\tstarts_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x04R\tstarts_at\x88\x01\x01\x129\n" +
+	"\aends_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x05R\aends_at\x88\x01\x01\x12a\n" +
+	"\x16candidate_requirements\x18\t \x01(\v2$.event.v1.EventCandidateRequirementsH\x06R\x16candidate_requirements\x88\x01\x01\x12-\n" +
+	"\x0fvolunteer_limit\x18\n" +
+	" \x01(\x05H\aR\x0fvolunteer_limit\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\r\n" +
+	"\v_image_pathB\b\n" +
 	"\x06_titleB\v\n" +
 	"\t_locationB\f\n" +
 	"\n" +
@@ -1274,14 +1313,14 @@ const file_event_v1_event_service_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x9b\x01\n" +
 	"\x18EventParticipationResult\x12*\n" +
 	"\x10participation_id\x18\x01 \x01(\tR\x10participation_id\x12\x18\n" +
-	"\x06absent\x18\x03 \x01(\bH\x00R\x06absent\x12.\n" +
-	"\x11confirmed_minutes\x18\x02 \x01(\x03H\x00R\x11confirmed_minutesB\t\n" +
+	"\x06absent\x18\x02 \x01(\bH\x00R\x06absent\x12.\n" +
+	"\x11confirmed_minutes\x18\x03 \x01(\x03H\x00R\x11confirmed_minutesB\t\n" +
 	"\aoutcome\"\x84\x01\n" +
 	"\x14CompleteEventRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12<\n" +
-	"\aresults\x18\x03 \x03(\v2\".event.v1.EventParticipationResultR\aresults\x12\x1e\n" +
+	"\aresults\x18\x02 \x03(\v2\".event.v1.EventParticipationResultR\aresults\x12\x1e\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\n" +
+	"request_id\x18\x03 \x01(\tR\n" +
 	"request_id\">\n" +
 	"\x15CompleteEventResponse\x12%\n" +
 	"\x05event\x18\x01 \x01(\v2\x0f.event.v1.EventR\x05event*\x7f\n" +

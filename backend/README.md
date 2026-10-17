@@ -1,151 +1,194 @@
 # Backend
 
-Go backend проекта. Модуль объявлен в `go.mod`, сгенерированные ConnectRPC-пакеты находятся в `genproto/`.
+Go-монолит с ConnectRPC, PostgreSQL, pgx и Squirrel. Реализованы все методы текущих proto:
+сессии и вход через Flida, профили, административное создание координатора,
+сотрудничество и приглашения, мероприятия и заявки, кошелёк, поощрения и заказы,
+чат, геопоиск и загрузка изображений.
 
-Исполняемые приложения размещаются в `cmd/`, внутренняя реализация — в `internal/`.
+Правила предметной области: [domain-design](../docs/domain-design.md).
+Состояние реализации и проверки: [backend-implementation](../docs/backend-implementation.md).
 
-Реализован модуль Session: агрегат, сервисы `app`, Connect RPC,
-аутентификация сессии, PostgreSQL-репозиторий на pgx/Squirrel и миграция `migrations/00001_sessions.sql`.
-Пользователь в сессии представлен общим `user_id`; роли в ней не хранятся.
-Логика UUIDv7 перенесена из Flida в локальный пакет `internal/pkg/types/uuid-v7`.
-ID сессии и пользователя используют этот пакет.
+## Запуск
 
-Каждая доменная модель размещается в собственной директории: `session-id`,
-`user-id`. Поля приватные, чтение — через методы.
-Конструкторы моделей вызывают `Validate`; доменные ошибки находятся в агрегате,
-интерфейс репозитория и его ошибки — в `domain/aggregate/session/repository.go`.
-Агрегат хранит отдельные значения и изменяется командами открытия и авторизации.
-Сервис закрытия удаляет запись через репозиторий; повторное удаление успешно.
-Состояние закрытия, дата закрытия и отдельный ключ сессии не хранятся.
-Для каждого типа используется один вид receiver; имя receiver — `x`.
-После типа идут его методы, затем обработчики команд; конструктор располагается в конце.
-Доменные ошибки объявляются сразу после импортов.
-Тексты ошибок пишутся в нижнем регистре, включая сокращения `id`, `uuid` и `sql`.
-При обработке ошибок каждой ошибке соответствует отдельный `case`, даже если результат одинаков.
-`NewInvalidArgumentError` всегда получает заполненный `BadRequest` с полем и причиной ошибки.
-Входные параметры функций и методов всегда именуются, включая методы интерфейсов.
-У каждого параметра явно указывается тип; в многострочных сигнатурах каждый параметр идёт отдельной строкой.
-В литералах структур с несколькими полями каждое поле записывается на отдельной строке.
-Сервисы принимают `ctx, r Request`; `Request.Validate` вызывается в начале сервиса.
-Конструкторы запросов только собирают DTO. Поля запросов приватные, чтение — через геттеры.
+Из каталога `backend`:
 
-Команды — контейнеры валидных входных данных с приватными полями и геттерами.
-Их конструкторы только собирают значения, не вызывают `Validate` и не возвращают ошибку.
-Агрегат принимает команды через публичные `Open` и `Authenticate`, без общего `Execute`.
-Эти методы проверяют допустимость перехода из текущего состояния сессии.
-Конструкторы агрегата принимают валидные модели, только собирают объект и не возвращают ошибку.
-`NewSessionFromFields` восстанавливает агрегат из полей и размещается после `NewSession`.
-У агрегата и команд нет метода `Validate`: этот метод используется у моделей и запросов сервисов.
-SQL отвечает за сохранение и чтение, без бизнес-проверок `CHECK`.
-
-Механизм context и cookie повторяет Flida: `authn.SetInfo/GetInfo`,
-`go.flida.dev/cookies`, cookie `__Secure-SID` и шифрование PASETO v4.local.
-В cookie находится защищённый `session_id`, отдельного ключа сессии нет.
-PASETO проверяет `iat`, `nbf` и `exp` относительно текущего времени при каждом чтении.
-Работа с токенами перенесена локально из Flida: `internal/pkg/token` содержит generic-интерфейсы
-`Service[T]`, `Encryptor[T]`, `Decryptor[T]` и модель `EncryptedToken` с приватным значением.
-`internal/pkg/token/paseto` реализует шифрование; `internal/pkg/session/token` определяет
-payload с ID сессии и датами, преобразование в PASETO и фабрику `PASETO`.
-В cookie передаётся `EncryptedToken.String()`, при чтении — `NewEncryptedToken(cookie.Value)`.
-В context передаётся `*aggregate_session.Session`, без отдельной проекции и CQRS. Состояние и срок сессии
-проверяются по PostgreSQL через `Authentication` в `internal/pkg/session/authentication/interceptor`.
-Как во Flida, его `Authenticate(ctx, r *http.Request) (any, error)` передаётся в `authn.NewMiddleware`.
-Middleware помещает возвращённый агрегат в context; RPC проверяет наличие применимой сессии.
-Режимы RPC перечислены в `authModeByProcedure`: анонимная, авторизованная или любая действующая сессия.
-Open/Close допускают отсутствие сессии; Get требует действующую, Authenticate — анонимную,
-UploadImage — авторизованную. Неизвестные RPC и AdminService через этот listener получают NotFound.
-Раздача `/storage/` публичная. Проверки `Origin`, Bearer-входа и фонового опроса сессий нет.
-Middleware проверяет стрим при открытии; дальнейший отзыв доступа реализуется в будущем чат-сервисе.
-
-API следует структуре Flida: фасад `Service`, отдельный `RPC` для каждой ручки и пакет `serde`.
-Сессионный агрегат доступен через `session_context.GetSession`; RPC преобразует ошибки своего сервиса.
-`OpenSession` и `AuthenticateSession` возвращают `google.protobuf.Empty` и устанавливают cookie.
-`OpenSession`, `GetSession` и `CloseSession` принимают `google.protobuf.Empty`.
-Их `Request` в `app` также пустые; сервисы сами получают текущий агрегат из context.
-Повторно загружать сессию из БД для Open/Get не требуется: её уже проверил Authentication.
-Open/Authenticate возвращают `token.EncryptedToken`; RPC передаёт его `.String()` в `cookies.Service.SetCookie`.
-Пакет `session/cookie` содержит только имя `__Secure-SID`, обёртки Manager нет.
-Действующая сессия при `OpenSession` сохраняется. Данные кабинета читает `GetSession`;
-наличие профиля координатора вычисляется заново, срок сессии не продлевается.
-Признак профиля координатора находится в DTO `service_get_session.Response`, а не в агрегате Session.
-`Request` и `Response` каждого сервиса размещаются в его `dto.go`.
-Интерфейсы зависимостей и ошибки объявляются в сервисах, которые их используют; общего `service_session` нет.
-
-Авторизация создаёт агрегат с новым `session_id`, а прежнюю анонимную запись удаляет
-в одной транзакции PostgreSQL через `Client.InTx(ctx, func(ctx context.Context) error)`.
-Сетевая проверка личности выполняется до транзакции. Повторной загрузки сессии и `FOR UPDATE` нет:
-для демо не реализуются специальные сценарии параллельных запросов.
-Репозиторий выполняет только `INSERT`, `SELECT`, `UPDATE`, `DELETE` и преобразование данных.
-Решения о допустимости входа, сроке сессии и удалении записи принимаются в `app`.
-
-Клиент `internal/infra/client/postgresql` оборачивает `pgxpool.Pool`.
-Его `Exec`, `Query`, `QueryRow` используют транзакцию из context, если она есть, иначе пул.
-`InTx` передаёт транзакцию через context; commit и rollback выполняет `pgx.BeginFunc`.
-При сборке зависимостей один клиент передаётся в `NewSessions` и в сервис авторизации как `Transactor`.
-Внутри callback репозиторий вызывается с полученным context. Вложенные транзакции не используются.
-
-Регистрация пользователей и проверка Flida пока представлены портом `service_authenticate_session.Authenticator`.
-Его реализация должна проверять подпись, `iss`, `aud`, `exp` и применимые OIDC claims,
-находить участника по `(iss, sub)` или регистрировать его вместе с нулевым кошельком.
-Неполный профиль при первой регистрации возвращает `ErrIncompleteProfile`, неверный токен — `ErrInvalidIDToken`.
-Наличие координаторского профиля предоставляет порт `service_get_session.CoordinatorReader`.
-Другие агрегаты и запуск сервера пока не реализованы.
-
-Собранный API регистрируется через сгенерированный `session_v1connect.NewSessionServiceHandler`.
-Как во Flida, HTTP router оборачивается в библиотечный middleware:
-
-```go
-parser := paseto.MakeParser([]paseto.Rule{paseto_rules.ValidNow()})
-tokens := session_token.PASETO(key, parser, sessionTTL)
-authentication := session_authentication_interceptor.NewAuthentication(cookiesService, repository, tokens)
-handler := authn.NewMiddleware(authentication.Authenticate).Wrap(mux)
+```sh
+cp .env.example .env
+sh scripts/generate-keys.sh
+sh scripts/fetch-cities.sh
+docker compose up -d postgres
 ```
 
-`paseto_rules` — локальный пакет `internal/pkg/paseto`, как `pkg/paseto` во Flida.
-Один `token.Service[session_token.Token]` передаётся сервисам Open/Authenticate как Encryptor,
-а Authentication — как Decryptor. Payload берёт даты из агрегата: TTL общего PASETO-сервиса
-не продлевает существующую сессию.
+Перенесите сгенерированные `SESSION_TOKEN_V4_SYMMETRIC_KEY`, `DATA_ENCRYPTION_KEY`, `ADMIN_API_KEY` в `.env`.
+Укажите `FLIDA_ISSUER` и `FLIDA_CLIENT_ID` своего приложения. Flida должна отдавать
+OIDC discovery/JWKS и ID token с данными профиля. Ключи DaData и администратора
+остаются только на сервере.
 
-Для Open/Authenticate передаётся `cookies.Service` с `WithHTTPOnly`, `WithSecure`, `WithPath("/")`,
-`WithSameSite` и `WithMaxAge` из конфигурации. Срок сессии всё равно ограничивается expires_at
-в PostgreSQL и PASETO: повторный Open не продлевает серверный срок.
-Close получает отдельный `expiredCookiesService` с теми же параметрами имени, Domain и Path,
-но `WithMaxAge(-time.Second)`, чтобы удалить cookie через `SetCookie(header, "")`.
+Конфигурация находится в `internal/config`, по подходу Flida: `caarlos0/env`,
+разделы с `envPrefix`, `ParseOptions` для типизированных ключей PASETO/AES.
+Переменные используют префиксы `POSTGRESQL_`, `HTTP_SERVER_`, `ADMIN_HTTP_SERVER_`,
+`FLIDA_`, `SESSION_TOKEN_`, `STORAGE_`, `CITY_CATALOG_`, `DADATA_`; актуальные имена — в `.env.example`.
+Поля Config и вложенных секций публичные, теги `env`/`envPrefix` стоят прямо на них.
+Точки входа заполняют Config через `env.ParseWithOptions(&cfg, config.ParseOptions())`,
+затем вызывают Validate. Промежуточного environment, геттеров и NewConfig нет.
+Сервер ожидает переменные окружения; `.env` сам не читает:
 
-## Изображения
-
-Добавлен `ImageService.UploadImage`: авторизованный участник загружает JPEG/PNG до 5 МиБ
-и до 4096 пикселей по каждой стороне. `ImageData` проверяет содержимое и размеры;
-`ImagePath` содержит UUIDv7 владельца и файла, расширение определяется сервером.
-`service_upload_image` сохраняет файл через порт `Storage`, его локальный адаптер —
-`internal/infra/client/image-storage`. Новых агрегатов и таблиц для файлов нет.
-
-Папка задаётся в `client_image_storage.NewClient("./storage")`. Файлы размещаются
-в `storage/{user_id}/{image_id}.jpg` или `.png`. Папка исключена из Git и должна
-сохраняться между запусками; в контейнере ей нужен volume.
-
-При сборке HTTP listener зарегистрировать сгенерированный `NewImageServiceHandler`
-с `connect.WithReadMaxBytes(8 << 20)` на router, обёрнутом в общий `authn.NewMiddleware`.
-Зависимости: локальный клиент → `service_upload_image.NewService` → `NewRPC` → API `NewService`.
-Публичную раздачу той же папки подключить к mux:
-
-```go
-mux.Handle("/storage/", http.StripPrefix("/storage/", http.FileServer(http.Dir("./storage"))))
+```sh
+set -a
+. ./.env
+set +a
+goose -dir migrations postgres "$POSTGRESQL_DSN" up
+go run ./cmd
 ```
 
-Ответ загрузки содержит `image_path` для сохранения в карточке и `image_url` вида `/storage/...`
-для отображения. Новые контракты Volunteer/Coordinator/Reward принимают путь своей загруженной картинки,
-а в ответах возвращают вычисляемые `avatar_url`/`image_url`.
-Сами агрегаты и сервисы карточек ещё не реализованы. При их реализации нужно проверять владельца
-из `ImagePath.GetUserID()` и существование файла перед сохранением привязки.
-Замена/очистка привязки файл не удаляет; фоновой очистки в демо нет.
-Файлы публичные: для демо используются только учебные изображения.
+Миграции применяются вручную через установленный goose, до запуска сервера или seed:
 
-Фронтовой helper: `frontend/utils/helpers/image.helper.ts`. Он отправляет байты с cookie,
-возвращает путь для Create/Update и полный URL картинки, учитывая отдельный origin бэкенда.
+```sh
+goose -dir migrations postgres "$POSTGRESQL_DSN" up
+goose -dir migrations postgres "$POSTGRESQL_DSN" status
+```
 
-Проверка сборки: `go build ./...`. Форматирование и линтер: `golangci-lint fmt` и
-`golangci-lint run ./...`. Конфигурация взята из Flida и адаптирована под модуль
-и ограничение строк в 120 символов. Unit-тесты пока не добавляются.
-Смешанные pointer/value receivers проверяет `recvcheck`.
-Имена параметров интерфейсов проверяет `inamedparam`.
+Одна таблица — одна миграция; версии хранит `goose_db_version`.
+Сервер и seed не меняют схему автоматически. Рабочие запросы выполняются через pgx/Squirrel.
+
+Клиентский listener по умолчанию `:8080`, административный — `127.0.0.1:8081`.
+`GET /healthz` возвращает успешный ответ после сборки приложения.
+Для браузера нужны HTTPS и `credentials: 'include'`: cookie `__Secure-SID` всегда Secure/HttpOnly.
+TLS можно завершать на прокси либо задать `HTTP_SERVER_TLS_CERTIFICATE` и `HTTP_SERVER_TLS_KEY` самому серверу.
+`FRONTEND_URL` задаёт адрес фронта для ссылок приглашения.
+CORS разрешает любой origin с credentials: сервер отражает origin запроса;
+методы и заголовки Connect/gRPC-Web берутся из `connectrpc.com/cors`.
+Cookie имеет `SameSite=None; Secure; HttpOnly`, на фронте нужен `credentials: 'include'`.
+Клиентский listener не предоставляет AdminService.
+
+Для контейнерного запуска заполните `.env`, загрузите справочник и выполните:
+
+```sh
+docker compose --profile app up --build -d
+```
+
+Серверный образ собирается из этого каталога. PostgreSQL и storage используют volumes;
+`data` подключается как каталог только для чтения. HTTPS обеспечьте прокси перед приложением.
+
+## Первый координатор и демонстрационные данные
+
+Сначала два учебных участника входят через Flida. Вызовите AdminService.FindVolunteers
+по ID, телефону или почте и выберите ID будущего координатора. Служебные запросы требуют
+`Authorization: Bearer <ADMIN_API_KEY>` на административном listener:
+
+```sh
+curl --fail-with-body http://127.0.0.1:8081/admin.v1.AdminService/CreateCoordinator \
+  -H "Authorization: Bearer $ADMIN_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data '{"volunteer_id":"<ID>","cooperation_request_cooldown_seconds":"60"}'
+```
+
+Для подготовки защиты:
+
+```sh
+go run ./cmd seed -coordinator-id '<ID координатора>' -volunteer-id '<ID другого участника>'
+```
+
+Seed использует существующие профили, создаёт активное сотрудничество, три учебных
+мероприятия и три поощрения по 20 коинов. Для прошедшего мероприятия уже есть принятая
+заявка: можно подтвердить 180 минут и купить поощрение. Повторный seed не сбрасывает баланс,
+результаты и историю. Подготовленное прошлое событие не выдавайте за событие, созданное на защите:
+API завершает мероприятия только после `ends_at`.
+
+## Сборка приложения
+
+`cmd/main.go` — единая точка входа. В `cmd/hahaton` сборка разделена как во Flida:
+`init_database_clients`, `init_external_clients`, `init_repositories`, `init_tokens`,
+`init_support_services`, `init_services`, `init_rpc_services`, `init_http_handlers`,
+`init_http_server`. Сервисы приложения не получают зависимости друг на друга.
+Команда `go run ./cmd seed ...` готовит только учебные данные и не применяет миграции.
+
+## Слои и транзакции
+
+- `api`: фасады сервисов, отдельные RPC, serde и преобразование ошибок.
+- `app`: сервисы `ctx, r Request`, проверка запросов и координация агрегатов.
+- `domain/aggregate`: состояние, команды, репозиторные контракты и доменные ошибки.
+- `domain/model`: отдельная директория на модель, приватные поля, конструктор с Validate.
+- `infra`: PostgreSQL-репозитории, Flida/DaData, каталог и локальное хранилище файлов.
+
+Optional-поля app-запросов оформлены по образцу Flida: RPC собирает `RequestOption` через `With…`,
+DTO хранит `Optional[T]`, сервис проверяет значение и presence через `Get()`.
+Отсутствие поля, пустая строка и явный ноль различаются и при обновлениях, и в фильтрах.
+
+Сервисы не вызывают другие сервисы. Последовательность регистрации и авторизации
+собирается в RPC. Репозиторий передаёт callback транзакции; вложенные обращения используют
+тот же pgx transaction через context. SQL только читает и сохраняет состояние.
+Версий агрегатов, event sourcing, CQRS и специальных механизмов редких гонок нет.
+
+Сессия в context — агрегат Session. Authentication из `internal/pkg/session/authentication/interceptor`
+подключён через `authn.NewMiddleware`, как во Flida. ID находится в зашифрованной PASETO-cookie.
+Open/Authenticate только устанавливают cookie, Close удаляет текущую сессию из БД.
+Volunteer и Coordinator используют общий ID, а наличие координаторского профиля проверяется отдельно.
+
+## Города, изображения и чат
+
+`ListCities`/`GetCity` читают таблицу `cities`. На пустой БД справочник импортируется
+из `CITY_CATALOG_CSV_PATH` с версией `CITY_CATALOG_VERSION`; после заполнения файл не нужен для чтения.
+DaData используется отдельно для адресных подсказок. Частичный ответ подсказок
+не считается полным справочником. Формат CSV и необязательных границ: [data/README](data/README.md).
+Без проверенного полигона поиск по городу возвращает FailedPrecondition; клиент явно выбирает радиус.
+
+UploadImage принимает JPEG/PNG до 5 МиБ и 4096 пикселей на сторону. Ответ содержит
+`image_path` для сохранения в карточке и `image_url` для показа. Файлы размещаются в
+`storage/{user_id}/{image_id}.jpg|png`, читаются публично через `/storage/`.
+Профиль, мероприятие и поощрение проверяют владельца и наличие файла.
+Пустой optional-путь очищает картинку, отсутствие поля сохраняет прежнюю.
+Helper фронта: `frontend/utils/helpers/image.helper.ts`; привязка полей выбора к формам остаётся задачей UI.
+
+Сообщения чата и секреты приглашений шифруются AES-GCM ключом `DATA_ENCRYPTION_KEY`. Храните ключ между перезапусками:
+его замена без переноса данных сделает старую переписку и приглашения нечитаемыми.
+Стрим проверяет новые сообщения и право доступа каждые 500 мс. После закрытия/истечения
+сессии или отмены участия доступ отзывается; после завершения события остаётся чтение.
+При первом и повторном вступлении видны только новые сообщения.
+
+## Проверки и ограничения демо
+
+Интеграционные тесты репозиториев устроены по образцу Flida: testify/suite и require,
+`tests/integration/repository/<агрегат>/postgresql`, контейнерный helper в
+`pkg/testcontainers/postgresql`. Нужен запущенный Docker; отдельный PostgreSQL/DSN не требуется.
+Каждый из 12 suites поднимает PostgreSQL 17, применяет Goose и очищает свои таблицы перед тестом.
+Контейнер удаляется автоматически. Рабочая БД не используется.
+
+```sh
+go test -tags=integration -count=1 -p 2 ./tests/integration/repository/...
+go test -tags=integration -count=1 -p 2 \
+  -coverpkg=./internal/infra/repository/... -coverprofile=repository.cover \
+  ./tests/integration/repository/...
+go tool cover -func=repository.cover
+```
+
+
+```sh
+go build ./...
+golangci-lint fmt
+golangci-lint run ./...
+```
+
+Линтер перенесён из Flida, длина строк — 120. Unit-тесты по договорённости не добавлены.
+Для воспроизводимой проверки всех 58 RPC через HTTP с PostgreSQL:
+
+```sh
+INTEGRATION_POSTGRESQL_DSN="$POSTGRESQL_DSN" go test -count=1 -tags=integration ./integration
+```
+
+Проверки создают отдельную временную схему и удаляют её после завершения;
+к рабочим таблицам не обращаются. OIDC/JWKS и DaData подменяются учебными серверами/ответами.
+Без `INTEGRATION_POSTGRESQL_DSN` сценарии пропускаются. Это интеграционные проверки;
+unit-тесты не добавлены.
+
+На отдельной PostgreSQL 17 проверены goose Up/Down/повторный Up, полный сценарий MVP,
+повторы начислений и покупок, нехватка баланса, возвраты, история выданного,
+каскады прекращения сотрудничества, доступ к чату, шифрование и cookie-аутентификация Connect JSON.
+Отдельно проверены OIDC discovery/JWKS с подписанным учебным токеном, загрузка и привязка
+изображения, admin-изоляция, полный импорт 1103 записей CSV и чтение без исходного файла,
+Connect-стрим с историей, успешный EOF и закрытие при отзыве сессии.
+
+Списки для демо фильтруются в памяти перед пагинацией; геометрия проверяется без PostGIS.
+Для нескольких экземпляров потребуются общее файловое хранилище и пересмотр синхронизации чата.
+Локальная демонстрация не требует DaData для уже сохранённых точек и справочника,
+но первый вход требует доступной Flida. Реальных платежей и призов нет.

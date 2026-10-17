@@ -82,15 +82,15 @@ type Volunteer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
-	AvatarUrl        string     `protobuf:"bytes,10,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
-	DateOfBirth      *date.Date `protobuf:"bytes,2,opt,name=date_of_birth,proto3" json:"date_of_birth,omitempty"`
-	FirstName        string     `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty"`
-	LastName         string     `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty"`
-	MiddleName       string     `protobuf:"bytes,5,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
-	EmailAddress     string     `protobuf:"bytes,6,opt,name=email_address,proto3" json:"email_address,omitempty"`
-	PhoneNumber      string     `protobuf:"bytes,9,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
-	CoinBalance      int64      `protobuf:"varint,7,opt,name=coin_balance,proto3" json:"coin_balance,omitempty"`
-	ConfirmedMinutes int64      `protobuf:"varint,8,opt,name=confirmed_minutes,proto3" json:"confirmed_minutes,omitempty"`
+	AvatarUrl        string     `protobuf:"bytes,2,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	DateOfBirth      *date.Date `protobuf:"bytes,3,opt,name=date_of_birth,proto3" json:"date_of_birth,omitempty"`
+	FirstName        string     `protobuf:"bytes,4,opt,name=first_name,proto3" json:"first_name,omitempty"`
+	LastName         string     `protobuf:"bytes,5,opt,name=last_name,proto3" json:"last_name,omitempty"`
+	MiddleName       string     `protobuf:"bytes,6,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
+	EmailAddress     string     `protobuf:"bytes,7,opt,name=email_address,proto3" json:"email_address,omitempty"`
+	PhoneNumber      string     `protobuf:"bytes,8,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
+	CoinBalance      int64      `protobuf:"varint,9,opt,name=coin_balance,proto3" json:"coin_balance,omitempty"`
+	ConfirmedMinutes int64      `protobuf:"varint,10,opt,name=confirmed_minutes,proto3" json:"confirmed_minutes,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -289,12 +289,12 @@ func (x *GetVolunteerResponse) GetVolunteer() *Volunteer {
 type CoordinatorVolunteer struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AvatarUrl     string                 `protobuf:"bytes,7,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
-	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,proto3" json:"last_name,omitempty"`
-	MiddleName    string                 `protobuf:"bytes,4,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
-	EmailAddress  *string                `protobuf:"bytes,5,opt,name=email_address,proto3,oneof" json:"email_address,omitempty"`
-	PhoneNumber   *string                `protobuf:"bytes,6,opt,name=phone_number,proto3,oneof" json:"phone_number,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,2,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	FirstName     string                 `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty"`
+	MiddleName    string                 `protobuf:"bytes,5,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
+	EmailAddress  *string                `protobuf:"bytes,6,opt,name=email_address,proto3,oneof" json:"email_address,omitempty"`
+	PhoneNumber   *string                `protobuf:"bytes,7,opt,name=phone_number,proto3,oneof" json:"phone_number,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -470,13 +470,13 @@ type UpdateVolunteerRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Отсутствует — сохранить; пустая строка — убрать аватар.
 	// Иначе image_path из UploadImage текущего участника; файл обязан существовать.
-	AvatarPath *string `protobuf:"bytes,5,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
+	AvatarPath *string `protobuf:"bytes,1,opt,name=avatar_path,proto3,oneof" json:"avatar_path,omitempty"`
 	// Отсутствующее поле сохраняется. Дата должна быть полной и не в будущем.
 	// Имя и фамилия непустые; пустое middle_name очищает отчество.
-	DateOfBirth   *date.Date `protobuf:"bytes,1,opt,name=date_of_birth,proto3,oneof" json:"date_of_birth,omitempty"`
-	FirstName     *string    `protobuf:"bytes,2,opt,name=first_name,proto3,oneof" json:"first_name,omitempty"`
-	LastName      *string    `protobuf:"bytes,3,opt,name=last_name,proto3,oneof" json:"last_name,omitempty"`
-	MiddleName    *string    `protobuf:"bytes,4,opt,name=middle_name,proto3,oneof" json:"middle_name,omitempty"`
+	DateOfBirth   *date.Date `protobuf:"bytes,2,opt,name=date_of_birth,proto3,oneof" json:"date_of_birth,omitempty"`
+	FirstName     *string    `protobuf:"bytes,3,opt,name=first_name,proto3,oneof" json:"first_name,omitempty"`
+	LastName      *string    `protobuf:"bytes,4,opt,name=last_name,proto3,oneof" json:"last_name,omitempty"`
+	MiddleName    *string    `protobuf:"bytes,5,opt,name=middle_name,proto3,oneof" json:"middle_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -736,7 +736,7 @@ type ListVolunteerOperationsRequest struct {
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
-	Offset        int64 `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	Offset        int64 `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -798,7 +798,7 @@ type ListVolunteerOperationsResponse struct {
 	Operations []*VolunteerOperation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -855,19 +855,19 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\tVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
-	"avatar_url\x18\n" +
-	" \x01(\tR\n" +
+	"avatar_url\x18\x02 \x01(\tR\n" +
 	"avatar_url\x127\n" +
-	"\rdate_of_birth\x18\x02 \x01(\v2\x11.google.type.DateR\rdate_of_birth\x12\x1e\n" +
+	"\rdate_of_birth\x18\x03 \x01(\v2\x11.google.type.DateR\rdate_of_birth\x12\x1e\n" +
 	"\n" +
-	"first_name\x18\x03 \x01(\tR\n" +
+	"first_name\x18\x04 \x01(\tR\n" +
 	"first_name\x12\x1c\n" +
-	"\tlast_name\x18\x04 \x01(\tR\tlast_name\x12 \n" +
-	"\vmiddle_name\x18\x05 \x01(\tR\vmiddle_name\x12$\n" +
-	"\remail_address\x18\x06 \x01(\tR\remail_address\x12\"\n" +
-	"\fphone_number\x18\t \x01(\tR\fphone_number\x12\"\n" +
-	"\fcoin_balance\x18\a \x01(\x03R\fcoin_balance\x12,\n" +
-	"\x11confirmed_minutes\x18\b \x01(\x03R\x11confirmed_minutes\"1\n" +
+	"\tlast_name\x18\x05 \x01(\tR\tlast_name\x12 \n" +
+	"\vmiddle_name\x18\x06 \x01(\tR\vmiddle_name\x12$\n" +
+	"\remail_address\x18\a \x01(\tR\remail_address\x12\"\n" +
+	"\fphone_number\x18\b \x01(\tR\fphone_number\x12\"\n" +
+	"\fcoin_balance\x18\t \x01(\x03R\fcoin_balance\x12,\n" +
+	"\x11confirmed_minutes\x18\n" +
+	" \x01(\x03R\x11confirmed_minutes\"1\n" +
 	"\x13GetVolunteerRequest\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x88\x01\x01B\x05\n" +
 	"\x03_id\"M\n" +
@@ -876,15 +876,15 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\x14CoordinatorVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
-	"avatar_url\x18\a \x01(\tR\n" +
+	"avatar_url\x18\x02 \x01(\tR\n" +
 	"avatar_url\x12\x1e\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tR\n" +
+	"first_name\x18\x03 \x01(\tR\n" +
 	"first_name\x12\x1c\n" +
-	"\tlast_name\x18\x03 \x01(\tR\tlast_name\x12 \n" +
-	"\vmiddle_name\x18\x04 \x01(\tR\vmiddle_name\x12)\n" +
-	"\remail_address\x18\x05 \x01(\tH\x00R\remail_address\x88\x01\x01\x12'\n" +
-	"\fphone_number\x18\x06 \x01(\tH\x01R\fphone_number\x88\x01\x01B\x10\n" +
+	"\tlast_name\x18\x04 \x01(\tR\tlast_name\x12 \n" +
+	"\vmiddle_name\x18\x05 \x01(\tR\vmiddle_name\x12)\n" +
+	"\remail_address\x18\x06 \x01(\tH\x00R\remail_address\x88\x01\x01\x12'\n" +
+	"\fphone_number\x18\a \x01(\tH\x01R\fphone_number\x88\x01\x01B\x10\n" +
 	"\x0e_email_addressB\x0f\n" +
 	"\r_phone_number\"D\n" +
 	"\x1eGetCoordinatorVolunteerRequest\x12\"\n" +
@@ -892,13 +892,13 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\x1fGetCoordinatorVolunteerResponse\x12@\n" +
 	"\tvolunteer\x18\x01 \x01(\v2\".volunteer.v1.CoordinatorVolunteerR\tvolunteer\"\xbb\x02\n" +
 	"\x16UpdateVolunteerRequest\x12%\n" +
-	"\vavatar_path\x18\x05 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12<\n" +
-	"\rdate_of_birth\x18\x01 \x01(\v2\x11.google.type.DateH\x01R\rdate_of_birth\x88\x01\x01\x12#\n" +
+	"\vavatar_path\x18\x01 \x01(\tH\x00R\vavatar_path\x88\x01\x01\x12<\n" +
+	"\rdate_of_birth\x18\x02 \x01(\v2\x11.google.type.DateH\x01R\rdate_of_birth\x88\x01\x01\x12#\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tH\x02R\n" +
+	"first_name\x18\x03 \x01(\tH\x02R\n" +
 	"first_name\x88\x01\x01\x12!\n" +
-	"\tlast_name\x18\x03 \x01(\tH\x03R\tlast_name\x88\x01\x01\x12%\n" +
-	"\vmiddle_name\x18\x04 \x01(\tH\x04R\vmiddle_name\x88\x01\x01B\x0e\n" +
+	"\tlast_name\x18\x04 \x01(\tH\x03R\tlast_name\x88\x01\x01\x12%\n" +
+	"\vmiddle_name\x18\x05 \x01(\tH\x04R\vmiddle_name\x88\x01\x01B\x0e\n" +
 	"\f_avatar_pathB\x10\n" +
 	"\x0e_date_of_birthB\r\n" +
 	"\v_first_nameB\f\n" +
@@ -928,13 +928,13 @@ const file_volunteer_v1_volunteer_service_proto_rawDesc = "" +
 	"\x1eListVolunteerOperationsRequest\x12=\n" +
 	"\x04type\x18\x01 \x01(\x0e2$.volunteer.v1.VolunteerOperationTypeH\x00R\x04type\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x04 \x01(\x03R\x06offsetB\a\n" +
+	"\x06offset\x18\x03 \x01(\x03R\x06offsetB\a\n" +
 	"\x05_type\"\x85\x01\n" +
 	"\x1fListVolunteerOperationsResponse\x12@\n" +
 	"\n" +
 	"operations\x18\x01 \x03(\v2 .volunteer.v1.VolunteerOperationR\n" +
 	"operations\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count*\xd0\x01\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count*\xd0\x01\n" +
 	"\x16VolunteerOperationType\x12(\n" +
 	"$VOLUNTEER_OPERATION_TYPE_UNSPECIFIED\x10\x00\x122\n" +
 	".VOLUNTEER_OPERATION_TYPE_PARTICIPATION_ACCRUAL\x10\x01\x12,\n" +

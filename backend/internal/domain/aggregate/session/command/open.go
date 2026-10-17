@@ -17,10 +17,7 @@ func (x Open) GetNow() time.Time {
 	return x.now
 }
 
-func NewOpen(
-	now time.Time,
-	expiresAt time.Time,
-) Open {
+func NewOpen(now, expiresAt time.Time) Open {
 	return Open{
 		now:       now,
 		expiresAt: expiresAt,

@@ -65,11 +65,11 @@ message Cooperation {
   CooperationStatus status = 3 [json_name = "status"];
 
   // Только для REJECTED; в остальных статусах отсутствует.
-  optional google.protobuf.Timestamp retry_after = 6 [json_name = "retry_after"];
+  optional google.protobuf.Timestamp retry_after = 4 [json_name = "retry_after"];
 
-  google.protobuf.Timestamp created_at = 4 [json_name = "created_at"];
+  google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
   // Время последнего изменения статуса.
-  google.protobuf.Timestamp updated_at = 5 [json_name = "updated_at"];
+  google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
 }
 
 enum CooperationStatus {
@@ -105,8 +105,8 @@ message RejectCooperationRequest {
 message TerminateCooperationRequest {
   // Координатор задаёт volunteer_id; волонтёр — coordinator_id. Другой вариант запрещён.
   oneof counterpart {
-    string coordinator_id = 2 [json_name = "coordinator_id"];
-    string volunteer_id = 1 [json_name = "volunteer_id"];
+    string coordinator_id = 1 [json_name = "coordinator_id"];
+    string volunteer_id = 2 [json_name = "volunteer_id"];
   }
 }
 
@@ -133,13 +133,13 @@ enum CooperationListScope {
 
 message ListCooperationsRequest {
   // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-  CooperationListScope scope = 5 [json_name = "scope"];
+  CooperationListScope scope = 1 [json_name = "scope"];
 
   // Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
-  optional CooperationStatus status = 1 [json_name = "status"];
+  optional CooperationStatus status = 2 [json_name = "status"];
 
   // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-  int32 limit = 2 [json_name = "limit"];
+  int32 limit = 3 [json_name = "limit"];
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
@@ -151,7 +151,7 @@ message ListCooperationsResponse {
   repeated Cooperation cooperations = 1 [json_name = "cooperations"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 // Приглашение действует, пока существует и серверное время строго меньше expires_at,
@@ -165,11 +165,11 @@ message CooperationInvitation {
   // при создании и чтении списка; не меняется между запросами и не попадает в логи.
   // QR-код содержит эту же ссылку и создаётся клиентом. Токен не совпадает с id
   // приглашения или coordinator_id и не выводится из них.
-  string invitation_url = 5 [json_name = "invitation_url"];
+  string invitation_url = 3 [json_name = "invitation_url"];
 
-  google.protobuf.Timestamp created_at = 3 [json_name = "created_at"];
+  google.protobuf.Timestamp created_at = 4 [json_name = "created_at"];
   // Отсутствует для бессрочного приглашения. После создания срок не изменяется.
-  optional google.protobuf.Timestamp expires_at = 4 [json_name = "expires_at"];
+  optional google.protobuf.Timestamp expires_at = 5 [json_name = "expires_at"];
 }
 
 message CreateCooperationInvitationRequest {
@@ -205,7 +205,7 @@ message ListCooperationInvitationsRequest {
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
-  int64 offset = 4 [json_name = "offset"];
+  int64 offset = 3 [json_name = "offset"];
 }
 
 message ListCooperationInvitationsResponse {
@@ -213,5 +213,5 @@ message ListCooperationInvitationsResponse {
   repeated CooperationInvitation invitations = 1 [json_name = "invitations"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }

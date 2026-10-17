@@ -138,10 +138,10 @@ type Cooperation struct {
 	VolunteerId   string            `protobuf:"bytes,2,opt,name=volunteer_id,proto3" json:"volunteer_id,omitempty"`
 	Status        CooperationStatus `protobuf:"varint,3,opt,name=status,proto3,enum=cooperation.v1.CooperationStatus" json:"status,omitempty"`
 	// Только для REJECTED; в остальных статусах отсутствует.
-	RetryAfter *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=retry_after,proto3,oneof" json:"retry_after,omitempty"`
-	CreatedAt  *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,proto3" json:"created_at,omitempty"`
+	RetryAfter *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=retry_after,proto3,oneof" json:"retry_after,omitempty"`
+	CreatedAt  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	// Время последнего изменения статуса.
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -471,11 +471,11 @@ type isTerminateCooperationRequest_Counterpart interface {
 }
 
 type TerminateCooperationRequest_CoordinatorId struct {
-	CoordinatorId string `protobuf:"bytes,2,opt,name=coordinator_id,proto3,oneof"`
+	CoordinatorId string `protobuf:"bytes,1,opt,name=coordinator_id,proto3,oneof"`
 }
 
 type TerminateCooperationRequest_VolunteerId struct {
-	VolunteerId string `protobuf:"bytes,1,opt,name=volunteer_id,proto3,oneof"`
+	VolunteerId string `protobuf:"bytes,2,opt,name=volunteer_id,proto3,oneof"`
 }
 
 func (*TerminateCooperationRequest_CoordinatorId) isTerminateCooperationRequest_Counterpart() {}
@@ -614,11 +614,11 @@ func (x *GetCooperationResponse) GetCooperation() *Cooperation {
 type ListCooperationsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-	Scope CooperationListScope `protobuf:"varint,5,opt,name=scope,proto3,enum=cooperation.v1.CooperationListScope" json:"scope,omitempty"`
+	Scope CooperationListScope `protobuf:"varint,1,opt,name=scope,proto3,enum=cooperation.v1.CooperationListScope" json:"scope,omitempty"`
 	// Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
-	Status *CooperationStatus `protobuf:"varint,1,opt,name=status,proto3,enum=cooperation.v1.CooperationStatus,oneof" json:"status,omitempty"`
+	Status *CooperationStatus `protobuf:"varint,2,opt,name=status,proto3,enum=cooperation.v1.CooperationStatus,oneof" json:"status,omitempty"`
 	// 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Limit int32 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
@@ -691,7 +691,7 @@ type ListCooperationsResponse struct {
 	Cooperations []*Cooperation `protobuf:"bytes,1,rep,name=cooperations,proto3" json:"cooperations,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -750,10 +750,10 @@ type CooperationInvitation struct {
 	// при создании и чтении списка; не меняется между запросами и не попадает в логи.
 	// QR-код содержит эту же ссылку и создаётся клиентом. Токен не совпадает с id
 	// приглашения или coordinator_id и не выводится из них.
-	InvitationUrl string                 `protobuf:"bytes,5,opt,name=invitation_url,proto3" json:"invitation_url,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,proto3" json:"created_at,omitempty"`
+	InvitationUrl string                 `protobuf:"bytes,3,opt,name=invitation_url,proto3" json:"invitation_url,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	// Отсутствует для бессрочного приглашения. После создания срок не изменяется.
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expires_at,proto3,oneof" json:"expires_at,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expires_at,proto3,oneof" json:"expires_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1056,7 +1056,7 @@ type ListCooperationInvitationsRequest struct {
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
-	Offset        int64 `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	Offset        int64 `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1118,7 +1118,7 @@ type ListCooperationInvitationsResponse struct {
 	Invitations []*CooperationInvitation `protobuf:"bytes,1,rep,name=invitations,proto3" json:"invitations,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1176,12 +1176,12 @@ const file_cooperation_v1_cooperation_service_proto_rawDesc = "" +
 	"\x0ecoordinator_id\x18\x01 \x01(\tR\x0ecoordinator_id\x12\"\n" +
 	"\fvolunteer_id\x18\x02 \x01(\tR\fvolunteer_id\x129\n" +
 	"\x06status\x18\x03 \x01(\x0e2!.cooperation.v1.CooperationStatusR\x06status\x12A\n" +
-	"\vretry_after\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\vretry_after\x88\x01\x01\x12:\n" +
+	"\vretry_after\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\vretry_after\x88\x01\x01\x12:\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_at\x12:\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updated_atB\x0e\n" +
 	"\f_retry_after\"C\n" +
 	"\x19RequestCooperationRequest\x12&\n" +
@@ -1193,8 +1193,8 @@ const file_cooperation_v1_cooperation_service_proto_rawDesc = "" +
 	"\x18RejectCooperationRequest\x12\"\n" +
 	"\fvolunteer_id\x18\x01 \x01(\tR\fvolunteer_id\"|\n" +
 	"\x1bTerminateCooperationRequest\x12(\n" +
-	"\x0ecoordinator_id\x18\x02 \x01(\tH\x00R\x0ecoordinator_id\x12$\n" +
-	"\fvolunteer_id\x18\x01 \x01(\tH\x00R\fvolunteer_idB\r\n" +
+	"\x0ecoordinator_id\x18\x01 \x01(\tH\x00R\x0ecoordinator_id\x12$\n" +
+	"\fvolunteer_id\x18\x02 \x01(\tH\x00R\fvolunteer_idB\r\n" +
 	"\vcounterpart\"v\n" +
 	"\x15GetCooperationRequest\x12(\n" +
 	"\x0ecoordinator_id\x18\x01 \x01(\tH\x00R\x0ecoordinator_id\x12$\n" +
@@ -1203,23 +1203,23 @@ const file_cooperation_v1_cooperation_service_proto_rawDesc = "" +
 	"\x16GetCooperationResponse\x12=\n" +
 	"\vcooperation\x18\x01 \x01(\v2\x1b.cooperation.v1.CooperationR\vcooperation\"\xce\x01\n" +
 	"\x17ListCooperationsRequest\x12:\n" +
-	"\x05scope\x18\x05 \x01(\x0e2$.cooperation.v1.CooperationListScopeR\x05scope\x12>\n" +
-	"\x06status\x18\x01 \x01(\x0e2!.cooperation.v1.CooperationStatusH\x00R\x06status\x88\x01\x01\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x05scope\x18\x01 \x01(\x0e2$.cooperation.v1.CooperationListScopeR\x05scope\x12>\n" +
+	"\x06status\x18\x02 \x01(\x0e2!.cooperation.v1.CooperationStatusH\x00R\x06status\x88\x01\x01\x12\x14\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x04 \x01(\x03R\x06offsetB\t\n" +
 	"\a_status\"}\n" +
 	"\x18ListCooperationsResponse\x12?\n" +
 	"\fcooperations\x18\x01 \x03(\v2\x1b.cooperation.v1.CooperationR\fcooperations\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\"\x83\x02\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\x83\x02\n" +
 	"\x15CooperationInvitation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
 	"\x0ecoordinator_id\x18\x02 \x01(\tR\x0ecoordinator_id\x12&\n" +
-	"\x0einvitation_url\x18\x05 \x01(\tR\x0einvitation_url\x12:\n" +
+	"\x0einvitation_url\x18\x03 \x01(\tR\x0einvitation_url\x12:\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_at\x12?\n" +
 	"\n" +
-	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
+	"expires_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expires_at\x88\x01\x01B\r\n" +
 	"\v_expires_at\"t\n" +
 	"\"CreateCooperationInvitationRequest\x12?\n" +
@@ -1240,10 +1240,10 @@ const file_cooperation_v1_cooperation_service_proto_rawDesc = "" +
 	"!ListCooperationInvitationsRequest\x12(\n" +
 	"\x0finclude_expired\x18\x01 \x01(\bR\x0finclude_expired\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x04 \x01(\x03R\x06offset\"\x8f\x01\n" +
+	"\x06offset\x18\x03 \x01(\x03R\x06offset\"\x8f\x01\n" +
 	"\"ListCooperationInvitationsResponse\x12G\n" +
 	"\vinvitations\x18\x01 \x03(\v2%.cooperation.v1.CooperationInvitationR\vinvitations\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count*\xba\x01\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count*\xba\x01\n" +
 	"\x11CooperationStatus\x12\"\n" +
 	"\x1eCOOPERATION_STATUS_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aCOOPERATION_STATUS_PENDING\x10\x01\x12\x1d\n" +

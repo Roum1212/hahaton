@@ -61,7 +61,7 @@ type EventChatServiceClient interface {
 	// Только PUBLISHED и при наличии доступа к чату; после CompleteEvent чат read-only.
 	// ID автора берётся из сессии, его тип определяется отношением к мероприятию,
 	// ФИО — из общего Volunteer. Клиент не задаёт тип автора.
-	// Отправка согласована с отменой участия/мероприятия и прекращением кооперации.
+	// Отправка согласована с отменой/отклонением участия, отменой мероприятия и прекращением кооперации.
 	SendEventChatMessage(context.Context, *connect.Request[v1.SendEventChatMessageRequest]) (*connect.Response[v1.SendEventChatMessageResponse], error)
 	// История чата. Координатор сохраняет право чтения своего отменённого мероприятия.
 	ListEventChatMessages(context.Context, *connect.Request[v1.ListEventChatMessagesRequest]) (*connect.Response[v1.ListEventChatMessagesResponse], error)
@@ -172,7 +172,7 @@ type EventChatServiceHandler interface {
 	// Только PUBLISHED и при наличии доступа к чату; после CompleteEvent чат read-only.
 	// ID автора берётся из сессии, его тип определяется отношением к мероприятию,
 	// ФИО — из общего Volunteer. Клиент не задаёт тип автора.
-	// Отправка согласована с отменой участия/мероприятия и прекращением кооперации.
+	// Отправка согласована с отменой/отклонением участия, отменой мероприятия и прекращением кооперации.
 	SendEventChatMessage(context.Context, *connect.Request[v1.SendEventChatMessageRequest]) (*connect.Response[v1.SendEventChatMessageResponse], error)
 	// История чата. Координатор сохраняет право чтения своего отменённого мероприятия.
 	ListEventChatMessages(context.Context, *connect.Request[v1.ListEventChatMessagesRequest]) (*connect.Response[v1.ListEventChatMessagesResponse], error)

@@ -14,7 +14,10 @@ var prefix = paseto.V4Local.Header()
 
 type Decrypt[T any] func(t paseto.Token) (T, error)
 
-type Encrypt[T any] func(t paseto.Token, value T) error
+type Encrypt[T any] func(
+	t paseto.Token,
+	value T,
+) error
 
 type service[T any] struct {
 	decrypt Decrypt[T]

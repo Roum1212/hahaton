@@ -122,6 +122,9 @@ linters:
     paths:
       - genproto
     rules:
+      - path: tests/integration/repository/fixture/
+        linters:
+          - mnd
       - path: _test\.go
         linters:
           - contextcheck
@@ -142,13 +145,22 @@ linters:
             - aidanwoods.dev/go-paseto
             - connectrpc.com/authn
             - connectrpc.com/connect
+            - connectrpc.com/cors
             - github.com/Masterminds/squirrel
+            - github.com/caarlos0/env/v10
+            - github.com/coreos/go-oidc/v3
+            - github.com/go-jose/go-jose/v4
             - github.com/google/uuid
             - github.com/jackc/pgx/v5
+            - github.com/pressly/goose/v3
+            - github.com/stretchr/testify
+            - github.com/testcontainers/testcontainers-go
+            - github.com/rs/cors
             - go.flida.dev/cookies
             - go.flida.dev/rpc-error
             - google.golang.org/genproto
             - google.golang.org/protobuf
+            - golang.org/x/net
 
     lll:
       line-length: 120
@@ -238,6 +250,8 @@ linters:
 
     misspell:
       locale: US
+      ignore-rules:
+        - cancelled
 
     mnd:
       checks:

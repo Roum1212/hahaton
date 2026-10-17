@@ -1,0 +1,122 @@
+package rpc_service_reward_order_rpc_create_reward_order
+
+import (
+	"context"
+	"errors"
+
+	"connectrpc.com/connect"
+	rpc_error "go.flida.dev/rpc-error"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+
+	reward_order_v1 "github.com/Roum1212/hahaton/genproto/reward-order/v1"
+	rpc_service_reward_order_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/reward-order/serde"
+	service_create_reward_order "github.com/Roum1212/hahaton/internal/app/service/create-reward-order"
+	aggregate_cooperation "github.com/Roum1212/hahaton/internal/domain/aggregate/cooperation"
+	aggregate_reward "github.com/Roum1212/hahaton/internal/domain/aggregate/reward"
+	aggregate_reward_order "github.com/Roum1212/hahaton/internal/domain/aggregate/reward-order"
+	aggregate_wallet "github.com/Roum1212/hahaton/internal/domain/aggregate/wallet"
+	model_reward_id "github.com/Roum1212/hahaton/internal/domain/model/reward-id"
+	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
+)
+
+type RPC struct {
+	service service_create_reward_order.Service
+}
+
+func (x RPC) CreateRewardOrder(
+	ctx context.Context,
+	r *connect.Request[reward_order_v1.CreateRewardOrderRequest],
+) (*connect.Response[reward_order_v1.CreateRewardOrderResponse], error) {
+	session, ok := session_context.GetSession(ctx)
+	if !ok {
+		return nil, rpc_error.NewUnauthenticatedError(nil)
+	}
+
+	rewardID, err := model_reward_id.NewRewardID(r.Msg.GetRewardId())
+	if err != nil {
+		return nil, rpc_error.NewInvalidArgumentError(&errdetails.BadRequest{
+			FieldViolations: []*errdetails.BadRequest_FieldViolation{
+				{
+					Field:       "reward_id",
+					Description: err.Error(),
+				},
+			},
+		})
+	}
+
+	expectedPriceCoins := r.Msg.GetExpectedPriceCoins()
+	requestID := r.Msg.GetRequestId()
+
+	response, err := x.service.CreateRewardOrder(ctx, service_create_reward_order.NewRequest(
+		session.GetUserID(),
+		rewardID,
+		expectedPriceCoins,
+		requestID,
+	))
+	if err != nil {
+		switch {
+		case errors.Is(err, service_create_reward_order.ErrInvalidRequest):
+			return nil, rpc_error.NewInvalidArgumentError(&errdetails.BadRequest{
+				FieldViolations: []*errdetails.BadRequest_FieldViolation{
+					{
+						Field:       "request",
+						Description: err.Error(),
+					},
+				},
+			})
+		case errors.Is(err, service_create_reward_order.ErrFailedPrecondition):
+			return nil, rpc_error.NewFailedPreconditionError(nil)
+		case errors.Is(err, service_create_reward_order.ErrAlreadyExists):
+			return nil, rpc_error.NewAlreadyExistsError(nil)
+		case errors.Is(err, aggregate_reward.ErrInvalidState):
+			return nil, rpc_error.NewFailedPreconditionError(nil)
+		case errors.Is(err, aggregate_reward.ErrNotFound):
+			return nil, rpc_error.NewNotFoundError(&errdetails.ResourceInfo{
+				ResourceType: "reward.v1.Reward",
+				ResourceName: "id:" + rewardID.String(),
+				Description:  "reward not found",
+			})
+		case errors.Is(err, aggregate_reward.ErrOutOfStock):
+			return nil, rpc_error.NewFailedPreconditionError(nil)
+		case errors.Is(err, aggregate_reward.ErrPriceChanged):
+			return nil, rpc_error.NewAbortedError(nil)
+		case errors.Is(err, aggregate_cooperation.ErrNotFound):
+			return nil, rpc_error.NewNotFoundError(&errdetails.ResourceInfo{
+				ResourceType: "cooperation.v1.Cooperation",
+				ResourceName: "",
+				Description:  "cooperation not found",
+			})
+		case errors.Is(err, aggregate_reward_order.ErrAlreadyExists):
+			return nil, rpc_error.NewAlreadyExistsError(nil)
+		case errors.Is(err, aggregate_reward_order.ErrInvalidState):
+			return nil, rpc_error.NewFailedPreconditionError(nil)
+		case errors.Is(err, aggregate_wallet.ErrInsufficientBalance):
+			return nil, rpc_error.NewFailedPreconditionError(nil)
+		case errors.Is(err, aggregate_wallet.ErrNotFound):
+			return nil, rpc_error.NewNotFoundError(&errdetails.ResourceInfo{
+				ResourceType: "wallet.Wallet",
+				ResourceName: "user_id:" + session.GetUserID().String(),
+				Description:  "wallet not found",
+			})
+		case errors.Is(err, aggregate_wallet.ErrOverflow):
+			return nil, rpc_error.NewInvalidArgumentError(&errdetails.BadRequest{
+				FieldViolations: []*errdetails.BadRequest_FieldViolation{
+					{
+						Field:       "request",
+						Description: err.Error(),
+					},
+				},
+			})
+		default:
+			return nil, rpc_error.NewInternalError()
+		}
+	}
+
+	return connect.NewResponse(&reward_order_v1.CreateRewardOrderResponse{
+		RewardOrder: rpc_service_reward_order_serde.AggregateToPBRewardOrder(response.GetOrder()),
+	}), nil
+}
+
+func NewRPC(service service_create_reward_order.Service) RPC {
+	return RPC{service: service}
+}
