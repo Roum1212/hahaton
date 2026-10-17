@@ -29,7 +29,9 @@ func initExternalClients(ctx context.Context, cfg config.Config) (externalClient
 		return externalClientSet{}, err
 	}
 
-	flida, err := client_flida.NewClient(ctx, cfg.Flida.Issuer, cfg.Flida.ClientID, httpClient)
+	flida, err := client_flida.NewClient(
+		ctx, cfg.Flida.Issuer, cfg.Flida.ClientID, cfg.Flida.DiscoveryURL, httpClient,
+	)
 	if err != nil {
 		return externalClientSet{}, err
 	}

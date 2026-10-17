@@ -25,7 +25,10 @@ docker compose up -d postgres
 
 Перенесите сгенерированные `SESSION_TOKEN_V4_SYMMETRIC_KEY`, `DATA_ENCRYPTION_KEY`, `ADMIN_API_KEY` в `.env`.
 Укажите `FLIDA_ISSUER` и `FLIDA_CLIENT_ID` своего приложения. Flida должна отдавать
-OIDC discovery/JWKS и ID token с данными профиля. Ключи DaData и администратора
+OIDC discovery/JWKS и ID token с данными профиля. Если discovery опубликован
+по отдельному пути, укажите `FLIDA_DISCOVERY_URL`; issuer остаётся значением `iss`
+с `https://`. Для текущей Flida это `https://id.flida.ru` и
+`https://id.flida.ru/api/.well-known/openid-configuration` соответственно. Ключи DaData и администратора
 остаются только на сервере.
 
 Конфигурация находится в `internal/config`, по подходу Flida: `caarlos0/env`,

@@ -9,7 +9,7 @@ export interface ISearchAreaState {
 
 export const createDefaultArea = (): ISearchAreaState => ({
   city: DEFAULT_CITY,
-  radiusKm: null,
+  radiusKm: DEFAULT_SEARCH_RADIUS_KM,
   center: null,
   address: '',
 });
@@ -23,7 +23,17 @@ export const toSearchArea = (state: ISearchAreaState): ISearchArea => {
 };
 
 export const useSearchArea = () => {
-  const state = useLocalStorage<ISearchAreaState>('searchArea', createDefaultArea(), { mergeDefaults: true });
+  const state = useLocalStorage<ISearchAreaState>('searchArea', createDefaultArea(), {
+    mergeDefaults: (stored, defaults) => {
+      const value = { ...defaults, ...stored };
+      if (value.city.id !== DEFAULT_CITY.id) return value;
+      return {
+        ...value,
+        city: { ...value.city, hasBoundary: DEFAULT_CITY.hasBoundary },
+        radiusKm: value.radiusKm ?? DEFAULT_SEARCH_RADIUS_KM,
+      };
+    },
+  });
   const confirmed = useLocalStorage('cityConfirmed', false);
   const dialogVisible = useState('searchAreaDialogVisible', () => false);
 

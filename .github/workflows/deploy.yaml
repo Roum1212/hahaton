@@ -1,0 +1,85 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      BACKEND_IMAGE: hahaton-backend:${{ github.sha }}
+      FRONTEND_IMAGE: hahaton-frontend:${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download city catalog
+        run: sh backend/scripts/fetch-cities.sh
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build backend
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          load: true
+          platforms: linux/amd64
+          tags: ${{ env.BACKEND_IMAGE }}
+          labels: org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+
+      - name: Build frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          load: true
+          platforms: linux/amd64
+          tags: ${{ env.FRONTEND_IMAGE }}
+          labels: org.opencontainers.image.revision=${{ github.sha }}
+          build-args: |
+            APP_PUBLIC_SITE_NAME=${{ vars.SITE_NAME || 'Цифровой волонтёр Обнинска' }}
+            APP_PUBLIC_SITE_DESCRIPTION=${{ vars.SITE_DESCRIPTION || 'Добрые дела, волонтёрские часы и поощрения' }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,scope=frontend,mode=max
+
+      - name: Prepare release
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release"
+          docker save "$BACKEND_IMAGE" "$FRONTEND_IMAGE" | gzip -1 > "$RUNNER_TEMP/release/images.tar.gz"
+          cp docker-compose.yaml "$RUNNER_TEMP/release/"
+          cp deploy/deploy.sh "$RUNNER_TEMP/release/"
+          tar -C "$RUNNER_TEMP/release" -cf "$RUNNER_TEMP/release.tar" images.tar.gz docker-compose.yaml deploy.sh
+
+      - name: Deploy over SSH
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          : "${DEPLOY_HOST:?Set the DEPLOY_HOST repository variable}"
+          : "${DEPLOY_SSH_KEY:?Set the DEPLOY_SSH_KEY repository secret}"
+          : "${DEPLOY_KNOWN_HOSTS:?Set the DEPLOY_KNOWN_HOSTS repository secret}"
+          umask 077
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/deploy_key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+          trap 'rm -f "$RUNNER_TEMP/deploy_key" "$RUNNER_TEMP/known_hosts"' EXIT
+          ssh -T -i "$RUNNER_TEMP/deploy_key" -p "$DEPLOY_PORT" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/known_hosts" \
+            -o ServerAliveInterval=15 -o ServerAliveCountMax=12 \
+            "$DEPLOY_USER@$DEPLOY_HOST" "$GITHUB_SHA" < "$RUNNER_TEMP/release.tar"

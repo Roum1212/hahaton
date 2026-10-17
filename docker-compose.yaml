@@ -18,6 +18,7 @@ services:
     stop_grace_period: 30s
 
   backend:
+    image: ${BACKEND_IMAGE:-hahaton-backend}
     build:
       context: ./backend
     restart: unless-stopped
@@ -33,6 +34,7 @@ services:
       ADMIN_API_KEY: ${ADMIN_API_KEY:?Set ADMIN_API_KEY in .env}
       FRONTEND_URL: ${FRONTEND_URL:?Set the public HTTPS FRONTEND_URL in .env}
       FLIDA_ISSUER: ${FLIDA_ISSUER:?Set FLIDA_ISSUER in .env}
+      FLIDA_DISCOVERY_URL: ${FLIDA_DISCOVERY_URL:-}
       FLIDA_CLIENT_ID: ${FLIDA_CLIENT_ID:?Set FLIDA_CLIENT_ID in .env}
       SESSION_TOKEN_V4_SYMMETRIC_KEY: ${SESSION_TOKEN_V4_SYMMETRIC_KEY:?Set the session key in .env}
       SESSION_TOKEN_TTL: ${SESSION_TOKEN_TTL:-24h}
@@ -47,12 +49,13 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${BACKEND_BIND_ADDRESS:-127.0.0.1}:${BACKEND_PORT:-8080}:8080"
+      - "${BACKEND_BIND_ADDRESS:-127.0.0.1}:${BACKEND_PORT:-8000}:8080"
     volumes:
       - storage-data:/app/storage
     stop_grace_period: 15s
 
   frontend:
+    image: ${FRONTEND_IMAGE:-hahaton-frontend}
     build:
       context: ./frontend
       args:
@@ -69,6 +72,7 @@ services:
       NUXT_PUBLIC_FLIDA_REDIRECT_URI: ${FLIDA_REDIRECT_URI:?Set the HTTPS Flida callback URL in .env}
       NUXT_PUBLIC_FLIDA_POST_LOGOUT_REDIRECT_URI: ${FLIDA_POST_LOGOUT_REDIRECT_URI:-}
       NUXT_PUBLIC_FLIDA_MODE: ${FLIDA_MODE:-redirect}
+      NUXT_PUBLIC_FLIDA_FEDCM: ${FLIDA_FEDCM:-[]}
       NUXT_PUBLIC_YANDEX_MAPS_API_KEY: ${YANDEX_MAPS_API_KEY:-}
       NUXT_PUBLIC_DEMO_LOGIN: "false"
     depends_on:

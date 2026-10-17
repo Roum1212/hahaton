@@ -52,8 +52,9 @@ type DaData struct {
 }
 
 type Flida struct {
-	ClientID string `env:"CLIENT_ID,required,notEmpty"`
-	Issuer   string `env:"ISSUER,required,notEmpty"`
+	ClientID     string `env:"CLIENT_ID,required,notEmpty"`
+	DiscoveryURL string `env:"DISCOVERY_URL"`
+	Issuer       string `env:"ISSUER,required,notEmpty"`
 }
 
 type PostgreSQL struct {
