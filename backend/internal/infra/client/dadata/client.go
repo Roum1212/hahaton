@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
@@ -16,12 +17,12 @@ import (
 )
 
 const (
-	endpoint         = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address"
 	maxResponseBytes = 4 << 20
 )
 
 type Client struct {
 	apiKey     string
+	endpoint   string
 	httpClient *http.Client
 }
 
@@ -47,7 +48,7 @@ func (x Client) Suggest(
 		return nil, fmt.Errorf("encode address request: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(body))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, x.endpoint, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("create address request: %w", err)
 	}
@@ -185,13 +186,23 @@ func stringPointer(raw json.RawMessage) *string {
 	return value
 }
 
-func NewClient(apiKey string, httpClient *http.Client) (Client, error) {
+func NewClient(apiKey, endpoint string, httpClient *http.Client) (Client, error) {
+	address, err := url.Parse(endpoint)
+	if err != nil {
+		return Client{}, fmt.Errorf("parse dadata endpoint: %w", err)
+	}
+
+	if (address.Scheme != "http" && address.Scheme != "https") || len(address.Host) == 0 {
+		return Client{}, errors.New("dadata endpoint must be an absolute http or https url")
+	}
+
 	if httpClient == nil || httpClient.Timeout <= 0 {
 		return Client{}, errors.New("dadata http client must have a positive timeout")
 	}
 
 	return Client{
 		apiKey:     apiKey,
+		endpoint:   endpoint,
 		httpClient: httpClient,
 	}, nil
 }

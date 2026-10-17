@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	aggregate_coordinator "github.com/Roum1212/hahaton/internal/domain/aggregate/coordinator"
@@ -64,6 +65,11 @@ func (x service) DeleteReward(ctx context.Context, r Request) error {
 		if err != nil {
 			return err
 		}
+
+		// Match the wallet lock order used by event completion.
+		sort.Slice(orders, func(i, j int) bool {
+			return orders[i].GetVolunteerID().String() < orders[j].GetVolunteerID().String()
+		})
 
 		for _, order := range orders {
 			if order.GetRewardID() != reward.GetRewardID() || order.GetStatus() != model_reward_order_status.Pending {

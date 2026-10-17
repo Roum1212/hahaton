@@ -12,6 +12,7 @@ import (
 
 	aggregate_cooperation_invitation "github.com/Roum1212/hahaton/internal/domain/aggregate/cooperation-invitation"
 	model_invitation_id "github.com/Roum1212/hahaton/internal/domain/model/invitation-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -109,32 +110,7 @@ func (x CooperationInvitations) Load(
 	ctx context.Context,
 	invitationID model_invitation_id.InvitationID,
 ) (*aggregate_cooperation_invitation.CooperationInvitation, error) {
-	sql, arguments, err := x.queries.Select(
-		idColumn,
-		coordinatorIDColumn,
-		tokenColumn,
-		createdAtColumn,
-		expiresAtColumn,
-	).From(
-		"cooperation_invitations",
-	).Where(
-		squirrel.Eq{idColumn: invitationID.String()},
-	).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_cooperation_invitation.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate(x.crypto)
+	return x.load(ctx, invitationID, false)
 }
 
 func (x CooperationInvitations) Modify(
@@ -147,6 +123,15 @@ func (x CooperationInvitations) Modify(
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
 		value, err := x.Load(ctx, invitationID)
+		if err != nil {
+			return err
+		}
+
+		if err := repository_locking.Coordinator(ctx, x.database, value.GetCoordinatorID(), true); err != nil {
+			return err
+		}
+
+		value, err = x.load(ctx, invitationID, true)
 		if err != nil {
 			return err
 		}
@@ -222,6 +207,44 @@ func (x CooperationInvitations) execute(ctx context.Context, query squirrel.Sqli
 	}
 
 	return result, nil
+}
+
+func (x CooperationInvitations) load(
+	ctx context.Context,
+	invitationID model_invitation_id.InvitationID,
+	lock bool,
+) (*aggregate_cooperation_invitation.CooperationInvitation, error) {
+	query := x.queries.Select(
+		idColumn,
+		coordinatorIDColumn,
+		tokenColumn,
+		createdAtColumn,
+		expiresAtColumn,
+	).From(
+		"cooperation_invitations",
+	).Where(
+		squirrel.Eq{idColumn: invitationID.String()},
+	)
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_cooperation_invitation.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate(x.crypto)
 }
 
 func NewCooperationInvitations(database Database, crypto Crypto) CooperationInvitations {

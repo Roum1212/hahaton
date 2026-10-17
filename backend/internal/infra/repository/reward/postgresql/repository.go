@@ -11,6 +11,7 @@ import (
 
 	aggregate_reward "github.com/Roum1212/hahaton/internal/domain/aggregate/reward"
 	model_reward_id "github.com/Roum1212/hahaton/internal/domain/model/reward-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -92,35 +93,7 @@ func (x Rewards) List(ctx context.Context) ([]*aggregate_reward.Reward, error) {
 }
 
 func (x Rewards) Load(ctx context.Context, rewardID model_reward_id.RewardID) (*aggregate_reward.Reward, error) {
-	sql, arguments, err := x.queries.Select(
-		idColumn,
-		coordinatorIDColumn,
-		titleColumn,
-		descriptionColumn,
-		imagePathColumn,
-		priceCoinsColumn,
-		quantityLimitColumn,
-		reservedQuantityColumn,
-		issuedQuantityColumn,
-		deletedColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("rewards").Where(squirrel.Eq{idColumn: rewardID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_reward.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate()
+	return x.load(ctx, rewardID, false)
 }
 
 func (x Rewards) Modify(
@@ -133,6 +106,15 @@ func (x Rewards) Modify(
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
 		value, err := x.Load(ctx, rewardID)
+		if err != nil {
+			return err
+		}
+
+		if err := repository_locking.Coordinator(ctx, x.database, value.GetCoordinatorID(), false); err != nil {
+			return err
+		}
+
+		value, err = x.load(ctx, rewardID, true)
 		if err != nil {
 			return err
 		}
@@ -201,6 +183,47 @@ func (x Rewards) execute(ctx context.Context, query squirrel.Sqlizer) (pgconn.Co
 	}
 
 	return result, nil
+}
+
+func (x Rewards) load(
+	ctx context.Context,
+	rewardID model_reward_id.RewardID,
+	lock bool,
+) (*aggregate_reward.Reward, error) {
+	query := x.queries.Select(
+		idColumn,
+		coordinatorIDColumn,
+		titleColumn,
+		descriptionColumn,
+		imagePathColumn,
+		priceCoinsColumn,
+		quantityLimitColumn,
+		reservedQuantityColumn,
+		issuedQuantityColumn,
+		deletedColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("rewards").Where(squirrel.Eq{idColumn: rewardID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_reward.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate()
 }
 
 func NewRewards(database Database) Rewards {

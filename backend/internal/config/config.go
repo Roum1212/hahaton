@@ -52,7 +52,8 @@ type CityCatalog struct {
 }
 
 type DaData struct {
-	APIKey string `env:"API_KEY"`
+	APIKey   string `env:"API_KEY"`
+	Endpoint string `env:"ENDPOINT" envDefault:"https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address"`
 }
 
 type Flida struct {

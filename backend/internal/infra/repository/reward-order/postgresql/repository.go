@@ -11,6 +11,7 @@ import (
 
 	aggregate_reward_order "github.com/Roum1212/hahaton/internal/domain/aggregate/reward-order"
 	model_reward_order_id "github.com/Roum1212/hahaton/internal/domain/model/reward-order-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -93,34 +94,7 @@ func (x RewardOrders) Load(
 	ctx context.Context,
 	rewardOrderID model_reward_order_id.RewardOrderID,
 ) (*aggregate_reward_order.RewardOrder, error) {
-	sql, arguments, err := x.queries.Select(
-		idColumn,
-		rewardIDColumn,
-		coordinatorIDColumn,
-		volunteerIDColumn,
-		rewardTitleColumn,
-		priceCoinsColumn,
-		requestIDColumn,
-		statusColumn,
-		cancellationReasonColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("reward_orders").Where(squirrel.Eq{idColumn: rewardOrderID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_reward_order.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate()
+	return x.load(ctx, rewardOrderID, false)
 }
 
 func (x RewardOrders) Modify(
@@ -133,6 +107,19 @@ func (x RewardOrders) Modify(
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
 		value, err := x.Load(ctx, rewardOrderID)
+		if err != nil {
+			return err
+		}
+
+		if err := repository_locking.Coordinator(ctx, x.database, value.GetCoordinatorID(), false); err != nil {
+			return err
+		}
+
+		if err := repository_locking.Reward(ctx, x.database, value.GetRewardID()); err != nil {
+			return err
+		}
+
+		value, err = x.load(ctx, rewardOrderID, true)
 		if err != nil {
 			return err
 		}
@@ -200,6 +187,46 @@ func (x RewardOrders) execute(ctx context.Context, query squirrel.Sqlizer) (pgco
 	}
 
 	return result, nil
+}
+
+func (x RewardOrders) load(
+	ctx context.Context,
+	rewardOrderID model_reward_order_id.RewardOrderID,
+	lock bool,
+) (*aggregate_reward_order.RewardOrder, error) {
+	query := x.queries.Select(
+		idColumn,
+		rewardIDColumn,
+		coordinatorIDColumn,
+		volunteerIDColumn,
+		rewardTitleColumn,
+		priceCoinsColumn,
+		requestIDColumn,
+		statusColumn,
+		cancellationReasonColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("reward_orders").Where(squirrel.Eq{idColumn: rewardOrderID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_reward_order.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate()
 }
 
 func NewRewardOrders(database Database) RewardOrders {

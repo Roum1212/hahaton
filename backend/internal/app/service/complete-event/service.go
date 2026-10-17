@@ -61,29 +61,31 @@ func (x service) CompleteEvent(ctx context.Context, r Request) (Response, error)
 
 	fingerprint := resultFingerprint(r.GetResults())
 
-	events, err := x.events.List(ctx)
-	if err != nil {
-		return Response{}, err
-	}
-
-	for _, event := range events {
-		if event.GetCoordinatorID() != r.GetUserID() || event.GetCompletionRequestID() != r.GetRequestID() {
-			continue
-		}
-
-		if event.GetEventID() != r.GetEventID() || event.GetResultFingerprint() != fingerprint {
-			return Response{}, ErrAlreadyExists
-		}
-
-		return NewResponse(event), nil
-	}
-
 	var completed *aggregate_event.Event
 
 	if err := x.events.Modify(ctx, r.GetEventID(), func(
 		ctx context.Context,
 		event *aggregate_event.Event,
 	) error {
+		events, err := x.events.List(ctx)
+		if err != nil {
+			return err
+		}
+
+		for _, previous := range events {
+			if previous.GetCoordinatorID() != r.GetUserID() || previous.GetCompletionRequestID() != r.GetRequestID() {
+				continue
+			}
+
+			if previous.GetEventID() != r.GetEventID() || previous.GetResultFingerprint() != fingerprint {
+				return ErrAlreadyExists
+			}
+
+			completed = previous
+
+			return nil
+		}
+
 		if err := x.complete(ctx, r, event, fingerprint); err != nil {
 			return err
 		}
@@ -133,6 +135,11 @@ func (x service) complete(ctx context.Context, r Request, event *aggregate_event
 	if len(approved) != len(results) {
 		return ErrInvalidRequest
 	}
+
+	// Acquire wallet locks in the same order across independent transactions.
+	sort.Slice(approved, func(i, j int) bool {
+		return approved[i].GetVolunteerID().String() < approved[j].GetVolunteerID().String()
+	})
 
 	for _, value := range approved {
 		result, ok := results[value.GetParticipationID()]

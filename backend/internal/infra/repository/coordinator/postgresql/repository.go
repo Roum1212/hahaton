@@ -83,29 +83,7 @@ func (x Coordinators) Load(
 	ctx context.Context,
 	userID model_user_id.UserID,
 ) (*aggregate_coordinator.Coordinator, error) {
-	sql, arguments, err := x.queries.Select(
-		idColumn,
-		descriptionColumn,
-		avatarPathColumn,
-		cooldownSecondsColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("coordinators").Where(squirrel.Eq{idColumn: userID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_coordinator.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate()
+	return x.load(ctx, userID, false)
 }
 
 func (x Coordinators) Modify(
@@ -117,7 +95,7 @@ func (x Coordinators) Modify(
 	) error,
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		value, err := x.Load(ctx, userID)
+		value, err := x.load(ctx, userID, true)
 		if err != nil {
 			return err
 		}
@@ -180,6 +158,41 @@ func (x Coordinators) execute(ctx context.Context, query squirrel.Sqlizer) (pgco
 	}
 
 	return result, nil
+}
+
+func (x Coordinators) load(
+	ctx context.Context,
+	userID model_user_id.UserID,
+	lock bool,
+) (*aggregate_coordinator.Coordinator, error) {
+	query := x.queries.Select(
+		idColumn,
+		descriptionColumn,
+		avatarPathColumn,
+		cooldownSecondsColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("coordinators").Where(squirrel.Eq{idColumn: userID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_coordinator.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate()
 }
 
 func NewCoordinators(database Database) Coordinators {
