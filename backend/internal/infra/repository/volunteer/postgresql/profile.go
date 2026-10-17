@@ -44,22 +44,7 @@ func (x Volunteers) List(ctx context.Context) ([]*aggregate_volunteer.Volunteer,
 }
 
 func (x Volunteers) Load(ctx context.Context, userID model_user_id.UserID) (*aggregate_volunteer.Volunteer, error) {
-	sql, arguments, err := x.profileQuery().Where(squirrel.Eq{idColumn: userID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	value, err := scanProfile(x.database.QueryRow(ctx, sql, arguments...))
-	if err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_volunteer.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return value, nil
+	return x.load(ctx, userID, false)
 }
 
 func (x Volunteers) Modify(
@@ -71,7 +56,7 @@ func (x Volunteers) Modify(
 	) error,
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		volunteer, err := x.Load(ctx, userID)
+		volunteer, err := x.load(ctx, userID, true)
 		if err != nil {
 			return err
 		}
@@ -105,6 +90,34 @@ func (x Volunteers) Save(ctx context.Context, volunteer *aggregate_volunteer.Vol
 	}
 
 	return nil
+}
+
+func (x Volunteers) load(
+	ctx context.Context,
+	userID model_user_id.UserID,
+	lock bool,
+) (*aggregate_volunteer.Volunteer, error) {
+	query := x.profileQuery().Where(squirrel.Eq{idColumn: userID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	value, err := scanProfile(x.database.QueryRow(ctx, sql, arguments...))
+	if err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_volunteer.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return value, nil
 }
 
 func (x Volunteers) profileQuery() squirrel.SelectBuilder {

@@ -24,7 +24,7 @@ type externalClientSet struct {
 func initExternalClients(ctx context.Context, cfg config.Config) (externalClientSet, error) {
 	httpClient := &http.Client{Timeout: providerTimeout}
 
-	dadata, err := client_dadata.NewClient(cfg.DaData.APIKey, httpClient)
+	dadata, err := client_dadata.NewClient(cfg.DaData.APIKey, cfg.DaData.Endpoint, httpClient)
 	if err != nil {
 		return externalClientSet{}, err
 	}

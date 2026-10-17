@@ -11,6 +11,7 @@ import (
 
 	aggregate_event "github.com/Roum1212/hahaton/internal/domain/aggregate/event"
 	model_event_id "github.com/Roum1212/hahaton/internal/domain/model/event-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -112,40 +113,7 @@ func (x Events) List(ctx context.Context) ([]*aggregate_event.Event, error) {
 }
 
 func (x Events) Load(ctx context.Context, eventID model_event_id.EventID) (*aggregate_event.Event, error) {
-	sql, arguments, err := x.queries.Select(
-		idColumn,
-		coordinatorIDColumn,
-		titleColumn,
-		descriptionColumn,
-		imagePathColumn,
-		locationColumn,
-		latitudeColumn,
-		longitudeColumn,
-		startsAtColumn,
-		endsAtColumn,
-		requirementsColumn,
-		volunteerLimitColumn,
-		statusColumn,
-		"COALESCE("+completionRequestIDColumn+", '')",
-		resultFingerprintColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("events").Where(squirrel.Eq{idColumn: eventID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_event.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate()
+	return x.load(ctx, eventID, false)
 }
 
 func (x Events) Modify(
@@ -158,6 +126,15 @@ func (x Events) Modify(
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
 		value, err := x.Load(ctx, eventID)
+		if err != nil {
+			return err
+		}
+
+		if err := repository_locking.Coordinator(ctx, x.database, value.GetCoordinatorID(), false); err != nil {
+			return err
+		}
+
+		value, err = x.load(ctx, eventID, true)
 		if err != nil {
 			return err
 		}
@@ -243,6 +220,48 @@ func (x Events) execute(ctx context.Context, query squirrel.Sqlizer) (pgconn.Com
 	}
 
 	return result, nil
+}
+
+func (x Events) load(ctx context.Context, eventID model_event_id.EventID, lock bool) (*aggregate_event.Event, error) {
+	query := x.queries.Select(
+		idColumn,
+		coordinatorIDColumn,
+		titleColumn,
+		descriptionColumn,
+		imagePathColumn,
+		locationColumn,
+		latitudeColumn,
+		longitudeColumn,
+		startsAtColumn,
+		endsAtColumn,
+		requirementsColumn,
+		volunteerLimitColumn,
+		statusColumn,
+		"COALESCE("+completionRequestIDColumn+", '')",
+		resultFingerprintColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("events").Where(squirrel.Eq{idColumn: eventID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_event.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate()
 }
 
 func NewEvents(database Database) Events {

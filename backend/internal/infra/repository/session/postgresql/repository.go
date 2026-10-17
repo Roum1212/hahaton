@@ -42,36 +42,7 @@ func (x Sessions) Delete(ctx context.Context, sessionID model_session_id.Session
 }
 
 func (x Sessions) Load(ctx context.Context, sessionID model_session_id.SessionID) (*aggregate_session.Session, error) {
-	query := x.queries.Select(
-		"COALESCE("+userIDColumn+"::text, '')",
-		createdAtColumn,
-		updatedAtColumn,
-		expiresAtColumn,
-	).From(
-		"sessions",
-	).Where(
-		squirrel.Eq{idColumn: sessionID.String()},
-	)
-
-	sql, arguments, err := query.ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("build session query: %w", err)
-	}
-
-	var row sessionRow
-
-	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(
-		&row.userID, &row.createdAt, &row.updatedAt, &row.expiresAt,
-	); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_session.ErrNotFound
-		default:
-			return nil, fmt.Errorf("load session: %w", err)
-		}
-	}
-
-	return row.toSession(sessionID)
+	return x.load(ctx, sessionID, false)
 }
 
 func (x Sessions) Replace(
@@ -83,7 +54,7 @@ func (x Sessions) Replace(
 	) (*aggregate_session.Session, error),
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		current, err := x.Load(ctx, sessionID)
+		current, err := x.load(ctx, sessionID, true)
 		if err != nil {
 			return err
 		}
@@ -117,6 +88,47 @@ func (x Sessions) Save(ctx context.Context, session *aggregate_session.Session) 
 	}
 
 	return nil
+}
+
+func (x Sessions) load(
+	ctx context.Context,
+	sessionID model_session_id.SessionID,
+	lock bool,
+) (*aggregate_session.Session, error) {
+	query := x.queries.Select(
+		"COALESCE("+userIDColumn+"::text, '')",
+		createdAtColumn,
+		updatedAtColumn,
+		expiresAtColumn,
+	).From(
+		"sessions",
+	).Where(
+		squirrel.Eq{idColumn: sessionID.String()},
+	)
+
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("build session query: %w", err)
+	}
+
+	var row sessionRow
+
+	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(
+		&row.userID, &row.createdAt, &row.updatedAt, &row.expiresAt,
+	); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_session.ErrNotFound
+		default:
+			return nil, fmt.Errorf("load session: %w", err)
+		}
+	}
+
+	return row.toSession(sessionID)
 }
 
 func sessionValues(session *aggregate_session.Session) map[string]any {

@@ -41,29 +41,31 @@ func (x service) CreateRewardOrder(ctx context.Context, r Request) (Response, er
 		return Response{}, fmt.Errorf("%w: %w", ErrInvalidRequest, err)
 	}
 
-	orders, err := x.orders.List(ctx)
-	if err != nil {
-		return Response{}, err
-	}
-
-	for _, order := range orders {
-		if order.GetVolunteerID() != r.GetUserID() || order.GetRequestID() != r.GetRequestID() {
-			continue
-		}
-
-		if order.GetRewardID() != r.GetRewardID() || order.GetPriceCoins() != r.GetExpectedPriceCoins() {
-			return Response{}, ErrAlreadyExists
-		}
-
-		return NewResponse(order), nil
-	}
-
 	var created *aggregate_reward_order.RewardOrder
 
 	if err := x.rewards.Modify(ctx, r.GetRewardID(), func(
 		ctx context.Context,
 		reward *aggregate_reward.Reward,
 	) error {
+		orders, err := x.orders.List(ctx)
+		if err != nil {
+			return err
+		}
+
+		for _, order := range orders {
+			if order.GetVolunteerID() != r.GetUserID() || order.GetRequestID() != r.GetRequestID() {
+				continue
+			}
+
+			if order.GetRewardID() != r.GetRewardID() || order.GetPriceCoins() != r.GetExpectedPriceCoins() {
+				return ErrAlreadyExists
+			}
+
+			created = order
+
+			return nil
+		}
+
 		order, err := x.purchase(ctx, r, reward)
 		if err != nil {
 			return err

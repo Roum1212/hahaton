@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -17,6 +16,7 @@ import (
 	model_chat_message_id "github.com/Roum1212/hahaton/internal/domain/model/chat-message-id"
 	model_event_id "github.com/Roum1212/hahaton/internal/domain/model/event-id"
 	model_user_id "github.com/Roum1212/hahaton/internal/domain/model/user-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -48,7 +48,6 @@ type EventChats struct {
 	database Database
 	crypto   Crypto
 	queries  squirrel.StatementBuilderType
-	mutex    sync.Mutex
 }
 
 func (x *EventChats) AppendMessage(ctx context.Context, message model_chat_message.ChatMessage) error {
@@ -189,24 +188,7 @@ func (x *EventChats) Load(
 	ctx context.Context,
 	eventID model_event_id.EventID,
 ) (*aggregate_event_chat.EventChat, error) {
-	sql, arguments, err := x.queries.Select(latestSequenceColumn).From("event_chats").Where(squirrel.Eq{
-		eventIDColumn: eventID.String(),
-	}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var sequence uint64
-	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(&sequence); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_event_chat.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return aggregate_event_chat.NewEventChatFromFields(eventID, sequence), nil
+	return x.load(ctx, eventID, false)
 }
 
 func (x *EventChats) Modify(
@@ -217,11 +199,16 @@ func (x *EventChats) Modify(
 		chat *aggregate_event_chat.EventChat,
 	) error,
 ) error {
-	x.mutex.Lock()
-	defer x.mutex.Unlock()
-
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		chat, err := x.Load(ctx, eventID)
+		if _, err := x.Load(ctx, eventID); err != nil {
+			return err
+		}
+
+		if err := repository_locking.Event(ctx, x.database, eventID); err != nil {
+			return err
+		}
+
+		chat, err := x.load(ctx, eventID, true)
 		if err != nil {
 			return err
 		}
@@ -251,6 +238,36 @@ func (x *EventChats) Modify(
 
 		return nil
 	})
+}
+
+func (x *EventChats) load(
+	ctx context.Context,
+	eventID model_event_id.EventID,
+	lock bool,
+) (*aggregate_event_chat.EventChat, error) {
+	query := x.queries.Select(latestSequenceColumn).From("event_chats").Where(squirrel.Eq{
+		eventIDColumn: eventID.String(),
+	})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var sequence uint64
+	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(&sequence); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_event_chat.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return aggregate_event_chat.NewEventChatFromFields(eventID, sequence), nil
 }
 
 func NewEventChats(database Database, crypto Crypto) *EventChats {

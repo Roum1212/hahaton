@@ -11,6 +11,7 @@ import (
 
 	aggregate_cooperation "github.com/Roum1212/hahaton/internal/domain/aggregate/cooperation"
 	model_user_id "github.com/Roum1212/hahaton/internal/domain/model/user-id"
+	repository_locking "github.com/Roum1212/hahaton/internal/infra/repository/locking"
 )
 
 const (
@@ -38,6 +39,10 @@ func (x Cooperations) Create(
 	afterCreate func(ctx context.Context) error,
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
+		if err := repository_locking.Coordinator(ctx, x.database, value.GetCoordinatorID(), true); err != nil {
+			return err
+		}
+
 		if _, err := x.execute(ctx, x.queries.Insert("cooperations").SetMap(aggregateValues(value))); err != nil {
 			return err
 		}
@@ -93,32 +98,7 @@ func (x Cooperations) Load(
 	coordinatorID model_user_id.UserID,
 	volunteerID model_user_id.UserID,
 ) (*aggregate_cooperation.Cooperation, error) {
-	sql, arguments, err := x.queries.Select(
-		coordinatorIDColumn,
-		volunteerIDColumn,
-		statusColumn,
-		retryAfterColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("cooperations").Where(squirrel.Eq{
-		coordinatorIDColumn: coordinatorID.String(),
-		volunteerIDColumn:   volunteerID.String(),
-	}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var record row
-	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_cooperation.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return record.toAggregate()
+	return x.load(ctx, coordinatorID, volunteerID, false)
 }
 
 func (x Cooperations) Modify(
@@ -131,7 +111,11 @@ func (x Cooperations) Modify(
 	) error,
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		value, err := x.Load(ctx, coordinatorID, volunteerID)
+		if err := repository_locking.Coordinator(ctx, x.database, coordinatorID, true); err != nil {
+			return err
+		}
+
+		value, err := x.load(ctx, coordinatorID, volunteerID, true)
 		if err != nil {
 			return err
 		}
@@ -193,6 +177,45 @@ func (x Cooperations) execute(ctx context.Context, query squirrel.Sqlizer) (pgco
 	}
 
 	return result, nil
+}
+
+func (x Cooperations) load(
+	ctx context.Context,
+	coordinatorID model_user_id.UserID,
+	volunteerID model_user_id.UserID,
+	lock bool,
+) (*aggregate_cooperation.Cooperation, error) {
+	query := x.queries.Select(
+		coordinatorIDColumn,
+		volunteerIDColumn,
+		statusColumn,
+		retryAfterColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("cooperations").Where(squirrel.Eq{
+		coordinatorIDColumn: coordinatorID.String(),
+		volunteerIDColumn:   volunteerID.String(),
+	})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var record row
+	if err := record.scan(x.database.QueryRow(ctx, sql, arguments...)); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_cooperation.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return record.toAggregate()
 }
 
 func NewCooperations(database Database) Cooperations {

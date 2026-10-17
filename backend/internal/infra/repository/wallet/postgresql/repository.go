@@ -70,39 +70,7 @@ func (x Wallets) Create(ctx context.Context, wallet *aggregate_wallet.Wallet) er
 }
 
 func (x Wallets) Load(ctx context.Context, userID model_user_id.UserID) (*aggregate_wallet.Wallet, error) {
-	sql, arguments, err := x.queries.Select(
-		coinBalanceColumn,
-		confirmedMinutesColumn,
-		lastSequenceColumn,
-		createdAtColumn,
-		updatedAtColumn,
-	).From("wallets").Where(squirrel.Eq{volunteerIDColumn: userID.String()}).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var (
-		balance, minutes     int64
-		sequence             uint64
-		createdAt, updatedAt time.Time
-	)
-
-	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(
-		&balance,
-		&minutes,
-		&sequence,
-		&createdAt,
-		&updatedAt,
-	); err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, aggregate_wallet.ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return aggregate_wallet.NewWalletFromFields(userID, balance, minutes, sequence, createdAt, updatedAt), nil
+	return x.load(ctx, userID, false)
 }
 
 func (x Wallets) Modify(
@@ -114,7 +82,7 @@ func (x Wallets) Modify(
 	) error,
 ) error {
 	return x.database.InTx(ctx, func(ctx context.Context) error {
-		wallet, err := x.Load(ctx, userID)
+		wallet, err := x.load(ctx, userID, true)
 		if err != nil {
 			return err
 		}
@@ -148,6 +116,47 @@ func (x Wallets) Save(ctx context.Context, wallet *aggregate_wallet.Wallet) erro
 	}
 
 	return nil
+}
+
+func (x Wallets) load(ctx context.Context, userID model_user_id.UserID, lock bool) (*aggregate_wallet.Wallet, error) {
+	query := x.queries.Select(
+		coinBalanceColumn,
+		confirmedMinutesColumn,
+		lastSequenceColumn,
+		createdAtColumn,
+		updatedAtColumn,
+	).From("wallets").Where(squirrel.Eq{volunteerIDColumn: userID.String()})
+	if lock {
+		query = query.Suffix("FOR UPDATE")
+	}
+
+	sql, arguments, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		balance, minutes     int64
+		sequence             uint64
+		createdAt, updatedAt time.Time
+	)
+
+	if err := x.database.QueryRow(ctx, sql, arguments...).Scan(
+		&balance,
+		&minutes,
+		&sequence,
+		&createdAt,
+		&updatedAt,
+	); err != nil {
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return nil, aggregate_wallet.ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return aggregate_wallet.NewWalletFromFields(userID, balance, minutes, sequence, createdAt, updatedAt), nil
 }
 
 func NewWallets(database Database) Wallets {
