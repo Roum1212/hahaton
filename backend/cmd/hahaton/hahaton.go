@@ -81,10 +81,7 @@ func NewHTTPHandler(ctx context.Context, cfg config.Config, pool *pgxpool.Pool) 
 		postgresql: client_postgresql.NewClient(pool),
 	}
 
-	repos, err := initRepositories(ctx, cfg, databaseClients, externalClients)
-	if err != nil {
-		return nil, fmt.Errorf("init repositories: %w", err)
-	}
+	repos := initRepositories(databaseClients, externalClients)
 
 	tokens := initTokens(cfg)
 

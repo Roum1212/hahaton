@@ -4,15 +4,17 @@ package geo.v1;
 
 option go_package = "github.com/Roum1212/hahaton/genproto/geo/v1;geo_v1";
 
-// Справочник городов и адресные подсказки. GeoService не создаёт мероприятия.
+// Поиск населённых пунктов и адресные подсказки DaData. GeoService не создаёт мероприятия.
 service GeoService {
   // Авторизованный клиент передаёт query/from_bound/to_bound; бэк обращается к
   // POST https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address.
-  // API key только на сервере, выдаются подсказки по России. Ошибка провайдера не
+  // API key только на сервере; поиск по России не ограничивается выбранным кругом или его радиусом.
+  // Ошибка провайдера не
   // маскируется пустым успешным списком: Unavailable либо ResourceExhausted при лимите.
   rpc SuggestAddresses(SuggestAddressesRequest) returns (SuggestAddressesResponse) {}
-  // Справочник доступен без авторизации. Подсказки не заменяют выгрузку всех городов.
-  // Пустой query и последовательный обход страниц возвращают весь справочник.
+  // Поиск населённых пунктов через DaData, без чтения и сохранения в БД, доступен без авторизации.
+  // Пустой query возвращает пустой список. Полной выгрузки всех городов и пагинации нет.
+  // Ошибка провайдера — Unavailable; превышение лимита — ResourceExhausted.
   rpc ListCities(ListCitiesRequest) returns (ListCitiesResponse) {}
   rpc GetCity(GetCityRequest) returns (GetCityResponse) {}
 }
@@ -32,8 +34,8 @@ message City {
 
   // Отсутствует, если центр не проверен; не подменять координатами (0, 0).
   GeoPoint center = 4 [json_name = "center"];
-  // Проверенная граница населённого пункта, а не городского округа.
-  // false: режим city_id недоступен; фронт предлагает явный выбор радиуса.
+  // DaData не возвращает проверенные полигоны: всегда false.
+  // Режим city_id недоступен; фронт предлагает явный выбор радиуса.
   bool has_boundary = 5 [json_name = "has_boundary"];
 }
 
@@ -54,20 +56,24 @@ message SearchArea {
 }
 
 message ListCitiesRequest {
-  // Подстрока имени без учёта регистра, trim; отсутствие/пустая строка — все города.
+  // Поисковый запрос DaData, trim, не более 300 Unicode-символов.
+  // Отсутствие/пустая строка — пустой список без обращения к провайдеру.
   optional string query = 1 [json_name = "query"];
 
-  // 0 означает 100; допустимы 1–1000.
+  // 0 означает 10; допустимы 1–20.
   int32 limit = 2 [json_name = "limit"];
+  // Допустим только 0: DaData не поддерживает страницы подсказок.
   int64 offset = 3 [json_name = "offset"];
 }
 
 message ListCitiesResponse {
-  // Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
+  // В порядке релевантности DaData; города и населённые пункты.
   repeated City cities = 1 [json_name = "cities"];
 
+  // Идентификатор источника: dadata; не версия полной выгрузки.
   string catalog_version = 2 [json_name = "catalog_version"];
 
+  // Число возвращённых подсказок, а не общее число совпадений у провайдера.
   int64 total_count = 3 [json_name = "total_count"];
 }
 
@@ -78,6 +84,7 @@ message GetCityRequest {
 message GetCityResponse {
   City city = 1 [json_name = "city"];
 
+  // Идентификатор источника: dadata; не версия полной выгрузки.
   string catalog_version = 2 [json_name = "catalog_version"];
 }
 

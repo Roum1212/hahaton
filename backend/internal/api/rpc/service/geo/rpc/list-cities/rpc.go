@@ -10,13 +10,14 @@ import (
 	geo_v1 "github.com/Roum1212/hahaton/genproto/geo/v1"
 	rpc_service_geo_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/geo/serde"
 	service_list_cities "github.com/Roum1212/hahaton/internal/app/service/list-cities"
+	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
 	model_page "github.com/Roum1212/hahaton/internal/domain/model/page"
 	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 )
 
 const (
-	defaultCityLimit = 100
-	maxCityLimit     = 1000
+	defaultCityLimit = 10
+	maxCityLimit     = service_list_cities.MaxCitySuggestions
 )
 
 type RPC struct {
@@ -57,6 +58,10 @@ func (x RPC) ListCities(
 					},
 				},
 			})
+		case errors.Is(err, service_suggest_addresses.ErrUnavailable):
+			return nil, rpc_error.NewUnavailableError()
+		case errors.Is(err, service_suggest_addresses.ErrQuota):
+			return nil, rpc_error.NewResourceExhaustedError(nil)
 		default:
 			return nil, rpc_error.NewInternalError()
 		}

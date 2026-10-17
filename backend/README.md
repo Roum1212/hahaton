@@ -19,7 +19,6 @@ Go-монолит с ConnectRPC, PostgreSQL, pgx и Squirrel. Реализова
 ```sh
 cp .env.example .env
 sh scripts/generate-keys.sh
-sh scripts/fetch-cities.sh
 docker compose up -d postgres
 ```
 
@@ -34,7 +33,7 @@ OIDC discovery/JWKS и ID token с данными профиля. Если disco
 Конфигурация находится в `internal/config`, по подходу Flida: `caarlos0/env`,
 разделы с `envPrefix`, `ParseOptions` для типизированных ключей PASETO/AES.
 Переменные используют префиксы `POSTGRESQL_`, `HTTP_SERVER_`,
-`FLIDA_`, `SESSION_TOKEN_`, `STORAGE_`, `CITY_CATALOG_`, `DADATA_`; актуальные имена — в `.env.example`.
+`FLIDA_`, `SESSION_TOKEN_`, `STORAGE_`, `DADATA_`; актуальные имена — в `.env.example`.
 Поля Config и вложенных секций публичные, теги `env`/`envPrefix` стоят прямо на них.
 Точки входа заполняют Config через `env.ParseWithOptions(&cfg, config.ParseOptions())`,
 затем вызывают Validate. Промежуточного environment, геттеров и NewConfig нет.
@@ -124,11 +123,19 @@ Volunteer и Coordinator используют общий ID, а наличие �
 
 ## Города, изображения и чат
 
-`ListCities`/`GetCity` читают таблицу `cities`. На пустой БД справочник импортируется
-из `CITY_CATALOG_CSV_PATH` с версией `CITY_CATALOG_VERSION`; после заполнения файл не нужен для чтения.
-DaData используется отдельно для адресных подсказок. Частичный ответ подсказок
-не считается полным справочником. Формат CSV и необязательных границ: [data/README](data/README.md).
-Без проверенного полигона поиск по городу возвращает FailedPrecondition; клиент явно выбирает радиус.
+`ListCities`/`GetCity` обращаются к DaData через бэкенд, без чтения и заполнения `cities`.
+Ключ `DADATA_API_KEY` хранится только на сервере. `ListCities` ищет населённые пункты
+по введённому названию и возвращает до 20 подсказок в порядке релевантности; пустой запрос
+возвращает пустой список. `offset` должен быть 0; `total_count` — число возвращённых подсказок.
+`catalog_version=dadata` обозначает источник, а не версию полного справочника.
+`GetCity` получает населённый пункт по ФИАС-коду. Полная выгрузка городов не поддерживается.
+Старые записи таблицы `cities` сохраняются, но больше не используются приложением.
+
+Адресные подсказки также запрашиваются через DaData. Выбранный центр и радиус не передаются
+в запрос подсказок и не ограничивают поиск адреса; они применяются только к выборке мероприятий.
+DaData не предоставляет проверенные полигоны населённых пунктов: `has_boundary=false`.
+Поиск мероприятий по `city_id` возвращает FailedPrecondition; клиент явно выбирает радиус.
+Недоступность DaData и исчерпание квоты возвращаются как Unavailable и ResourceExhausted.
 
 UploadImage принимает JPEG/PNG до 5 МиБ и 4096 пикселей на сторону. Ответ содержит
 `image_path` для сохранения в карточке и `image_url` для показа. Файлы размещаются в

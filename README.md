@@ -13,7 +13,6 @@ PostgreSQL доступен только во внутренней сети Comp
 cp .env.example .env
 sh backend/scripts/generate-keys.sh
 openssl rand -hex 32
-sh backend/scripts/fetch-cities.sh
 ```
 
 Перенесите три сгенерированных ключа в соответствующие поля `.env`, а последний случайный
@@ -26,16 +25,17 @@ sh backend/scripts/fetch-cities.sh
   Для текущей Flida: issuer `https://id.flida.ru`, discovery
   `https://id.flida.ru/api/.well-known/openid-configuration`.
 - `FLIDA_REDIRECT_URI` — HTTPS-адрес `<FRONTEND_URL>/auth/callback`, разрешённый в Flida.
-- `DADATA_API_KEY` и `YANDEX_MAPS_API_KEY` — если используете подсказки адресов и карту.
+- `DADATA_API_KEY` — серверный ключ для поиска городов и адресных подсказок.
+- `YANDEX_MAPS_API_KEY` — ключ карты.
 
 Не переносите ADMIN_API_KEY, ключи сессии/шифрования и пароль БД в публичные настройки frontend.
 Compose передаёт frontend только публичные `NUXT_PUBLIC_*`. API URL и настройки входа меняются
 при пересоздании контейнера, пересборка для них не требуется. Название и meta-description сайта
 передаются также как build arguments; для их изменения пересоберите frontend.
 
-Города загружаются в PostgreSQL при первом старте backend из подготовленного CSV.
-Полигоны необязательны: если они нужны, положите их в `backend/data`, укажите путь
-`/app/data/<имя файла>` в `CITY_CATALOG_BOUNDARIES_PATH` и пересоберите backend.
+Города и адресные подсказки запрашиваются через серверный API DaData без БД и CSV.
+Поиск возвращает до 20 подсказок по введённому названию, без выгрузки всех городов.
+Радиус выбранного круга ограничивает мероприятия, но не поиск адреса.
 
 Код работы с cookie и RPC-ошибками перенесён из библиотек Flida во внутренние пакеты
 `backend/internal/pkg/cookies` и `backend/internal/pkg/rpc-error`. Отдельных модулей и

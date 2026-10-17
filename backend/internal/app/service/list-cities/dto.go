@@ -1,9 +1,18 @@
 package service_list_cities
 
 import (
+	"errors"
+	"strings"
+	"unicode/utf8"
+
 	model_city "github.com/Roum1212/hahaton/internal/domain/model/city"
 	model_page "github.com/Roum1212/hahaton/internal/domain/model/page"
 	utils_value "github.com/Roum1212/hahaton/internal/pkg/utils/value"
+)
+
+const (
+	MaxCitySuggestions = 20
+	maxQueryLength     = 300
 )
 
 type Request struct {
@@ -21,7 +30,20 @@ func (x Request) GetQuery() utils_value.Optional[string] {
 }
 
 func (x Request) Validate() error {
-	return x.page.Validate()
+	if err := x.page.Validate(); err != nil {
+		return err
+	}
+
+	if x.page.GetLimit() > MaxCitySuggestions || x.page.GetOffset() != 0 {
+		return errors.New("city suggestions require limit up to 20 and zero offset")
+	}
+
+	query, _ := x.query.Get()
+	if utf8.RuneCountInString(strings.TrimSpace(query)) > maxQueryLength {
+		return errors.New("city query must contain at most 300 characters")
+	}
+
+	return nil
 }
 
 type RequestOption func(x *Request)

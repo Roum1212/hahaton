@@ -46,11 +46,13 @@ const (
 type GeoServiceClient interface {
 	// Авторизованный клиент передаёт query/from_bound/to_bound; бэк обращается к
 	// POST https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address.
-	// API key только на сервере, выдаются подсказки по России. Ошибка провайдера не
+	// API key только на сервере; поиск по России не ограничивается выбранным кругом или его радиусом.
+	// Ошибка провайдера не
 	// маскируется пустым успешным списком: Unavailable либо ResourceExhausted при лимите.
 	SuggestAddresses(context.Context, *connect.Request[v1.SuggestAddressesRequest]) (*connect.Response[v1.SuggestAddressesResponse], error)
-	// Справочник доступен без авторизации. Подсказки не заменяют выгрузку всех городов.
-	// Пустой query и последовательный обход страниц возвращают весь справочник.
+	// Поиск населённых пунктов через DaData, без чтения и сохранения в БД, доступен без авторизации.
+	// Пустой query возвращает пустой список. Полной выгрузки всех городов и пагинации нет.
+	// Ошибка провайдера — Unavailable; превышение лимита — ResourceExhausted.
 	ListCities(context.Context, *connect.Request[v1.ListCitiesRequest]) (*connect.Response[v1.ListCitiesResponse], error)
 	GetCity(context.Context, *connect.Request[v1.GetCityRequest]) (*connect.Response[v1.GetCityResponse], error)
 }
@@ -113,11 +115,13 @@ func (c *geoServiceClient) GetCity(ctx context.Context, req *connect.Request[v1.
 type GeoServiceHandler interface {
 	// Авторизованный клиент передаёт query/from_bound/to_bound; бэк обращается к
 	// POST https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address.
-	// API key только на сервере, выдаются подсказки по России. Ошибка провайдера не
+	// API key только на сервере; поиск по России не ограничивается выбранным кругом или его радиусом.
+	// Ошибка провайдера не
 	// маскируется пустым успешным списком: Unavailable либо ResourceExhausted при лимите.
 	SuggestAddresses(context.Context, *connect.Request[v1.SuggestAddressesRequest]) (*connect.Response[v1.SuggestAddressesResponse], error)
-	// Справочник доступен без авторизации. Подсказки не заменяют выгрузку всех городов.
-	// Пустой query и последовательный обход страниц возвращают весь справочник.
+	// Поиск населённых пунктов через DaData, без чтения и сохранения в БД, доступен без авторизации.
+	// Пустой query возвращает пустой список. Полной выгрузки всех городов и пагинации нет.
+	// Ошибка провайдера — Unavailable; превышение лимита — ResourceExhausted.
 	ListCities(context.Context, *connect.Request[v1.ListCitiesRequest]) (*connect.Response[v1.ListCitiesResponse], error)
 	GetCity(context.Context, *connect.Request[v1.GetCityRequest]) (*connect.Response[v1.GetCityResponse], error)
 }

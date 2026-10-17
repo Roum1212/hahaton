@@ -1,10 +1,6 @@
 package hahaton
 
 import (
-	"context"
-
-	"github.com/Roum1212/hahaton/internal/config"
-	repository_city_postgresql "github.com/Roum1212/hahaton/internal/infra/repository/city/postgresql"
 	repository_cooperation_invitation_postgresql "github.com/Roum1212/hahaton/internal/infra/repository/cooperation-invitation/postgresql"
 	repository_cooperation_postgresql "github.com/Roum1212/hahaton/internal/infra/repository/cooperation/postgresql"
 	repository_coordinator_postgresql "github.com/Roum1212/hahaton/internal/infra/repository/coordinator/postgresql"
@@ -19,8 +15,6 @@ import (
 )
 
 type repositorySet struct {
-	catalog *repository_city_postgresql.Catalog
-
 	chats        *repository_event_chat_postgresql.EventChats
 	cooperations repository_cooperation_postgresql.Cooperations
 	coordinators repository_coordinator_postgresql.Coordinators
@@ -36,23 +30,10 @@ type repositorySet struct {
 }
 
 func initRepositories(
-	ctx context.Context,
-	cfg config.Config,
 	databaseClients databaseClientSet,
 	externalClients externalClientSet,
-) (repositorySet, error) {
-	catalog, err := repository_city_postgresql.NewCatalog(ctx, databaseClients.postgresql)
-	if err != nil {
-		return repositorySet{}, err
-	}
-
-	if err := initializeCities(ctx, cfg, catalog); err != nil {
-		return repositorySet{}, err
-	}
-
+) repositorySet {
 	return repositorySet{
-		catalog: catalog,
-
 		chats: repository_event_chat_postgresql.NewEventChats(
 			databaseClients.postgresql,
 			externalClients.encryption,
@@ -71,5 +52,5 @@ func initRepositories(
 		sessions:       repository_session_postgresql.NewSessions(databaseClients.postgresql),
 		volunteers:     repository_volunteer_postgresql.NewVolunteers(databaseClients.postgresql),
 		wallets:        repository_wallet_postgresql.NewWallets(databaseClients.postgresql),
-	}, nil
+	}
 }

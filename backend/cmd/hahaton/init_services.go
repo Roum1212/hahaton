@@ -206,7 +206,7 @@ func initServices(
 			repos.wallets,
 		),
 		findVolunteers:         service_find_volunteers.NewService(repos.volunteers, repos.coordinators),
-		getCity:                service_get_city.NewService(repos.catalog),
+		getCity:                service_get_city.NewService(externalClients.dadata),
 		getCooperation:         service_get_cooperation.NewService(repos.cooperations, repos.coordinators),
 		getCoordinator:         service_get_coordinator.NewService(repos.coordinators, repos.volunteers),
 		getCoordinatorSettings: service_get_coordinator_settings.NewService(repos.coordinators),
@@ -241,7 +241,7 @@ func initServices(
 			repos.rewards,
 			repos.cooperations,
 		),
-		listCities: service_list_cities.NewService(repos.catalog),
+		listCities: service_list_cities.NewService(externalClients.dadata),
 		listCooperationInvitations: service_list_cooperation_invitations.NewService(
 			repos.invitations,
 			repos.coordinators,
@@ -260,7 +260,7 @@ func initServices(
 			repos.coordinators,
 			repos.cooperations,
 			repos.participations,
-			repos.catalog,
+			externalClients.dadata,
 		),
 		listMyEventChats: service_list_my_event_chats.NewService(
 			repos.events,

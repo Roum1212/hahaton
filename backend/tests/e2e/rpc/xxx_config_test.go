@@ -73,11 +73,6 @@ func (x *RPCTestSuite) SetupSuite() {
 	binary, err := os.Executable()
 	x.Require().NoError(err)
 
-	csvPath := filepath.Join(directory, "cities.csv")
-	x.Require().NoError(os.WriteFile(csvPath, []byte(
-		"fias_id,city,region,geo_lat,geo_lon\nobninsk,Обнинск,Калужская область,55.1,36.6\n",
-	), 0o600))
-
 	environment := map[string]string{
 		"E2E_BACKEND_PROCESS":            "1",
 		"POSTGRESQL_DSN":                 x.pool.Config().ConnString(),
@@ -94,9 +89,6 @@ func (x *RPCTestSuite) SetupSuite() {
 		"SESSION_TOKEN_V4_SYMMETRIC_KEY": strings.Repeat("01", 32),
 		"DATA_ENCRYPTION_KEY":            strings.Repeat("02", 32),
 		"STORAGE_DIRECTORY":              filepath.Join(directory, "storage"),
-		"CITY_CATALOG_CSV_PATH":          csvPath,
-		"CITY_CATALOG_BOUNDARIES_PATH":   "",
-		"CITY_CATALOG_VERSION":           "e2e",
 		"DADATA_API_KEY":                 "e2e-dadata",
 		"DADATA_ENDPOINT":                x.provider.server.URL + "/addresses",
 	}

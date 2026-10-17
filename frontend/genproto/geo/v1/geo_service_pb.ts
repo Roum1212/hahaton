@@ -69,8 +69,8 @@ export type City = Message<"geo.v1.City"> & {
   center?: GeoPoint | undefined;
 
   /**
-   * Проверенная граница населённого пункта, а не городского округа.
-   * false: режим city_id недоступен; фронт предлагает явный выбор радиуса.
+   * DaData не возвращает проверенные полигоны: всегда false.
+   * Режим city_id недоступен; фронт предлагает явный выбор радиуса.
    *
    * @generated from field: bool has_boundary = 5 [json_name = "has_boundary"];
    */
@@ -146,20 +146,23 @@ export const SearchAreaSchema: GenMessage<SearchArea> = /*@__PURE__*/
  */
 export type ListCitiesRequest = Message<"geo.v1.ListCitiesRequest"> & {
   /**
-   * Подстрока имени без учёта регистра, trim; отсутствие/пустая строка — все города.
+   * Поисковый запрос DaData, trim, не более 300 Unicode-символов.
+   * Отсутствие/пустая строка — пустой список без обращения к провайдеру.
    *
    * @generated from field: optional string query = 1;
    */
   query?: string | undefined;
 
   /**
-   * 0 означает 100; допустимы 1–1000.
+   * 0 означает 10; допустимы 1–20.
    *
    * @generated from field: int32 limit = 2;
    */
   limit: number;
 
   /**
+   * Допустим только 0: DaData не поддерживает страницы подсказок.
+   *
    * @generated from field: int64 offset = 3;
    */
   offset: bigint;
@@ -177,18 +180,22 @@ export const ListCitiesRequestSchema: GenMessage<ListCitiesRequest> = /*@__PURE_
  */
 export type ListCitiesResponse = Message<"geo.v1.ListCitiesResponse"> & {
   /**
-   * Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
+   * В порядке релевантности DaData; города и населённые пункты.
    *
    * @generated from field: repeated geo.v1.City cities = 1;
    */
   cities: City[];
 
   /**
+   * Идентификатор источника: dadata; не версия полной выгрузки.
+   *
    * @generated from field: string catalog_version = 2 [json_name = "catalog_version"];
    */
   catalogVersion: string;
 
   /**
+   * Число возвращённых подсказок, а не общее число совпадений у провайдера.
+   *
    * @generated from field: int64 total_count = 3 [json_name = "total_count"];
    */
   totalCount: bigint;
@@ -228,6 +235,8 @@ export type GetCityResponse = Message<"geo.v1.GetCityResponse"> & {
   city?: City | undefined;
 
   /**
+   * Идентификатор источника: dadata; не версия полной выгрузки.
+   *
    * @generated from field: string catalog_version = 2 [json_name = "catalog_version"];
    */
   catalogVersion: string;
@@ -404,7 +413,7 @@ export const SuggestAddressesResponseSchema: GenMessage<SuggestAddressesResponse
   messageDesc(file_geo_v1_geo_service, 12);
 
 /**
- * Справочник городов и адресные подсказки. GeoService не создаёт мероприятия.
+ * Поиск населённых пунктов и адресные подсказки DaData. GeoService не создаёт мероприятия.
  *
  * @generated from service geo.v1.GeoService
  */
@@ -412,7 +421,8 @@ export const GeoService: GenService<{
   /**
    * Авторизованный клиент передаёт query/from_bound/to_bound; бэк обращается к
    * POST https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address.
-   * API key только на сервере, выдаются подсказки по России. Ошибка провайдера не
+   * API key только на сервере; поиск по России не ограничивается выбранным кругом или его радиусом.
+   * Ошибка провайдера не
    * маскируется пустым успешным списком: Unavailable либо ResourceExhausted при лимите.
    *
    * @generated from rpc geo.v1.GeoService.SuggestAddresses
@@ -423,8 +433,9 @@ export const GeoService: GenService<{
     output: typeof SuggestAddressesResponseSchema;
   },
   /**
-   * Справочник доступен без авторизации. Подсказки не заменяют выгрузку всех городов.
-   * Пустой query и последовательный обход страниц возвращают весь справочник.
+   * Поиск населённых пунктов через DaData, без чтения и сохранения в БД, доступен без авторизации.
+   * Пустой query возвращает пустой список. Полной выгрузки всех городов и пагинации нет.
+   * Ошибка провайдера — Unavailable; превышение лимита — ResourceExhausted.
    *
    * @generated from rpc geo.v1.GeoService.ListCities
    */

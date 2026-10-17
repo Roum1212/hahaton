@@ -12,7 +12,6 @@ import (
 
 type Config struct {
 	AdminAPIKey       string        `env:"ADMIN_API_KEY,required,notEmpty"`
-	CityCatalog       CityCatalog   `envPrefix:"CITY_CATALOG_"`
 	DaData            DaData        `envPrefix:"DADATA_"`
 	DataEncryptionKey EncryptionKey `env:"DATA_ENCRYPTION_KEY,required,notEmpty"`
 	Flida             Flida         `envPrefix:"FLIDA_"`
@@ -38,12 +37,6 @@ func (x Config) Validate() error {
 	}
 
 	return nil
-}
-
-type CityCatalog struct {
-	BoundariesPath string `env:"BOUNDARIES_PATH"`
-	CSVPath        string `env:"CSV_PATH"         envDefault:"./data/city.csv"`
-	Version        string `env:"VERSION,notEmpty" envDefault:"local"`
 }
 
 type DaData struct {
