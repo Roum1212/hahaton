@@ -190,9 +190,9 @@ export const LANDING_NAV: ILandingNavItem[] = [
 ];
 
 export const LANDING_STATS: ILandingStat[] = [
-  { value: '1', label: 'город в пилоте', link: 'Выбрать мероприятие', anchor: 'events' },
+  { value: '>100', label: 'городов для поиска мероприятий', link: 'Выбрать мероприятие', anchor: 'events' },
   { value: `${COINS_PER_HOUR}`, label: 'койнов за 1 час участия', link: 'Как начисляются', anchor: 'steps', hint: COINS_DISCLAIMER },
-  { value: '3', label: 'поощрения в магазине', link: 'Как обменять', anchor: 'steps' },
+  { value: '∞', label: 'поощрений в магазине', link: 'Как обменять', anchor: 'steps' },
   { value: '2', label: 'роли: волонтёр и координатор', link: 'Для кого сервис', anchor: 'audience' },
 ];
 
