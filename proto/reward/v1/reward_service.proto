@@ -6,26 +6,11 @@ import "google/protobuf/empty.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/reward/v1;reward_v1";
 
-// Учебные поощрения за внутренние коины; реальных платежей и выдачи призов нет.
-// Все методы требуют авторизации. Действующий участник — user_id из сессии.
-// Создание/правка/удаление требуют Coordinator с этим ID и владения поощрением.
 service RewardService {
-  // Только координатор. Создаёт своё поощрение в статусе ACTIVE.
   rpc CreateReward(CreateRewardRequest) returns (CreateRewardResponse) {}
-  // Создатель видит своё действующее поощрение. Волонтёр — при активном сотрудничестве.
-  // Удалённая карточка — NotFound; история доступна в снимках своих заказов.
   rpc GetReward(GetRewardRequest) returns (GetRewardResponse) {}
-  // scope выбирает каталог партнёров либо собственные поощрения координатора.
-  // История покупок доступна через RewardOrderService, включая прекращённое сотрудничество.
   rpc ListRewards(ListRewardsRequest) returns (ListRewardsResponse) {}
-  // Только создатель и только ACTIVE. Изменения не затрагивают снимки уже оформленных заказов.
-  // Проверка количества и сохранение синхронизируются с покупкой, отменой и выдачей заказов.
   rpc UpdateReward(UpdateRewardRequest) returns (google.protobuf.Empty) {}
-  // Только создатель. Удаляет карточку из каталога без восстановления/архива.
-  // Атомарно запрещает покупки и отменяет только PENDING заказы с возвратом исходной
-  // цены и освобождением резервов. ISSUED остаются неизменными, не удаляются/не отменяются.
-  // История и снимки всех заказов сохраняются. Повтор владельцем успешен.
-  // Синхронизируется с оформлением/выдачей/отменой; технический tombstone хранит владельца.
   rpc DeleteReward(DeleteRewardRequest) returns (google.protobuf.Empty) {}
 }
 
@@ -35,17 +20,12 @@ message Reward {
   string coordinator_id = 2 [json_name = "coordinator_id"];
 
   string description = 3 [json_name = "description"];
-  // Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
   string image_url = 4 [json_name = "image_url"];
   string title = 5 [json_name = "title"];
 
-  // Целое положительное число коинов за одну единицу.
   int64 price_coins = 6 [json_name = "price_coins"];
 
-  // Вычисляется сервером: quantity_limit минус выданные единицы и резервы.
-  // Ноль означает отсутствие свободных единиц, а не архивирование.
   int32 available_quantity = 7 [json_name = "available_quantity"];
-  // Общее количество, включая уже выданные единицы и резервы невыданных заказов.
   int32 quantity_limit = 8 [json_name = "quantity_limit"];
 
   RewardStatus status = 9 [json_name = "status"];
@@ -58,16 +38,11 @@ enum RewardStatus {
 
 message CreateRewardRequest {
   string description = 1 [json_name = "description"];
-  // Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
-  // Файл обязан существовать и принадлежать ему.
   string image_path = 2 [json_name = "image_path"];
-  // Непустое название.
   string title = 3 [json_name = "title"];
 
-  // Строго больше нуля.
   int64 price_coins = 4 [json_name = "price_coins"];
 
-  // Строго больше нуля.
   int32 quantity_limit = 5 [json_name = "quantity_limit"];
 }
 
@@ -85,51 +60,33 @@ message GetRewardResponse {
 
 enum RewardListScope {
   REWARD_LIST_SCOPE_UNSPECIFIED = 0;
-  // ACTIVE поощрения координаторов с активным сотрудничеством.
   REWARD_LIST_SCOPE_CATALOG = 1;
-  // Только coordinator_id = user_id сессии; требуется Coordinator.
   REWARD_LIST_SCOPE_OWNED = 2;
 }
 
 message ListRewardsRequest {
-  // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
   RewardListScope scope = 1 [json_name = "scope"];
 
-  // Необязательный непустой фильтр внутри доступных поощрений; не расширяет права.
   optional string coordinator_id = 2 [json_name = "coordinator_id"];
 
-  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 3 [json_name = "limit"];
-  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
-  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
-  // На каждом запросе применяются текущие права доступа и фильтры.
   int64 offset = 4 [json_name = "offset"];
 }
 
 message ListRewardsResponse {
-  // По title, затем id по возрастанию.
   repeated Reward rewards = 1 [json_name = "rewards"];
-  // Общее число доступных записей с текущими фильтрами, без limit и offset.
-  // Подсчитывается в том же снимке данных, что и элементы страницы.
   int64 total_count = 2 [json_name = "total_count"];
 }
 
 message UpdateRewardRequest {
   string id = 1 [json_name = "id"];
 
-  // Отсутствующие поля не меняются. Пустое описание очищает его.
   optional string description = 2 [json_name = "description"];
-  // Отсутствует — сохранить; пустая строка — убрать изображение.
-  // Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
   optional string image_path = 3 [json_name = "image_path"];
-  // Непустое название.
   optional string title = 4 [json_name = "title"];
 
-  // Строго больше нуля. Новая цена применяется только к новым заказам.
   optional int64 price_coins = 5 [json_name = "price_coins"];
 
-  // Неотрицательное число, не меньше суммы выданных единиц и текущих резервов.
-  // Нарушение ограничения по резервам/выдачам означает FailedPrecondition.
   optional int32 quantity_limit = 6 [json_name = "quantity_limit"];
 }
 

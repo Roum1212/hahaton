@@ -6,36 +6,23 @@ import "google/protobuf/empty.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/coordinator/v1;coordinator_v1";
 
-// Действующий участник — user_id из проверенной сессии. Изменение своего профиля
-// и чтение/изменение его настроек дополнительно требуют существования Coordinator.
 service CoordinatorService {
-  // Требует авторизации. Карточка доступна до установления сотрудничества.
   rpc GetCoordinator(GetCoordinatorRequest) returns (GetCoordinatorResponse) {}
-  // Требует авторизации. Список доступен до установления сотрудничества.
   rpc ListCoordinators(ListCoordinatorsRequest) returns (ListCoordinatorsResponse) {}
-  // Требует Coordinator с id = user_id из сессии. Меняет только его описание/аватар.
-  // ФИО изменяется через UpdateVolunteer и отражается в обеих карточках.
   rpc UpdateCoordinator(UpdateCoordinatorRequest) returns (google.protobuf.Empty) {}
-  // Только настройки Coordinator с id = user_id сессии.
   rpc GetCoordinatorSettings(GetCoordinatorSettingsRequest) returns (GetCoordinatorSettingsResponse) {}
   rpc UpdateCoordinatorSettings(UpdateCoordinatorSettingsRequest) returns (google.protobuf.Empty) {}
 }
 
 message Coordinator {
-  // Равен ID волонтёра, для которого админы создали этот профиль.
   string id = 1 [json_name = "id"];
 
-  // Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
-  // Аватар независим от аватара Volunteer с тем же ID.
   string avatar_url = 2 [json_name = "avatar_url"];
   string description = 3 [json_name = "description"];
-  // Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
   string display_name = 4 [json_name = "display_name"];
 }
 
 message GetCoordinatorRequest {
-  // Если отсутствует, используется user_id из сессии и читается собственный Coordinator.
-  // Если собственного профиля нет — NotFound; переданный пустой id — InvalidArgument.
   optional string id = 1 [json_name = "id"];
 }
 
@@ -44,33 +31,21 @@ message GetCoordinatorResponse {
 }
 
 message ListCoordinatorsRequest {
-  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 1 [json_name = "limit"];
-  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
-  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
-  // На каждом запросе применяются текущие права доступа и фильтры.
   int64 offset = 2 [json_name = "offset"];
 }
 
 message ListCoordinatorsResponse {
-  // По display_name, затем id по возрастанию.
   repeated Coordinator coordinators = 1 [json_name = "coordinators"];
-  // Общее число доступных записей с текущими фильтрами, без limit и offset.
-  // Подсчитывается в том же снимке данных, что и элементы страницы.
   int64 total_count = 2 [json_name = "total_count"];
 }
 
 message UpdateCoordinatorRequest {
-  // Отсутствует — сохранить; пустая строка — убрать аватар.
-  // Иначе image_path из UploadImage текущего участника; файл обязан существовать.
   optional string avatar_path = 1 [json_name = "avatar_path"];
-  // Отсутствующее поле не меняется. Пустая строка очищает описание.
   optional string description = 2 [json_name = "description"];
 }
 
 message CoordinatorSettings {
-  // Неотрицательное целое число секунд ожидания повторной обычной заявки после отказа.
-  // 0 разрешает немедленную повторную заявку. Уже записанный retry_after не меняется.
   int64 cooperation_request_cooldown_seconds = 1 [json_name = "cooperation_request_cooldown_seconds"];
 }
 

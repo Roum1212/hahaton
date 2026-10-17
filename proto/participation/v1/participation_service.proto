@@ -7,39 +7,15 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/participation/v1;participation_v1";
 
-// Автор — user_id из cookie-сессии. Для одобрения/отклонения требуется Coordinator
-// с этим ID; управлять можно только заявками своих мероприятий.
-// Переход, места и доступ к чату меняются атомарно.
-// Заявки физически не удаляются. Одна неизменяемая пара (event_id, volunteer_id) — один id.
 service ParticipationService {
-  // Только волонтёр: ACTIVE Cooperation, PUBLISHED и now < starts_at.
-  // Запись на собственное мероприятие запрещена: сотрудничества с собой нет.
-  // Всегда создаёт PENDING, даже при полном лимите: это резерв без занятия места.
-  // Существующая заявка — AlreadyExists; для CANCELLED есть отдельное восстановление.
   rpc RequestParticipation(RequestParticipationRequest) returns (RequestParticipationResponse) {}
-  // Только волонтёр: CANCELLED -> PENDING при тех же условиях, что первая подача.
-  // Место и прежнее одобрение не возвращаются. REJECTED восстановить нельзя.
   rpc RestoreParticipation(RestoreParticipationRequest) returns (google.protobuf.Empty) {}
-  // Создатель: PENDING -> APPROVED строго до starts_at при ACTIVE Cooperation
-  // и свободном месте. Ручной выбор из резерва, без автоматического продвижения/FIFO.
-  // Лимит нельзя превысить конкурентными одобрениями. Открывается новый период чата.
   rpc ApproveParticipation(ApproveParticipationRequest) returns (google.protobuf.Empty) {}
-  // Создатель: PENDING/APPROVED -> REJECTED пока Event PUBLISHED, в том числе после начала.
-  // Для APPROVED освобождает место и отзывает весь доступ к чату, включая действующий стрим.
-  // Начислений нет; отклонённый участник исключается из итогового списка CompleteEvent.
-  // Отклонение окончательно: повторная подача на это мероприятие запрещена.
   rpc RejectParticipation(RejectParticipationRequest) returns (google.protobuf.Empty) {}
-  // Волонтёр: PENDING/APPROVED -> CANCELLED строго до starts_at.
-  // Освобождает место и отзывает весь текущий доступ к чату.
-  // Автоматическая отмена при прекращении Cooperation возможна и после начала.
   rpc CancelParticipation(CancelParticipationRequest) returns (google.protobuf.Empty) {}
-  // Владелец и создатель мероприятия читают заявку, в том числе после прекращения Cooperation.
   rpc GetParticipation(GetParticipationRequest) returns (GetParticipationResponse) {}
-  // scope выбирает свои заявки либо заявки своих мероприятий, без смешения выборок.
   rpc ListParticipations(ListParticipationsRequest) returns (ListParticipationsResponse) {}
-  // Те же права, что у GetParticipation; сохраняет циклы отмены/восстановления/одобрения.
   rpc ListParticipationChanges(ListParticipationChangesRequest) returns (ListParticipationChangesResponse) {}
-  // Отдельных ConfirmParticipation/MarkParticipationAbsent нет: только общий CompleteEvent.
 }
 
 message Participation {
@@ -49,11 +25,9 @@ message Participation {
   string volunteer_id = 3 [json_name = "volunteer_id"];
 
   ParticipationCancellationReason cancellation_reason = 4 [json_name = "cancellation_reason"];
-  // Необязательная причина отказа; только сам адресат и создатель мероприятия.
   optional string rejection_reason = 5 [json_name = "rejection_reason"];
   ParticipationStatus status = 6 [json_name = "status"];
 
-  // Все три поля присутствуют только у CONFIRMED, записываются синхронно в CompleteEvent.
   optional string accrual_operation_id = 7 [json_name = "accrual_operation_id"];
   optional int64 awarded_coins = 8 [json_name = "awarded_coins"];
   optional int64 awarded_minutes = 9 [json_name = "awarded_minutes"];
@@ -67,12 +41,9 @@ enum ParticipationStatus {
   PARTICIPATION_STATUS_PENDING = 1;
   PARTICIPATION_STATUS_APPROVED = 2;
   PARTICIPATION_STATUS_REJECTED = 3;
-  // Итоги и операция начисления уже сохранены. Конечный статус.
   PARTICIPATION_STATUS_CONFIRMED = 4;
   PARTICIPATION_STATUS_NOT_ATTENDED = 5;
-  // Можно восстановить до начала PUBLISHED мероприятия при ACTIVE Cooperation.
   PARTICIPATION_STATUS_CANCELLED = 6;
-  // Не рассмотрена до CompleteEvent; не является неявкой. Конечный статус.
   PARTICIPATION_STATUS_CLOSED = 7;
 }
 
@@ -100,11 +71,8 @@ message ApproveParticipationRequest {
 }
 
 message RejectParticipationRequest {
-  // Заявка своего мероприятия в PENDING или APPROVED, мероприятие — PUBLISHED.
-  // Иное состояние — FailedPrecondition; заявка чужого мероприятия — PermissionDenied.
   string id = 1 [json_name = "id"];
 
-  // Если передано — от 1 до 2000 Unicode-символов после trim.
   optional string reason = 2 [json_name = "reason"];
 }
 
@@ -122,42 +90,33 @@ message GetParticipationResponse {
 
 enum ParticipationListScope {
   PARTICIPATION_LIST_SCOPE_UNSPECIFIED = 0;
-  // Только volunteer_id = user_id сессии, независимо от наличия Coordinator.
   PARTICIPATION_LIST_SCOPE_MY_APPLICATIONS = 1;
-  // Только участия в мероприятиях с coordinator_id = user_id; требуется Coordinator.
   PARTICIPATION_LIST_SCOPE_MY_EVENTS = 2;
 }
 
 message ListParticipationsRequest {
-  // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
   ParticipationListScope scope = 1 [json_name = "scope"];
 
   optional string event_id = 2 [json_name = "event_id"];
-  // Отсутствует — все; UNSPECIFIED/неизвестный статус недопустимы.
   optional ParticipationStatus status = 3 [json_name = "status"];
   optional string volunteer_id = 4 [json_name = "volunteer_id"];
 
-  // 0 означает 20; допустимы 1–100. offset >= 0. Проверки доступа до пагинации.
   int32 limit = 5 [json_name = "limit"];
   int64 offset = 6 [json_name = "offset"];
 }
 
 message ListParticipationsResponse {
-  // По created_at, id по возрастанию; отменённые записи также сохраняются.
   repeated Participation participations = 1 [json_name = "participations"];
-  // Тот же снимок данных/права/фильтры, что и страница, без limit/offset.
   int64 total_count = 2 [json_name = "total_count"];
 }
 
 message ParticipationChange {
-  // Порядок аудита; не используется как условие команды.
   uint64 sequence = 1 [json_name = "sequence"];
 
   ParticipationCancellationReason cancellation_reason = 2 [json_name = "cancellation_reason"];
   optional string rejection_reason = 3 [json_name = "rejection_reason"];
   ParticipationStatus status = 4 [json_name = "status"];
 
-  // Автор для пользовательского действия; отсутствие означает системный переход.
   oneof actor {
     string coordinator_id = 5 [json_name = "coordinator_id"];
     string volunteer_id = 6 [json_name = "volunteer_id"];
@@ -173,7 +132,6 @@ message ListParticipationChangesRequest {
 }
 
 message ListParticipationChangesResponse {
-  // По sequence по возрастанию, начиная с первой подачи.
   repeated ParticipationChange changes = 1 [json_name = "changes"];
   int64 total_count = 2 [json_name = "total_count"];
 }
