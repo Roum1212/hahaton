@@ -18,13 +18,13 @@ export const useAuthActions = () => {
   const authStore = useAuthStore();
   const { loader } = useApp();
 
-  const redirectAfterLogin = async () => {
+  const redirectAfterLogin = async (fallback?: string) => {
     const redirectCookie = useCookie<string | null>('redirectAfterLogin');
-    const saved = redirectCookie.value;
+    const saved = takeLoginRedirect() ?? normalizeLoginRedirect(redirectCookie.value);
     const allowed = !!saved && (modeFromPath(saved) !== 'coordinator' || authStore.hasCoordinatorProfile);
-    const path = allowed ? saved : useCabinetMode().homeFor();
+    const path = allowed ? saved : (fallback ?? useCabinetMode().homeFor());
     redirectCookie.value = null;
-    await navigateTo(path, { replace: true });
+    return navigateTo(path, { replace: true });
   };
 
   const logout = async () => {
@@ -48,6 +48,7 @@ export const useAuthActions = () => {
 export const useDemoAuth = () => {
   const authStore = useAuthStore();
   const { toast, loader } = useApp();
+  const { redirectAfterLogin } = useAuthActions();
   const enabled = !!useRuntimeConfig().public.demoLogin;
 
   const signIn = async (account: IDemoAccount) => {
@@ -58,9 +59,8 @@ export const useDemoAuth = () => {
         return true;
       });
       if (!ok) return;
-      useCookie<string | null>('redirectAfterLogin').value = null;
       toast.success(`Вы вошли как ${account.name}`);
-      await navigateTo(useCabinetMode().homeFor(account.mode), { replace: true });
+      await redirectAfterLogin(useCabinetMode().homeFor(account.mode));
     } finally {
       loader.hide();
     }

@@ -58,8 +58,8 @@ export const useAuthStore = defineStore('auth', {
       this.resetUserScopedStores();
       const route = useRouter().currentRoute.value;
       if (GUEST_PAGES.includes(route.path.toLowerCase())) return;
-      useCookie('redirectAfterLogin').value = route.fullPath;
-      navigateTo(ROUTES.login);
+      rememberLoginRedirect(route.fullPath);
+      navigateTo({ path: ROUTES.login, query: { returnTo: route.fullPath } });
     },
 
     resetUserScopedStores() {
