@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"go.flida.dev/cookies/pkg/cookies"
-
 	"github.com/Roum1212/hahaton/internal/config"
+	"github.com/Roum1212/hahaton/internal/pkg/cookies"
 	session_cookie "github.com/Roum1212/hahaton/internal/pkg/session/cookie"
 )
 

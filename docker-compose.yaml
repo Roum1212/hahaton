@@ -1,0 +1,83 @@
+name: hahaton
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hackathon}
+      POSTGRES_USER: ${POSTGRES_USER:-hackathon}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    stop_grace_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      POSTGRESQL_DSN: host=postgres port=5432 sslmode=disable
+      PGDATABASE: ${POSTGRES_DB:-hackathon}
+      PGUSER: ${POSTGRES_USER:-hackathon}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: host=postgres port=5432 sslmode=disable
+      GOOSE_MIGRATION_DIR: /app/migrations
+      HTTP_SERVER_ADDRESS: :8080
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?Set ADMIN_API_KEY in .env}
+      FRONTEND_URL: ${FRONTEND_URL:?Set the public HTTPS FRONTEND_URL in .env}
+      FLIDA_ISSUER: ${FLIDA_ISSUER:?Set FLIDA_ISSUER in .env}
+      FLIDA_CLIENT_ID: ${FLIDA_CLIENT_ID:?Set FLIDA_CLIENT_ID in .env}
+      SESSION_TOKEN_V4_SYMMETRIC_KEY: ${SESSION_TOKEN_V4_SYMMETRIC_KEY:?Set the session key in .env}
+      SESSION_TOKEN_TTL: ${SESSION_TOKEN_TTL:-24h}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?Set the data encryption key in .env}
+      STORAGE_DIRECTORY: /app/storage
+      CITY_CATALOG_CSV_PATH: /app/data/city.csv
+      CITY_CATALOG_BOUNDARIES_PATH: ${CITY_CATALOG_BOUNDARIES_PATH:-}
+      CITY_CATALOG_VERSION: ${CITY_CATALOG_VERSION:-hflabs-local}
+      DADATA_ENDPOINT: ${DADATA_ENDPOINT:-https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address}
+      DADATA_API_KEY: ${DADATA_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_BIND_ADDRESS:-127.0.0.1}:${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - storage-data:/app/storage
+    stop_grace_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        APP_PUBLIC_SITE_NAME: ${SITE_NAME:-Цифровой волонтёр Обнинска}
+        APP_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Добрые дела, волонтёрские часы и поощрения}
+    restart: unless-stopped
+    environment:
+      NUXT_PUBLIC_RPC_URL: ${BACKEND_URL:?Set the public HTTPS BACKEND_URL in .env}
+      NUXT_PUBLIC_IMAGES_PATH: ${BACKEND_URL:?Set the public HTTPS BACKEND_URL in .env}
+      NUXT_PUBLIC_SITE_URL: ${FRONTEND_URL:?Set the public HTTPS FRONTEND_URL in .env}
+      NUXT_PUBLIC_SITE_NAME: ${SITE_NAME:-Цифровой волонтёр Обнинска}
+      NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Добрые дела, волонтёрские часы и поощрения}
+      NUXT_PUBLIC_FLIDA_CLIENT_ID: ${FLIDA_CLIENT_ID:?Set FLIDA_CLIENT_ID in .env}
+      NUXT_PUBLIC_FLIDA_REDIRECT_URI: ${FLIDA_REDIRECT_URI:?Set the HTTPS Flida callback URL in .env}
+      NUXT_PUBLIC_FLIDA_POST_LOGOUT_REDIRECT_URI: ${FLIDA_POST_LOGOUT_REDIRECT_URI:-}
+      NUXT_PUBLIC_FLIDA_MODE: ${FLIDA_MODE:-redirect}
+      NUXT_PUBLIC_YANDEX_MAPS_API_KEY: ${YANDEX_MAPS_API_KEY:-}
+      NUXT_PUBLIC_DEMO_LOGIN: "false"
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_PORT:-3000}:3000"
+    stop_grace_period: 15s
+
+volumes:
+  postgres-data:
+  storage-data:

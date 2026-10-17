@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+.nuxt
+.output
+.pnpm-store
+test-reports
+mock
+*.log

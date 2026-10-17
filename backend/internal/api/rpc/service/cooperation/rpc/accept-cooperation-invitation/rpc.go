@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	cooperation_v1 "github.com/Roum1212/hahaton/genproto/cooperation/v1"
@@ -13,6 +12,7 @@ import (
 	service_accept_cooperation_invitation "github.com/Roum1212/hahaton/internal/app/service/accept-cooperation-invitation"
 	aggregate_cooperation "github.com/Roum1212/hahaton/internal/domain/aggregate/cooperation"
 	aggregate_cooperation_invitation "github.com/Roum1212/hahaton/internal/domain/aggregate/cooperation-invitation"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

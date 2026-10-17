@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	event_v1 "github.com/Roum1212/hahaton/genproto/event/v1"
@@ -19,6 +18,7 @@ import (
 	model_event_title "github.com/Roum1212/hahaton/internal/domain/model/event-title"
 	model_image_path "github.com/Roum1212/hahaton/internal/domain/model/image-path"
 	model_volunteer_limit "github.com/Roum1212/hahaton/internal/domain/model/volunteer-limit"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

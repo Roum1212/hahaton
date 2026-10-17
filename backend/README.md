@@ -8,6 +8,10 @@ Go-монолит с ConnectRPC, PostgreSQL, pgx и Squirrel. Реализова
 Правила предметной области: [domain-design](../docs/domain-design.md).
 Состояние реализации и проверки: [backend-implementation](../docs/backend-implementation.md).
 
+Работа с cookie и RPC-ошибками перенесена из Flida в `internal/pkg/cookies` и
+`internal/pkg/rpc-error`. Это обычные пакеты основного модуля без зависимостей на
+приватные Go-модули Flida и без локальных `replace`.
+
 ## Запуск
 
 Из каталога `backend`:
@@ -26,7 +30,7 @@ OIDC discovery/JWKS и ID token с данными профиля. Ключи DaD
 
 Конфигурация находится в `internal/config`, по подходу Flida: `caarlos0/env`,
 разделы с `envPrefix`, `ParseOptions` для типизированных ключей PASETO/AES.
-Переменные используют префиксы `POSTGRESQL_`, `HTTP_SERVER_`, `ADMIN_HTTP_SERVER_`,
+Переменные используют префиксы `POSTGRESQL_`, `HTTP_SERVER_`,
 `FLIDA_`, `SESSION_TOKEN_`, `STORAGE_`, `CITY_CATALOG_`, `DADATA_`; актуальные имена — в `.env.example`.
 Поля Config и вложенных секций публичные, теги `env`/`envPrefix` стоят прямо на них.
 Точки входа заполняют Config через `env.ParseWithOptions(&cfg, config.ParseOptions())`,
@@ -41,7 +45,7 @@ goose -dir migrations postgres "$POSTGRESQL_DSN" up
 go run ./cmd
 ```
 
-Миграции применяются вручную через установленный goose, до запуска сервера или seed:
+Миграции применяются вручную через установленный goose, до запуска сервера:
 
 ```sh
 goose -dir migrations postgres "$POSTGRESQL_DSN" up
@@ -49,9 +53,11 @@ goose -dir migrations postgres "$POSTGRESQL_DSN" status
 ```
 
 Одна таблица — одна миграция; версии хранит `goose_db_version`.
-Сервер и seed не меняют схему автоматически. Рабочие запросы выполняются через pgx/Squirrel.
+Сервер не меняет схему автоматически. Рабочие запросы выполняются через pgx/Squirrel.
 
-Клиентский listener по умолчанию `:8080`, административный — `127.0.0.1:8081`.
+Единый listener по умолчанию `:8080` обслуживает обычные и административные RPC.
+AdminService защищён отдельным `Authorization: Bearer <ADMIN_API_KEY>`;
+cookie-сессия волонтёра/координатора административных прав не даёт.
 `GET /healthz` возвращает успешный ответ после сборки приложения.
 Для браузера нужны HTTPS и `credentials: 'include'`: cookie `__Secure-SID` всегда Secure/HttpOnly.
 TLS можно завершать на прокси либо задать `HTTP_SERVER_TLS_CERTIFICATE` и `HTTP_SERVER_TLS_KEY` самому серверу.
@@ -59,41 +65,30 @@ TLS можно завершать на прокси либо задать `HTTP_
 CORS разрешает любой origin с credentials: сервер отражает origin запроса;
 методы и заголовки Connect/gRPC-Web берутся из `connectrpc.com/cors`.
 Cookie имеет `SameSite=None; Secure; HttpOnly`, на фронте нужен `credentials: 'include'`.
-Клиентский listener не предоставляет AdminService.
+AdminService подключён к тому же listener и проверяет административный токен до вызова RPC.
 
-Для контейнерного запуска заполните `.env`, загрузите справочник и выполните:
+Для развёртывания всего проекта используйте [корневой Compose](../docker-compose.yaml)
+и [инструкцию запуска](../README.md): frontend, backend и PostgreSQL, постоянные volumes,
+ручные миграции Goose и HTTP за вашим Nginx. Образ backend содержит `/app/goose` и миграции;
+сервер не применяет их автоматически. Локальный `backend/docker-compose.yml` остаётся
+вариантом разработки: PostgreSQL отдельно либо backend с профилем app.
 
-```sh
-docker compose --profile app up --build -d
-```
+## Первый координатор
 
-Серверный образ собирается из этого каталога. PostgreSQL и storage используют volumes;
-`data` подключается как каталог только для чтения. HTTPS обеспечьте прокси перед приложением.
-
-## Первый координатор и демонстрационные данные
-
-Сначала два учебных участника входят через Flida. Вызовите AdminService.FindVolunteers
+Сначала будущий координатор входит через Flida как волонтёр. Вызовите AdminService.FindVolunteers
 по ID, телефону или почте и выберите ID будущего координатора. Служебные запросы требуют
-`Authorization: Bearer <ADMIN_API_KEY>` на административном listener:
+`Authorization: Bearer <ADMIN_API_KEY>` на общем listener:
 
 ```sh
-curl --fail-with-body http://127.0.0.1:8081/admin.v1.AdminService/CreateCoordinator \
+curl --fail-with-body http://127.0.0.1:8080/admin.v1.AdminService/CreateCoordinator \
   -H "Authorization: Bearer $ADMIN_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"volunteer_id":"<ID>","cooperation_request_cooldown_seconds":"60"}'
 ```
 
-Для подготовки защиты:
-
-```sh
-go run ./cmd seed -coordinator-id '<ID координатора>' -volunteer-id '<ID другого участника>'
-```
-
-Seed использует существующие профили, создаёт активное сотрудничество, три учебных
-мероприятия и три поощрения по 20 коинов. Для прошедшего мероприятия уже есть принятая
-заявка: можно подтвердить 180 минут и купить поощрение. Повторный seed не сбрасывает баланс,
-результаты и историю. Подготовленное прошлое событие не выдавайте за событие, созданное на защите:
-API завершает мероприятия только после `ends_at`.
+Мероприятия, сотрудничество и поощрения создаются через обычные RPC или интерфейс.
+Для защиты подготовьте минимум три мероприятия и три поощрения заранее.
+Завершить мероприятие и начислить коины можно только после `ends_at`.
 
 ## Сборка приложения
 
@@ -101,7 +96,6 @@ API завершает мероприятия только после `ends_at`.
 `init_database_clients`, `init_external_clients`, `init_repositories`, `init_tokens`,
 `init_support_services`, `init_services`, `init_rpc_services`, `init_http_handlers`,
 `init_http_server`. Сервисы приложения не получают зависимости друг на друга.
-Команда `go run ./cmd seed ...` готовит только учебные данные и не применяет миграции.
 
 ## Слои и транзакции
 
@@ -166,7 +160,7 @@ go tool cover -func=repository.cover
 E2E-тесты находятся в `tests/e2e/rpc`: сгенерированные Connect-клиенты и testify,
 как во Flida. Вместо общего dev-окружения suite поднимает изолированный PostgreSQL 17
 через Testcontainers, применяет Goose и запускает `hahaton.Run` в отдельном процессе
-тестового бинарника. Используются настоящие HTTPS client API и отдельный HTTP admin API.
+тестового бинарника. Используется настоящий общий HTTPS listener для пользовательского и административного API.
 Flida OIDC/JWKS и DaData заменены локальным TLS-сервером; подпись ID token и проверка TLS
 остаются включены. Реальные учётные записи, ключи провайдеров и рабочая БД не нужны.
 
@@ -210,7 +204,7 @@ unit-тесты не добавлены.
 повторы начислений и покупок, нехватка баланса, возвраты, история выданного,
 каскады прекращения сотрудничества, доступ к чату, шифрование и cookie-аутентификация Connect JSON.
 Отдельно проверены OIDC discovery/JWKS с подписанным учебным токеном, загрузка и привязка
-изображения, admin-изоляция, полный импорт 1103 записей CSV и чтение без исходного файла,
+изображения, защита admin API отдельным токеном, полный импорт 1103 записей CSV и чтение без исходного файла,
 Connect-стрим с историей, успешный EOF и закрытие при отзыве сессии.
 
 Изменяемые агрегаты читаются с `FOR UPDATE` внутри callback-транзакции; обычные Load

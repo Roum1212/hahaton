@@ -12,7 +12,6 @@ import (
 
 type Config struct {
 	AdminAPIKey       string        `env:"ADMIN_API_KEY,required,notEmpty"`
-	AdminHTTPServer   AdminServer   `envPrefix:"ADMIN_HTTP_SERVER_"`
 	CityCatalog       CityCatalog   `envPrefix:"CITY_CATALOG_"`
 	DaData            DaData        `envPrefix:"DADATA_"`
 	DataEncryptionKey EncryptionKey `env:"DATA_ENCRYPTION_KEY,required,notEmpty"`
@@ -39,10 +38,6 @@ func (x Config) Validate() error {
 	}
 
 	return nil
-}
-
-type AdminServer struct {
-	Address string `env:"ADDRESS,notEmpty" envDefault:"127.0.0.1:8081"`
 }
 
 type CityCatalog struct {

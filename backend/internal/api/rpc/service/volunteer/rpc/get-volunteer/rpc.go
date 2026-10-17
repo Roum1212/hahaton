@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	volunteer_v1 "github.com/Roum1212/hahaton/genproto/volunteer/v1"
@@ -14,6 +13,7 @@ import (
 	aggregate_volunteer "github.com/Roum1212/hahaton/internal/domain/aggregate/volunteer"
 	aggregate_wallet "github.com/Roum1212/hahaton/internal/domain/aggregate/wallet"
 	model_user_id "github.com/Roum1212/hahaton/internal/domain/model/user-id"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

@@ -156,8 +156,6 @@ linters:
             - github.com/stretchr/testify
             - github.com/testcontainers/testcontainers-go
             - github.com/rs/cors
-            - go.flida.dev/cookies
-            - go.flida.dev/rpc-error
             - google.golang.org/genproto
             - google.golang.org/protobuf
             - golang.org/x/net

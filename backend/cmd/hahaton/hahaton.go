@@ -34,26 +34,22 @@ func Run(ctx context.Context) error {
 	}
 	defer databaseClients.pool.Close()
 
-	clientHandler, adminHandler, err := NewHandlers(ctx, cfg, databaseClients.pool)
+	handler, err := NewHTTPHandler(ctx, cfg, databaseClients.pool)
 	if err != nil {
 		return err
 	}
 
-	clientServer := initHTTPServer(cfg.HTTPServer.Address, clientHandler)
-	adminServer := initHTTPServer(cfg.AdminHTTPServer.Address, adminHandler)
-	results := make(chan error, 2)
+	server := initHTTPServer(cfg.HTTPServer.Address, handler)
+	results := make(chan error, 1)
 
 	go func() {
 		if len(cfg.HTTPServer.TLSCertificate) != 0 {
-			results <- clientServer.ListenAndServeTLS(cfg.HTTPServer.TLSCertificate, cfg.HTTPServer.TLSKey)
+			results <- server.ListenAndServeTLS(cfg.HTTPServer.TLSCertificate, cfg.HTTPServer.TLSKey)
 
 			return
 		}
 
-		results <- clientServer.ListenAndServe()
-	}()
-	go func() {
-		results <- adminServer.ListenAndServe()
+		results <- server.ListenAndServe()
 	}()
 
 	var runError error
@@ -65,20 +61,19 @@ func Run(ctx context.Context) error {
 	shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), shutdownTimeout)
 	defer cancel()
 
-	clientError := clientServer.Shutdown(shutdownCtx)
-	adminError := adminServer.Shutdown(shutdownCtx)
+	shutdownError := server.Shutdown(shutdownCtx)
 
 	if errors.Is(runError, http.ErrServerClosed) {
 		runError = nil
 	}
 
-	return errors.Join(runError, clientError, adminError)
+	return errors.Join(runError, shutdownError)
 }
 
-func NewHandlers(ctx context.Context, cfg config.Config, pool *pgxpool.Pool) (http.Handler, http.Handler, error) {
+func NewHTTPHandler(ctx context.Context, cfg config.Config, pool *pgxpool.Pool) (http.Handler, error) {
 	externalClients, err := initExternalClients(ctx, cfg)
 	if err != nil {
-		return nil, nil, fmt.Errorf("init external clients: %w", err)
+		return nil, fmt.Errorf("init external clients: %w", err)
 	}
 
 	databaseClients := databaseClientSet{
@@ -88,7 +83,7 @@ func NewHandlers(ctx context.Context, cfg config.Config, pool *pgxpool.Pool) (ht
 
 	repos, err := initRepositories(ctx, cfg, databaseClients, externalClients)
 	if err != nil {
-		return nil, nil, fmt.Errorf("init repositories: %w", err)
+		return nil, fmt.Errorf("init repositories: %w", err)
 	}
 
 	tokens := initTokens(cfg)
@@ -96,7 +91,6 @@ func NewHandlers(ctx context.Context, cfg config.Config, pool *pgxpool.Pool) (ht
 	supportServices := initSupportServices(cfg)
 	services := initServices(cfg, externalClients, repos, tokens)
 	rpcServices := initRPCServices(cfg, services, supportServices)
-	clientHandler, adminHandler := initHTTPHandlers(cfg, repos, tokens, supportServices, rpcServices)
 
-	return clientHandler, adminHandler, nil
+	return initHTTPHandler(cfg, repos, tokens, supportServices, rpcServices), nil
 }

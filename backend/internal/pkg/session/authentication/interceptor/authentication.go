@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"connectrpc.com/authn"
-	"go.flida.dev/cookies/pkg/cookies"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	"github.com/Roum1212/hahaton/genproto/cooperation/v1/cooperation_v1connect"
@@ -25,6 +23,8 @@ import (
 	"github.com/Roum1212/hahaton/genproto/session/v1/session_v1connect"
 	"github.com/Roum1212/hahaton/genproto/volunteer/v1/volunteer_v1connect"
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
+	"github.com/Roum1212/hahaton/internal/pkg/cookies"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_token "github.com/Roum1212/hahaton/internal/pkg/session/token"
 	"github.com/Roum1212/hahaton/internal/pkg/token"
 )

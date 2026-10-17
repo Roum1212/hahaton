@@ -74,9 +74,10 @@ func (x *RPCTestSuite) TestAdminProvisioning() {
 	publicRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, publicAdmin, strings.NewReader("{}"))
 	x.Require().NoError(err)
 	publicRequest.Header.Set("Content-Type", "application/json")
+	publicRequest.AddCookie(a.cookie)
 	response, err := x.httpClient.Do(publicRequest)
 	x.Require().NoError(err)
-	x.Require().Equal(404, response.StatusCode)
+	x.Require().Equal(http.StatusUnauthorized, response.StatusCode)
 	x.Require().NoError(response.Body.Close())
 }
 

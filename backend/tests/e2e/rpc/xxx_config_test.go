@@ -41,7 +41,6 @@ type RPCTestSuite struct {
 	httpClient *http.Client
 	clients    rpcClients
 	baseURL    string
-	adminURL   string
 	coverage   *rpcCoverage
 }
 
@@ -66,7 +65,6 @@ func (x *RPCTestSuite) SetupSuite() {
 		}), 0o600),
 	)
 	x.baseURL = "https://" + freeAddress(t)
-	x.adminURL = "http://" + freeAddress(t)
 
 	_, source, _, ok := runtime.Caller(0)
 	x.Require().True(ok)
@@ -84,7 +82,6 @@ func (x *RPCTestSuite) SetupSuite() {
 		"E2E_BACKEND_PROCESS":            "1",
 		"POSTGRESQL_DSN":                 x.pool.Config().ConnString(),
 		"HTTP_SERVER_ADDRESS":            strings.TrimPrefix(x.baseURL, "https://"),
-		"ADMIN_HTTP_SERVER_ADDRESS":      strings.TrimPrefix(x.adminURL, "http://"),
 		"HTTP_SERVER_TLS_CERTIFICATE":    certificate,
 		"HTTP_SERVER_TLS_KEY":            key,
 		"SSL_CERT_FILE":                  certificate,
@@ -148,7 +145,7 @@ func (x *RPCTestSuite) SetupSuite() {
 		},
 		Timeout: requestTimeout,
 	}
-	x.clients = newRPCClients(x.httpClient, x.baseURL, x.adminURL)
+	x.clients = newRPCClients(x.httpClient, x.baseURL)
 	x.Require().Eventually(func() bool {
 		return healthy(x.httpClient, x.baseURL)
 	}, startupTimeout, pollInterval)

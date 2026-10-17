@@ -17,8 +17,6 @@ require (
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.44.0
-	go.flida.dev/cookies v0.0.0-20260812080531-f1cb15774239
-	go.flida.dev/rpc-error v0.0.0-20260812080407-d4a1447d88b2
 	golang.org/x/net v0.56.0
 	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260122232226-8e98ce8d340d
