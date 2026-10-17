@@ -16,7 +16,7 @@ const SILENT_FLIDA_ERRORS = ['popup_closed', 'fedcm_unavailable'];
 
 export const useAuthActions = () => {
   const authStore = useAuthStore();
-  const { loader } = useApp();
+  const loader = useLoader();
 
   const redirectAfterLogin = async (fallback?: string) => {
     const redirectCookie = useCookie<string | null>('redirectAfterLogin');

@@ -11,7 +11,10 @@ const props = withDefaults(
   },
 );
 
-const letter = computed(() => props.name.trim().slice(0, 1).toLocaleUpperCase() || '?');
+const letter = computed(() => {
+  const words = props.name.trim().split(/\s+/);
+  return (words[1] ?? words[0] ?? '').slice(0, 1).toLocaleUpperCase() || '?';
+});
 </script>
 
 <template>

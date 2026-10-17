@@ -4,21 +4,19 @@ import { UpdateKind } from '~/core/updates/services/updates/updates.types';
 const RECONNECT_DELAYS_MS = [1000, 2000, 5000, 10000];
 const NOTIFY_DELAY_MS = 300;
 
-let running = false;
 let controller: AbortController | null = null;
 let notifyTimer: ReturnType<typeof setTimeout> | null = null;
 
 const sleep = (ms: number, signal: AbortSignal) =>
   new Promise<void>((resolve) => {
-    const timer = setTimeout(resolve, ms);
-    signal.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timer);
-        resolve();
-      },
-      { once: true },
-    );
+    if (signal.aborted) return resolve();
+    const finish = () => {
+      clearTimeout(timer);
+      signal.removeEventListener('abort', finish);
+      resolve();
+    };
+    const timer = setTimeout(finish, ms);
+    signal.addEventListener('abort', finish, { once: true });
   });
 
 export const useUpdatesConnection = () => {
@@ -26,52 +24,51 @@ export const useUpdatesConnection = () => {
   const authStore = useAuthStore();
 
   const scheduleNotify = () => {
-    if (notifyTimer) clearTimeout(notifyTimer);
+    if (notifyTimer) return;
     notifyTimer = setTimeout(() => {
       notifyTimer = null;
       store.notify();
     }, NOTIFY_DELAY_MS);
   };
 
-  const run = async () => {
+  const run = async (current: AbortController) => {
     let attempt = 0;
-    let synced = false;
-    while (running) {
-      const current = new AbortController();
-      controller = current;
+    while (!current.signal.aborted) {
       try {
         for await (const kind of store.service.subscribe(current.signal)) {
+          if (current.signal.aborted) break;
           attempt = 0;
           store.connected = true;
-          if (kind === UpdateKind.CHANGED || (kind === UpdateKind.READY && synced)) scheduleNotify();
-          if (kind === UpdateKind.READY) synced = true;
+          if (kind === UpdateKind.CHANGED || kind === UpdateKind.READY) scheduleNotify();
         }
       } catch (e) {
         const error = ConnectError.from(e);
-        if (!running || error.code === Code.Canceled) break;
+        if (current.signal.aborted) break;
         if (error.code === Code.Unauthenticated) {
+          stop();
           authStore.expire();
           break;
         }
       }
+      if (current.signal.aborted) break;
       store.connected = false;
-      if (!running) break;
       await sleep(RECONNECT_DELAYS_MS[Math.min(attempt, RECONNECT_DELAYS_MS.length - 1)]!, current.signal);
       attempt += 1;
     }
-    store.connected = false;
+    if (controller === current) stop();
   };
 
   const start = () => {
-    if (running) return;
-    running = true;
-    run();
+    if (controller) return;
+    const current = new AbortController();
+    controller = current;
+    void run(current);
   };
 
   const stop = () => {
-    running = false;
     controller?.abort();
     controller = null;
+    store.connected = false;
     if (notifyTimer) clearTimeout(notifyTimer);
     notifyTimer = null;
   };
