@@ -5,24 +5,14 @@ package image.v1;
 option go_package = "github.com/Roum1212/hahaton/genproto/image/v1;image_v1";
 
 service ImageService {
-  // Только авторизованный участник. Загружает JPEG/PNG до 5 МиБ, не более 4096 пикселей
-  // по каждой стороне. Формат определяется сервером; имя файла и внешний URL не принимаются.
-  // Файл сохраняется локально в storage/{user_id}/{image_id}.jpg или .png.
-  // Сам вызов не изменяет профиль, мероприятие или поощрение: image_path передаётся в их Create/Update.
-  // Изображения доступны на чтение без авторизации; загружаются только публичные картинки.
   rpc UploadImage(UploadImageRequest) returns (UploadImageResponse) {}
 }
 
 message UploadImageRequest {
-  // Содержимое файла. Connect JSON кодирует bytes в base64; binary передаёт байты.
-  // Пустое, неподдерживаемое, повреждённое или слишком большое изображение — InvalidArgument.
   bytes data = 1 [json_name = "data"];
 }
 
 message UploadImageResponse {
-  // Относительный путь {user_id}/{image_id}.jpg или .png для Create/Update карточки.
-  // Сервер проверяет владельца и существование файла перед привязкой.
   string image_path = 1 [json_name = "image_path"];
-  // Путь /storage/... на HTTP origin бэкенда для отображения через img.
   string image_url = 2 [json_name = "image_url"];
 }

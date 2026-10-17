@@ -7,35 +7,11 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/reward-order/v1;reward_order_v1";
 
-// Все методы требуют авторизации. В MVP один заказ содержит одну единицу одного поощрения.
-// Покупатель — user_id сессии. Выдача и действия владельца требуют Coordinator
-// с этим ID и владения поощрением. Переключатель кабинета прав не выдаёт.
-// Недопустимое состояние означает FailedPrecondition; чужой заказ — PermissionDenied.
 service RewardOrderService {
-  // Покупатель — user_id сессии. Требуются ACTIVE поощрение, активная кооперация с его
-  // создателем, свободная единица и баланс не меньше цены. Нехватка — FailedPrecondition.
-  // Купить своё поощрение нельзя: сотрудничество с самим собой запрещено.
-  // В одной транзакции создаёт PENDING, резервирует единицу, списывает зафиксированную цену
-  // из общего городского баланса и записывает операцию REWARD_PURCHASE.
-  // Согласован с изменением/удалением поощрения и прекращением кооперации.
-  // Конкурентные списания одного кошелька не могут сделать баланс отрицательным.
   rpc CreateRewardOrder(CreateRewardOrderRequest) returns (CreateRewardOrderResponse) {}
-  // Только владелец заказа или создатель поощрения; история доступна после прекращения кооперации.
   rpc GetRewardOrder(GetRewardOrderRequest) returns (GetRewardOrderResponse) {}
-  // scope выбирает свои покупки либо входящие заказы на свои поощрения.
   rpc ListRewardOrders(ListRewardOrdersRequest) returns (ListRewardOrdersResponse) {}
-  // Только создатель поощрения. PENDING -> ISSUED при активной кооперации.
-  // Удалённое поощрение выдать нельзя: его невыданные заказы уже отменены.
-  // Резерв становится выданной единицей; повторного списания нет.
-  // Повторная выдача ISSUED успешна без изменений. CANCELLED выдать нельзя.
-  // Выдача синхронизируется с отменой заказа и прекращением кооперации.
   rpc IssueRewardOrder(IssueRewardOrderRequest) returns (google.protobuf.Empty) {}
-  // Владелец заказа или создатель поощрения. PENDING -> CANCELLED.
-  // В одной транзакции возвращает ровно price_coins из заказа, записывает REWARD_REFUND
-  // и освобождает резерв. Текущая цена поощрения значения не имеет.
-  // Уже CANCELLED возвращает успех без повторного возврата; ISSUED отменить нельзя.
-  // При прекращении сотрудничества или удалении поощрения тот же переход для PENDING.
-  // ISSUED неизменяемы: нельзя отменить или удалить даже при удалении поощрения.
   rpc CancelRewardOrder(CancelRewardOrderRequest) returns (google.protobuf.Empty) {}
 }
 
@@ -46,11 +22,9 @@ message RewardOrder {
   string reward_id = 3 [json_name = "reward_id"];
   string volunteer_id = 4 [json_name = "volunteer_id"];
 
-  // Неизменяемые снимки на момент покупки, не зависят от последующих правок поощрения.
   int64 price_coins = 5 [json_name = "price_coins"];
   string reward_title = 6 [json_name = "reward_title"];
 
-  // UNSPECIFIED для PENDING и ISSUED; причина выбирается сервером при отмене.
   RewardOrderCancellationReason cancellation_reason = 7 [json_name = "cancellation_reason"];
   RewardOrderStatus status = 8 [json_name = "status"];
 
@@ -60,10 +34,8 @@ message RewardOrder {
 
 enum RewardOrderStatus {
   REWARD_ORDER_STATUS_UNSPECIFIED = 0;
-  // Коины уже списаны, единица зарезервирована, ожидает выдачи.
   REWARD_ORDER_STATUS_PENDING = 1;
   REWARD_ORDER_STATUS_ISSUED = 2;
-  // Коины возвращены, резерв освобождён. Запись сохраняется для истории.
   REWARD_ORDER_STATUS_CANCELLED = 3;
 }
 
@@ -78,16 +50,8 @@ enum RewardOrderCancellationReason {
 message CreateRewardOrderRequest {
   string reward_id = 1 [json_name = "reward_id"];
 
-  // Цена из просмотренной карточки, строго больше нуля.
-  // Несовпадение с текущей ценой означает Aborted без списаний; клиент обновляет карточку.
   int64 expected_price_coins = 2 [json_name = "expected_price_coins"];
 
-  // Обязательный непустой ключ одной попытки покупки, создаваемый клиентом.
-  // Уникален в пределах волонтёра и этого RPC. Повтор с тем же содержимым возвращает
-  // существующий заказ, даже если он уже выдан/отменён или кооперация прекращена.
-  // Авторизация обязательна; при повторе не выполняются новые списания и резервы.
-  // Тот же ключ с другим reward_id или expected_price_coins означает AlreadyExists.
-  // Ключ сохраняется вместе с заказом. Новая покупка требует нового ключа.
   string request_id = 3 [json_name = "request_id"];
 }
 
@@ -105,36 +69,24 @@ message GetRewardOrderResponse {
 
 enum RewardOrderListScope {
   REWARD_ORDER_LIST_SCOPE_UNSPECIFIED = 0;
-  // Только volunteer_id = user_id сессии.
   REWARD_ORDER_LIST_SCOPE_MY_PURCHASES = 1;
-  // Только coordinator_id = user_id сессии; требуется Coordinator.
   REWARD_ORDER_LIST_SCOPE_INCOMING = 2;
 }
 
 message ListRewardOrdersRequest {
-  // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
   RewardOrderListScope scope = 1 [json_name = "scope"];
 
-  // Дополнительные непустые фильтры внутри доступных заказов, не расширяют права.
   optional string coordinator_id = 2 [json_name = "coordinator_id"];
   optional string reward_id = 3 [json_name = "reward_id"];
-  // Отсутствует — все статусы; UNSPECIFIED и неизвестные значения недопустимы.
   optional RewardOrderStatus status = 4 [json_name = "status"];
   optional string volunteer_id = 5 [json_name = "volunteer_id"];
 
-  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 6 [json_name = "limit"];
-  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
-  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
-  // На каждом запросе применяются текущие права доступа и фильтры.
   int64 offset = 7 [json_name = "offset"];
 }
 
 message ListRewardOrdersResponse {
-  // По created_at, затем id по убыванию.
   repeated RewardOrder reward_orders = 1 [json_name = "reward_orders"];
-  // Общее число доступных записей с текущими фильтрами, без limit и offset.
-  // Подсчитывается в том же снимке данных, что и элементы страницы.
   int64 total_count = 2 [json_name = "total_count"];
 }
 

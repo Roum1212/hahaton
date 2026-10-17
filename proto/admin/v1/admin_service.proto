@@ -6,21 +6,9 @@ import "event/v1/event_service.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/admin/v1;admin_v1";
 
-// Служебный интерфейс разработчиков на общем listener.
-// Требует служебной аутентификации. Обычная cookie участника этих прав не даёт.
 service AdminService {
-  // Ищет зарегистрированного волонтёра для выдачи координаторских прав.
-  // Точное совпадение; поиск сам по себе не создаёт Coordinator.
   rpc FindVolunteers(FindVolunteersRequest) returns (FindVolunteersResponse) {}
-  // Создаёт Coordinator для существующего Volunteer с тем же внутренним ID.
-  // ФИО берётся из Volunteer; локальных логина и пароля нет.
-  // Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
   rpc CreateCoordinator(CreateCoordinatorRequest) returns (CreateCoordinatorResponse) {}
-  // Завершает PUBLISHED мероприятие досрочно от имени его координатора.
-  // Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
-  // Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
-  // Начисления, аудит и закрытие чата выполняются в одной транзакции.
-  // Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
   rpc ForceCompleteEvent(ForceCompleteEventRequest) returns (ForceCompleteEventResponse) {}
 }
 
@@ -39,42 +27,31 @@ message AdminVolunteer {
 }
 
 message FindVolunteersRequest {
-  // Ровно один непустой критерий. Почта сравнивается без учёта регистра после trim,
-  // телефон — в нормализованном международном формате E.164.
-  // Контакт служит поиску; для создания Coordinator админ выбирает конкретный id.
   oneof criterion {
     string email_address = 1 [json_name = "email_address"];
     string phone_number = 2 [json_name = "phone_number"];
     string volunteer_id = 3 [json_name = "volunteer_id"];
   }
 
-  // 0 означает 20; допустимы 1–100. offset >= 0.
   int32 limit = 4 [json_name = "limit"];
   int64 offset = 5 [json_name = "offset"];
 }
 
 message FindVolunteersResponse {
-  // По id по возрастанию. Нет совпадений — пустая страница.
   repeated AdminVolunteer volunteers = 1 [json_name = "volunteers"];
-  // Тот же снимок и критерий, что у страницы, без limit/offset.
   int64 total_count = 2 [json_name = "total_count"];
 }
 
 message CreateCoordinatorRequest {
-  // Обязательный внутренний ID существующего волонтёра.
   string volunteer_id = 1 [json_name = "volunteer_id"];
 
-  // Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
-  // Файл обязан существовать и принадлежать этому участнику.
   string avatar_path = 2 [json_name = "avatar_path"];
   string description = 3 [json_name = "description"];
 
-  // Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
   optional int64 cooperation_request_cooldown_seconds = 4 [json_name = "cooperation_request_cooldown_seconds"];
 }
 
 message CreateCoordinatorResponse {
-  // Всегда равен volunteer_id из запроса.
   string id = 1 [json_name = "id"];
 }
 

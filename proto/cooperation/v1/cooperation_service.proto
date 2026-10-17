@@ -7,68 +7,28 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/Roum1212/hahaton/genproto/cooperation/v1;cooperation_v1";
 
-// Действующий участник — user_id из проверенной сессии; оба профиля имеют тот же ID.
-// Команды координатора требуют наличия его профиля. Сотрудничество с собой запрещено:
-// coordinator_id = volunteer_id означает InvalidArgument при заявке/принятии приглашения.
 service CooperationService {
-  // Только волонтёр создаёт заявку в статусе PENDING.
-  // Пара coordinator_id + volunteer_id сохраняется единожды; повторное обращение
-  // после REJECTED разрешено при now >= retry_after, после TERMINATED — сразу.
-  // PENDING/ACTIVE — AlreadyExists. Новый цикл переводит ту же связь в PENDING.
   rpc RequestCooperation(RequestCooperationRequest) returns (RequestCooperationResponse) {}
-  // Координатор одобряет заявку: PENDING -> ACTIVE.
   rpc ApproveCooperation(ApproveCooperationRequest) returns (google.protobuf.Empty) {}
-  // Координатор отклоняет: PENDING -> REJECTED. retry_after фиксируется как
-  // now + текущий cooldown координатора и не меняется последующей правкой настройки.
   rpc RejectCooperation(RejectCooperationRequest) returns (google.protobuf.Empty) {}
-  // Любая сторона прекращает сотрудничество: ACTIVE -> TERMINATED.
-  // В одной транзакции переводит участия PENDING/APPROVED в CANCELLED,
-  // отменяет невыданные заказы, возвращает списанные за них коины и освобождает резервы.
-  // Участия в конечных статусах, подтверждённые начисления и выданные поощрения сохраняются.
-  // Отзывается весь доступ волонтёра к чатам этого координатора, включая прошлые.
-  // Повторное сотрудничество не восстанавливает заявки, заказы или старые периоды чатов.
   rpc TerminateCooperation(TerminateCooperationRequest) returns (google.protobuf.Empty) {}
-  // Связь могут читать только указанные в ней волонтёр и координатор.
   rpc GetCooperation(GetCooperationRequest) returns (GetCooperationResponse) {}
-  // scope явно задаёт сторону участника в его сотрудничествах и заявках.
   rpc ListCooperations(ListCooperationsRequest) returns (ListCooperationsResponse) {}
-  // Требует Coordinator с id = user_id сессии. Создаёт новое многоразовое приглашение.
-  // Каждый вызов создаёт отдельное приглашение с непредсказуемым токеном.
-  // Любой авторизованный волонтёр с действующей ссылкой может принять приглашение.
   rpc CreateCooperationInvitation(CreateCooperationInvitationRequest) returns (CreateCooperationInvitationResponse) {}
-  // Только координатор. Список собственных приглашений для управления сроками и отзывом.
-  // Каждое приглашение содержит ту же ссылку, что при создании: её можно снова
-  // скопировать или показать как QR после перезагрузки кабинета. Чужие приглашения
-  // и ссылки недоступны. Удалённые записи не возвращаются.
   rpc ListCooperationInvitations(ListCooperationInvitationsRequest) returns (ListCooperationInvitationsResponse) {}
-  // Только координатор. Если приглашение существует, проверяет владельца и физически удаляет его.
-  // Если уже отсутствует, возвращает успех; чужое существующее приглашение — PermissionDenied.
-  // Удалённый токен больше не принимается. Уже заключённые кооперации не меняются.
   rpc RevokeCooperationInvitation(RevokeCooperationInvitationRequest) returns (google.protobuf.Empty) {}
-  // Действующий волонтёр определяется по user_id сессии. Проверяются приглашение и его срок.
-  // Неизвестный или отозванный токен означает NotFound; истёкшее приглашение — FailedPrecondition.
-  // Если связи нет, создаёт ACTIVE; PENDING переводит в ACTIVE; ACTIVE возвращает без изменений.
-  // REJECTED и TERMINATED переводит в ACTIVE: приглашение обходит cooldown.
-  // Принятие не расходует приглашение: его могут использовать другие волонтёры.
-  // Проверки и изменение связи выполняются в одной транзакции, согласованной с отзывом
-  // приглашения, одобрением, отклонением и прекращением кооперации.
-  // При параллельных принятиях сохраняется уникальность пары coordinator_id + volunteer_id.
-  // Открытие ссылки само по себе не меняет данные: клиент вызывает этот RPC после входа.
   rpc AcceptCooperationInvitation(AcceptCooperationInvitationRequest) returns (AcceptCooperationInvitationResponse) {}
 }
 
 message Cooperation {
-  // Вместе с volunteer_id образует уникальный неизменяемый идентификатор связи.
   string coordinator_id = 1 [json_name = "coordinator_id"];
   string volunteer_id = 2 [json_name = "volunteer_id"];
 
   CooperationStatus status = 3 [json_name = "status"];
 
-  // Только для REJECTED; в остальных статусах отсутствует.
   optional google.protobuf.Timestamp retry_after = 4 [json_name = "retry_after"];
 
   google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
-  // Время последнего изменения статуса.
   google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
 }
 
@@ -76,9 +36,7 @@ enum CooperationStatus {
   COOPERATION_STATUS_UNSPECIFIED = 0;
   COOPERATION_STATUS_PENDING = 1;
   COOPERATION_STATUS_ACTIVE = 2;
-  // Повторная обычная заявка разрешена после retry_after; приглашение — сразу.
   COOPERATION_STATUS_REJECTED = 3;
-  // Повторное сотрудничество разрешено, старые заявки на мероприятия не восстанавливаются.
   COOPERATION_STATUS_TERMINATED = 4;
 }
 
@@ -90,20 +48,15 @@ message RequestCooperationResponse {
   Cooperation cooperation = 1 [json_name = "cooperation"];
 }
 
-// Требует Coordinator с id = user_id сессии. Текущий статус должен быть PENDING,
-// иначе возвращается FailedPrecondition. Проверка и переход выполняются атомарно.
 message ApproveCooperationRequest {
   string volunteer_id = 1 [json_name = "volunteer_id"];
 }
 
-// Требует Coordinator с id = user_id сессии. Текущий статус должен быть PENDING,
-// иначе возвращается FailedPrecondition. Проверка и переход выполняются атомарно.
 message RejectCooperationRequest {
   string volunteer_id = 1 [json_name = "volunteer_id"];
 }
 
 message TerminateCooperationRequest {
-  // Координатор задаёт volunteer_id; волонтёр — coordinator_id. Другой вариант запрещён.
   oneof counterpart {
     string coordinator_id = 1 [json_name = "coordinator_id"];
     string volunteer_id = 2 [json_name = "volunteer_id"];
@@ -111,8 +64,6 @@ message TerminateCooperationRequest {
 }
 
 message GetCooperationRequest {
-  // coordinator_id: сам участник выступает волонтёром; volunteer_id: координатором,
-  // с обязательной проверкой наличия Coordinator. Ровно один непустой ID обязателен.
   oneof counterpart {
     string coordinator_id = 1 [json_name = "coordinator_id"];
     string volunteer_id = 2 [json_name = "volunteer_id"];
@@ -125,56 +76,36 @@ message GetCooperationResponse {
 
 enum CooperationListScope {
   COOPERATION_LIST_SCOPE_UNSPECIFIED = 0;
-  // volunteer_id = user_id сессии.
   COOPERATION_LIST_SCOPE_AS_VOLUNTEER = 1;
-  // coordinator_id = user_id сессии; требуется Coordinator.
   COOPERATION_LIST_SCOPE_AS_COORDINATOR = 2;
 }
 
 message ListCooperationsRequest {
-  // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
   CooperationListScope scope = 1 [json_name = "scope"];
 
-  // Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
   optional CooperationStatus status = 2 [json_name = "status"];
 
-  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 3 [json_name = "limit"];
-  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
-  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
-  // На каждом запросе применяются текущие права доступа и фильтры.
   int64 offset = 4 [json_name = "offset"];
 }
 
 message ListCooperationsResponse {
-  // По coordinator_id, затем volunteer_id по возрастанию.
   repeated Cooperation cooperations = 1 [json_name = "cooperations"];
-  // Общее число доступных записей с текущими фильтрами, без limit и offset.
-  // Подсчитывается в том же снимке данных, что и элементы страницы.
   int64 total_count = 2 [json_name = "total_count"];
 }
 
-// Приглашение действует, пока существует и серверное время строго меньше expires_at,
-// если срок задан. Истечение срока и отзыв не прекращают существующие кооперации.
 message CooperationInvitation {
   string id = 1 [json_name = "id"];
 
   string coordinator_id = 2 [json_name = "coordinator_id"];
 
-  // Готовая многоразовая ссылка с секретным токеном. Возвращается только владельцу
-  // при создании и чтении списка; не меняется между запросами и не попадает в логи.
-  // QR-код содержит эту же ссылку и создаётся клиентом. Токен не совпадает с id
-  // приглашения или coordinator_id и не выводится из них.
   string invitation_url = 3 [json_name = "invitation_url"];
 
   google.protobuf.Timestamp created_at = 4 [json_name = "created_at"];
-  // Отсутствует для бессрочного приглашения. После создания срок не изменяется.
   optional google.protobuf.Timestamp expires_at = 5 [json_name = "expires_at"];
 }
 
 message CreateCooperationInvitationRequest {
-  // Если отсутствует, приглашение бессрочное. Если передано, должно быть корректной
-  // датой строго в будущем относительно серверного времени, иначе InvalidArgument.
   optional google.protobuf.Timestamp expires_at = 1 [json_name = "expires_at"];
 }
 
@@ -187,8 +118,6 @@ message RevokeCooperationInvitationRequest {
 }
 
 message AcceptCooperationInvitationRequest {
-  // Непустой токен из ссылки. coordinator_id определяется по приглашению,
-  // volunteer_id = user_id сессии. Пустой токен или приглашение самому себе — InvalidArgument.
   string token = 1 [json_name = "token"];
 }
 
@@ -197,21 +126,13 @@ message AcceptCooperationInvitationResponse {
 }
 
 message ListCooperationInvitationsRequest {
-  // По умолчанию только действующие; true также включает истёкшие.
   bool include_expired = 1 [json_name = "include_expired"];
 
-  // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 2 [json_name = "limit"];
-  // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
-  // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
-  // На каждом запросе применяются текущие права доступа и фильтры.
   int64 offset = 3 [json_name = "offset"];
 }
 
 message ListCooperationInvitationsResponse {
-  // По created_at, затем id по убыванию.
   repeated CooperationInvitation invitations = 1 [json_name = "invitations"];
-  // Общее число доступных записей с текущими фильтрами, без limit и offset.
-  // Подсчитывается в том же снимке данных, что и элементы страницы.
   int64 total_count = 2 [json_name = "total_count"];
 }
