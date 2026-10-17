@@ -54,12 +54,10 @@ type AdminServiceClient interface {
 	// Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
 	CreateCoordinator(context.Context, *connect.Request[v1.CreateCoordinatorRequest]) (*connect.Response[v1.CreateCoordinatorResponse], error)
 	// Завершает PUBLISHED мероприятие досрочно от имени его координатора.
-	// Обходит только now >= ends_at; исходные starts_at и ends_at сохраняются.
-	// Итоги, начисления, аудит, закрытие PENDING и чата — как у EventService.CompleteEvent.
-	// results содержит ровно по одному итогу на каждое APPROVED участие.
-	// Повтор с теми же результатами и request_id не начисляет повторно; ключ общий
-	// с обычным завершением у координатора. Иной payload с тем же ключом — AlreadyExists,
-	// иной ключ для завершённого или отменённое мероприятие — FailedPrecondition.
+	// Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
+	// Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
+	// Начисления, аудит и закрытие чата выполняются в одной транзакции.
+	// Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
 	ForceCompleteEvent(context.Context, *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error)
 }
 
@@ -127,12 +125,10 @@ type AdminServiceHandler interface {
 	// Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
 	CreateCoordinator(context.Context, *connect.Request[v1.CreateCoordinatorRequest]) (*connect.Response[v1.CreateCoordinatorResponse], error)
 	// Завершает PUBLISHED мероприятие досрочно от имени его координатора.
-	// Обходит только now >= ends_at; исходные starts_at и ends_at сохраняются.
-	// Итоги, начисления, аудит, закрытие PENDING и чата — как у EventService.CompleteEvent.
-	// results содержит ровно по одному итогу на каждое APPROVED участие.
-	// Повтор с теми же результатами и request_id не начисляет повторно; ключ общий
-	// с обычным завершением у координатора. Иной payload с тем же ключом — AlreadyExists,
-	// иной ключ для завершённого или отменённое мероприятие — FailedPrecondition.
+	// Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
+	// Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
+	// Начисления, аудит и закрытие чата выполняются в одной транзакции.
+	// Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
 	ForceCompleteEvent(context.Context, *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error)
 }
 

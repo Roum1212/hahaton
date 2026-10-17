@@ -71,15 +71,10 @@ func (x Request) Validate() error {
 	return nil
 }
 
-func NewForceRequest(
-	eventID model_event_id.EventID,
-	results []model_event_result.EventResult,
-	requestID string,
-) Request {
+func NewForceRequest(eventID model_event_id.EventID) Request {
 	return Request{
 		eventID:   eventID,
-		results:   results,
-		requestID: requestID,
+		requestID: "demo-complete:" + eventID.String(),
 		force:     true,
 	}
 }

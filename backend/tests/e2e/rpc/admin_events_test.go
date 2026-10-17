@@ -22,15 +22,15 @@ const missingForceCompletionID = "00000000-0000-7000-8000-000000000001"
 
 func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 	ctx := x.T().Context()
-	c, volunteer, absent, pending, stranger := x.coordinator(), x.login(), x.login(), x.login(), x.login()
+	c, volunteer, other, pending, stranger := x.coordinator(), x.login(), x.login(), x.login(), x.login()
 
-	for _, value := range []actor{volunteer, absent, pending} {
+	for _, value := range []actor{volunteer, other, pending} {
 		x.cooperate(c, value)
 	}
 
 	id := x.event(c, 3)
 	first := x.participate(c, volunteer, id)
-	second := x.participate(c, absent, id)
+	second := x.participate(c, other, id)
 	waiting, err := x.clients.participation.RequestParticipation(ctx,
 		request(pending, &participation_v1.RequestParticipationRequest{EventId: id}))
 	x.Require().NoError(err)
@@ -39,33 +39,15 @@ func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 	x.Require().NoError(err)
 	x.Require().True(before.Msg.GetEvent().GetStartsAt().AsTime().After(time.Now()))
 
-	message := &admin_v1.ForceCompleteEventRequest{
-		Id: id, RequestId: "force-finish",
+	message := &admin_v1.ForceCompleteEventRequest{Id: id}
+	_, err = x.clients.event.CompleteEvent(ctx, request(c, &event_v1.CompleteEventRequest{
+		Id: id, RequestId: "normal-finish",
 		Results: []*event_v1.EventParticipationResult{
 			{ParticipationId: first, Outcome: &event_v1.EventParticipationResult_ConfirmedMinutes{ConfirmedMinutes: 180}},
-			{ParticipationId: second, Outcome: &event_v1.EventParticipationResult_Absent{Absent: true}},
+			{ParticipationId: second, Outcome: &event_v1.EventParticipationResult_ConfirmedMinutes{ConfirmedMinutes: 180}},
 		},
-	}
-	_, err = x.clients.event.CompleteEvent(ctx, request(c, &event_v1.CompleteEventRequest{
-		Id: id, RequestId: message.GetRequestId(), Results: message.GetResults(),
 	}))
 	callError(x.T(), err, connect.CodeFailedPrecondition)
-
-	invalid := proto.CloneOf(message)
-	invalid.Results[1].ParticipationId = missingForceCompletionID
-	invalidRequest := connect.NewRequest(invalid)
-	invalidRequest.Header().Set("Authorization", "Bearer "+adminAPIKey)
-	_, err = x.clients.admin.ForceCompleteEvent(ctx, invalidRequest)
-	callError(x.T(), err, connect.CodeInvalidArgument)
-	rolledBack, err := x.clients.volunteer.GetVolunteer(ctx,
-		request(volunteer, &volunteer_v1.GetVolunteerRequest{}))
-	x.Require().NoError(err)
-	x.Require().Zero(rolledBack.Msg.GetVolunteer().GetCoinBalance())
-	x.Require().Zero(rolledBack.Msg.GetVolunteer().GetConfirmedMinutes())
-	rolledBackOperations, err := x.clients.volunteer.ListVolunteerOperations(ctx,
-		request(volunteer, &volunteer_v1.ListVolunteerOperationsRequest{}))
-	x.Require().NoError(err)
-	x.Require().Empty(rolledBackOperations.Msg.GetOperations())
 
 	_, err = x.clients.eventChat.SendEventChatMessage(ctx, request(c, &event_chat_v1.SendEventChatMessageRequest{
 		EventId: id, Text: "История сохраняется", RequestId: "before-completion",
@@ -114,11 +96,6 @@ func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 	x.Require().NoError(chat.Err())
 	_, err = x.clients.admin.ForceCompleteEvent(ctx, r)
 	x.Require().NoError(err)
-	_, err = x.clients.event.CompleteEvent(ctx, request(c, &event_v1.CompleteEventRequest{
-		Id: id, RequestId: message.GetRequestId(), Results: message.GetResults(),
-	}))
-	x.Require().NoError(err)
-
 	profile, err := x.clients.volunteer.GetVolunteer(ctx, request(volunteer, &volunteer_v1.GetVolunteerRequest{}))
 	x.Require().NoError(err)
 	x.Require().EqualValues(30, profile.Msg.GetVolunteer().GetCoinBalance())
@@ -135,8 +112,8 @@ func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 		status participation_v1.ParticipationStatus
 	}{
 		{volunteer, first, participation_v1.ParticipationStatus_PARTICIPATION_STATUS_CONFIRMED},
-		{absent, second, participation_v1.ParticipationStatus_PARTICIPATION_STATUS_NOT_ATTENDED},
-		{pending, waiting.Msg.GetId(), participation_v1.ParticipationStatus_PARTICIPATION_STATUS_CLOSED},
+		{other, second, participation_v1.ParticipationStatus_PARTICIPATION_STATUS_CONFIRMED},
+		{pending, waiting.Msg.GetId(), participation_v1.ParticipationStatus_PARTICIPATION_STATUS_CONFIRMED},
 	} {
 		participation, err := x.clients.participation.GetParticipation(ctx,
 			request(value.actor, &participation_v1.GetParticipationRequest{Id: value.id}))
@@ -149,17 +126,21 @@ func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 		last := changes.Msg.GetChanges()[len(changes.Msg.GetChanges())-1]
 		x.Require().Equal(value.status, last.GetStatus())
 
-		if value.id != waiting.Msg.GetId() {
-			x.Require().Equal(c.id, last.GetCoordinatorId())
-		} else {
-			x.Require().Nil(last.GetActor())
-		}
+		x.Require().Equal(c.id, last.GetCoordinatorId())
+		x.Require().EqualValues(180, participation.Msg.GetParticipation().GetAwardedMinutes())
+		x.Require().EqualValues(30, participation.Msg.GetParticipation().GetAwardedCoins())
+
+		profile, err := x.clients.volunteer.GetVolunteer(ctx,
+			request(value.actor, &volunteer_v1.GetVolunteerRequest{}))
+		x.Require().NoError(err)
+		x.Require().EqualValues(30, profile.Msg.GetVolunteer().GetCoinBalance())
+		x.Require().EqualValues(180, profile.Msg.GetVolunteer().GetConfirmedMinutes())
+		operations, err := x.clients.volunteer.ListVolunteerOperations(ctx,
+			request(value.actor, &volunteer_v1.ListVolunteerOperationsRequest{}))
+		x.Require().NoError(err)
+		x.Require().Len(operations.Msg.GetOperations(), 1)
 	}
 
-	noAward, err := x.clients.volunteer.GetVolunteer(ctx, request(absent, &volunteer_v1.GetVolunteerRequest{}))
-	x.Require().NoError(err)
-	x.Require().Zero(noAward.Msg.GetVolunteer().GetCoinBalance())
-	x.Require().Zero(noAward.Msg.GetVolunteer().GetConfirmedMinutes())
 	readOnly, err := x.clients.eventChat.GetEventChat(ctx,
 		request(volunteer, &event_chat_v1.GetEventChatRequest{EventId: id}))
 	x.Require().NoError(err)
@@ -172,17 +153,6 @@ func (x *RPCTestSuite) TestForceCompleteEventAppliesAllResults() {
 	callError(x.T(), err, connect.CodeFailedPrecondition)
 	_, err = x.clients.participation.RequestParticipation(ctx,
 		request(pending, &participation_v1.RequestParticipationRequest{EventId: id}))
-	callError(x.T(), err, connect.CodeFailedPrecondition)
-
-	changed := proto.CloneOf(message)
-	changed.Results[0].Outcome = &event_v1.EventParticipationResult_ConfirmedMinutes{ConfirmedMinutes: 60}
-	conflict := connect.NewRequest(changed)
-	conflict.Header().Set("Authorization", "Bearer "+adminAPIKey)
-	_, err = x.clients.admin.ForceCompleteEvent(ctx, conflict)
-	callError(x.T(), err, connect.CodeAlreadyExists)
-
-	changed.RequestId = "another-completion"
-	_, err = x.clients.admin.ForceCompleteEvent(ctx, conflict)
 	callError(x.T(), err, connect.CodeFailedPrecondition)
 
 	rewardID := x.reward(c, 20, 1)
@@ -199,7 +169,7 @@ func (x *RPCTestSuite) TestForceCompleteEventRequiresAdminToken() {
 	ctx := x.T().Context()
 	c := x.coordinator()
 	id := x.event(c, 1)
-	r := request(c, &admin_v1.ForceCompleteEventRequest{Id: id, RequestId: "admin-only"})
+	r := request(c, &admin_v1.ForceCompleteEventRequest{Id: id})
 	_, err := x.clients.admin.ForceCompleteEvent(ctx, r)
 	callError(x.T(), err, connect.CodeUnauthenticated)
 	r.Header().Set("Authorization", "Bearer incorrect")
@@ -211,43 +181,24 @@ func (x *RPCTestSuite) TestForceCompleteEventRequiresAdminToken() {
 	x.Require().NoError(err)
 }
 
-func (x *RPCTestSuite) TestForceCompleteEventValidatesResultsAndState() {
+func (x *RPCTestSuite) TestForceCompleteEventValidatesState() {
 	ctx := x.T().Context()
 	c, volunteer := x.coordinator(), x.login()
 	x.cooperate(c, volunteer)
 	id := x.event(c, 1)
-	participationID := x.participate(c, volunteer, id)
-	result := &event_v1.EventParticipationResult{
-		ParticipationId: participationID,
-		Outcome:         &event_v1.EventParticipationResult_ConfirmedMinutes{ConfirmedMinutes: 180},
-	}
+	x.participate(c, volunteer, id)
 
-	for _, value := range []*admin_v1.ForceCompleteEventRequest{
-		{Id: "invalid", RequestId: "invalid"},
-		{Id: id, Results: []*event_v1.EventParticipationResult{result}},
-		{Id: id, RequestId: "missing-result"},
-		{Id: id, RequestId: "duplicate", Results: []*event_v1.EventParticipationResult{result, result}},
-		{
-			Id: id, RequestId: "missing-outcome",
-			Results: []*event_v1.EventParticipationResult{{ParticipationId: participationID}},
-		},
-	} {
-		r := connect.NewRequest(value)
+	for _, id := range []string{"", "invalid"} {
+		r := connect.NewRequest(&admin_v1.ForceCompleteEventRequest{Id: id})
 		r.Header().Set("Authorization", "Bearer "+adminAPIKey)
 		_, err := x.clients.admin.ForceCompleteEvent(ctx, r)
 		callError(x.T(), err, connect.CodeInvalidArgument)
 	}
 
-	event, err := x.clients.event.GetEvent(ctx, request(c, &event_v1.GetEventRequest{Id: id}))
-	x.Require().NoError(err)
-	x.Require().Equal(event_v1.EventStatus_EVENT_STATUS_PUBLISHED, event.Msg.GetEvent().GetStatus())
-	profile, err := x.clients.volunteer.GetVolunteer(ctx, request(volunteer, &volunteer_v1.GetVolunteerRequest{}))
-	x.Require().NoError(err)
-	x.Require().Zero(profile.Msg.GetVolunteer().GetCoinBalance())
-	_, err = x.clients.event.CancelEvent(ctx, request(c, &event_v1.CancelEventRequest{Id: id}))
+	_, err := x.clients.event.CancelEvent(ctx, request(c, &event_v1.CancelEventRequest{Id: id}))
 	x.Require().NoError(err)
 
-	r := connect.NewRequest(&admin_v1.ForceCompleteEventRequest{Id: id, RequestId: "canceled"})
+	r := connect.NewRequest(&admin_v1.ForceCompleteEventRequest{Id: id})
 	r.Header().Set("Authorization", "Bearer "+adminAPIKey)
 	_, err = x.clients.admin.ForceCompleteEvent(ctx, r)
 	callError(x.T(), err, connect.CodeFailedPrecondition)
@@ -255,4 +206,101 @@ func (x *RPCTestSuite) TestForceCompleteEventValidatesResultsAndState() {
 	r.Msg.Id = missingForceCompletionID
 	_, err = x.clients.admin.ForceCompleteEvent(ctx, r)
 	callError(x.T(), err, connect.CodeNotFound)
+
+	id = x.event(c, 1)
+	participationID := x.participate(c, volunteer, id)
+	x.finishTime(id)
+	_, err = x.clients.event.CompleteEvent(ctx, request(c, &event_v1.CompleteEventRequest{
+		Id: id, RequestId: "regular-completion",
+		Results: []*event_v1.EventParticipationResult{
+			{
+				ParticipationId: participationID,
+				Outcome:         &event_v1.EventParticipationResult_ConfirmedMinutes{ConfirmedMinutes: 60},
+			},
+		},
+	}))
+	x.Require().NoError(err)
+
+	r.Msg.Id = id
+	_, err = x.clients.admin.ForceCompleteEvent(ctx, r)
+	callError(x.T(), err, connect.CodeFailedPrecondition)
+}
+
+func (x *RPCTestSuite) TestForceCompleteEventSkipsInactiveAndOtherEvents() {
+	ctx := x.T().Context()
+	c, canceled, rejected, pending := x.coordinator(), x.login(), x.login(), x.login()
+
+	for _, value := range []actor{canceled, rejected, pending} {
+		x.cooperate(c, value)
+	}
+
+	id := x.event(c, 2)
+	canceledID := x.participate(c, canceled, id)
+	rejectedID := x.participate(c, rejected, id)
+	_, err := x.clients.participation.CancelParticipation(ctx,
+		request(canceled, &participation_v1.CancelParticipationRequest{Id: canceledID}))
+	x.Require().NoError(err)
+	_, err = x.clients.participation.RejectParticipation(ctx,
+		request(c, &participation_v1.RejectParticipationRequest{Id: rejectedID}))
+	x.Require().NoError(err)
+
+	otherEventID := x.event(c, 1)
+	waiting, err := x.clients.participation.RequestParticipation(ctx,
+		request(pending, &participation_v1.RequestParticipationRequest{EventId: otherEventID}))
+	x.Require().NoError(err)
+
+	r := connect.NewRequest(&admin_v1.ForceCompleteEventRequest{Id: id})
+	r.Header().Set("Authorization", "Bearer "+adminAPIKey)
+	_, err = x.clients.admin.ForceCompleteEvent(ctx, r)
+	x.Require().NoError(err)
+
+	for _, value := range []struct {
+		actor  actor
+		id     string
+		status participation_v1.ParticipationStatus
+	}{
+		{canceled, canceledID, participation_v1.ParticipationStatus_PARTICIPATION_STATUS_CANCELLED},
+		{rejected, rejectedID, participation_v1.ParticipationStatus_PARTICIPATION_STATUS_REJECTED},
+		{pending, waiting.Msg.GetId(), participation_v1.ParticipationStatus_PARTICIPATION_STATUS_PENDING},
+	} {
+		participation, err := x.clients.participation.GetParticipation(ctx,
+			request(value.actor, &participation_v1.GetParticipationRequest{Id: value.id}))
+		x.Require().NoError(err)
+		x.Require().Equal(value.status, participation.Msg.GetParticipation().GetStatus())
+		profile, err := x.clients.volunteer.GetVolunteer(ctx,
+			request(value.actor, &volunteer_v1.GetVolunteerRequest{}))
+		x.Require().NoError(err)
+		x.Require().Zero(profile.Msg.GetVolunteer().GetCoinBalance())
+		x.Require().Zero(profile.Msg.GetVolunteer().GetConfirmedMinutes())
+	}
+}
+
+func (x *RPCTestSuite) TestForceCompleteEventConcurrentRetries() {
+	ctx := x.T().Context()
+	c, volunteer := x.coordinator(), x.login()
+	x.cooperate(c, volunteer)
+	id := x.event(c, 1)
+	_, err := x.clients.participation.RequestParticipation(ctx,
+		request(volunteer, &participation_v1.RequestParticipationRequest{EventId: id}))
+	x.Require().NoError(err)
+
+	complete := func() error {
+		r := connect.NewRequest(&admin_v1.ForceCompleteEventRequest{Id: id})
+		r.Header().Set("Authorization", "Bearer "+adminAPIKey)
+		_, err := x.clients.admin.ForceCompleteEvent(ctx, r)
+
+		return err
+	}
+	for _, err := range simultaneously(complete, complete) {
+		x.Require().NoError(err)
+	}
+
+	profile, err := x.clients.volunteer.GetVolunteer(ctx, request(volunteer, &volunteer_v1.GetVolunteerRequest{}))
+	x.Require().NoError(err)
+	x.Require().EqualValues(30, profile.Msg.GetVolunteer().GetCoinBalance())
+	x.Require().EqualValues(180, profile.Msg.GetVolunteer().GetConfirmedMinutes())
+	operations, err := x.clients.volunteer.ListVolunteerOperations(ctx,
+		request(volunteer, &volunteer_v1.ListVolunteerOperationsRequest{}))
+	x.Require().NoError(err)
+	x.Require().Len(operations.Msg.GetOperations(), 1)
 }

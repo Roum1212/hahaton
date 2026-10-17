@@ -3,7 +3,6 @@ package rpc_service_admin_rpc_force_complete_event
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"connectrpc.com/connect"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -15,7 +14,6 @@ import (
 	aggregate_participation "github.com/Roum1212/hahaton/internal/domain/aggregate/participation"
 	aggregate_wallet "github.com/Roum1212/hahaton/internal/domain/aggregate/wallet"
 	model_event_id "github.com/Roum1212/hahaton/internal/domain/model/event-id"
-	model_event_result "github.com/Roum1212/hahaton/internal/domain/model/event-result"
 	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 )
 
@@ -39,30 +37,7 @@ func (x RPC) ForceCompleteEvent(
 		})
 	}
 
-	results := make([]model_event_result.EventResult, 0, len(r.Msg.GetResults()))
-	for index, value := range r.Msg.GetResults() {
-		result, err := rpc_service_event_serde.ResultFromPB(value)
-		if err != nil {
-			return nil, rpc_error.NewInvalidArgumentError(&errdetails.BadRequest{
-				FieldViolations: []*errdetails.BadRequest_FieldViolation{
-					{
-						Field:       fmt.Sprintf("results[%d]", index),
-						Description: err.Error(),
-					},
-				},
-			})
-		}
-
-		results = append(results, result)
-	}
-
-	requestID := r.Msg.GetRequestId()
-
-	response, err := x.service.CompleteEvent(ctx, service_complete_event.NewForceRequest(
-		eventID,
-		results,
-		requestID,
-	))
+	response, err := x.service.CompleteEvent(ctx, service_complete_event.NewForceRequest(eventID))
 	if err != nil {
 		switch {
 		case errors.Is(err, service_complete_event.ErrInvalidRequest):
