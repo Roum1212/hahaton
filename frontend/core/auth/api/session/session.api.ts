@@ -8,14 +8,12 @@ export class SessionApi extends BaseRpcApi<typeof SessionService> {
     super(SessionService, transport);
   }
 
-  async open(): Promise<ApiSession.Response | undefined> {
-    const { session } = await this.client.openSession({});
-    return session;
+  async open(): Promise<void> {
+    await this.client.openSession({});
   }
 
-  async authenticate(idToken: string): Promise<ApiSession.Response | undefined> {
-    const { session } = await this.client.authenticateSession({ idToken });
-    return session;
+  async authenticate(idToken: string): Promise<void> {
+    await this.client.authenticateSession({ idToken });
   }
 
   async get(): Promise<ApiSession.Response | undefined> {

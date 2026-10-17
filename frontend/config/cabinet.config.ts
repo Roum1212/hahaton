@@ -6,7 +6,7 @@ export interface IProfileTab {
 export const VOLUNTEER_TABS: IProfileTab[] = [
   { key: 'applications', label: 'Мои заявки' },
   { key: 'purchases', label: 'Покупки' },
-  { key: 'wallet', label: 'История коинов' },
+  { key: 'wallet', label: 'История койнов' },
   { key: 'about', label: 'Анкета' },
 ];
 

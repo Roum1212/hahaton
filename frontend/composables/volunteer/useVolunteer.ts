@@ -17,8 +17,9 @@ export const useVolunteerNames = () => {
 
   const name = (id: string) => store.getCoordinatorView(id)?.fullName || 'Волонтёр';
   const view = (id: string) => store.getCoordinatorView(id);
+  const avatar = (id: string) => store.getCoordinatorView(id)?.avatarUrl ?? null;
 
-  return { ensure, name, view };
+  return { ensure, name, view, avatar };
 };
 
 const PROFILE_PAGE_LIMIT = 100;

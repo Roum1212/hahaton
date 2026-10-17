@@ -16,7 +16,7 @@ onMounted(() => handleAsyncOperation(() => load(fetchPage)));
       <Skeleton v-for="n in 4" :key="n" height="56px" border-radius="16px" />
     </div>
 
-    <AppEmpty v-else-if="!list.length" title="Коины появятся после первого мероприятия" image="/images/landing/step-accrual.jpg" />
+    <AppEmpty v-else-if="!list.length" title="Койны появятся после первого мероприятия" image="/images/landing/step-accrual.jpg" />
 
     <template v-else>
       <div class="app-list">

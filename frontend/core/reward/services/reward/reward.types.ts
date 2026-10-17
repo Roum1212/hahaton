@@ -10,6 +10,7 @@ export interface IReward {
   priceCoins: number;
   availableQuantity: number;
   quantityLimit: number;
+  imageUrl: string | null;
 }
 
 export interface IRewardDto {
@@ -17,6 +18,7 @@ export interface IRewardDto {
   description: string;
   priceCoins: number;
   quantityLimit: number;
+  imagePath?: string;
 }
 
 export interface IRewardFilter {

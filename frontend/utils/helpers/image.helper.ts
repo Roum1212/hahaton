@@ -1,29 +1,18 @@
-import { createClient } from '@connectrpc/connect';
-import { createConnectTransport } from '@connectrpc/connect-web';
-import { ImageService } from '../../genproto/image/v1/image_service_pb';
+export const IMAGE_ACCEPT = 'image/jpeg,image/png';
+export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
-const maxImageBytes = 5 * 1024 * 1024;
+export function validateImageFile(file: File): string | null {
+  if (file.type !== 'image/jpeg' && file.type !== 'image/png') return 'Поддерживаются изображения JPEG и PNG';
+  if (file.size === 0 || file.size > MAX_IMAGE_BYTES) return 'Выберите изображение размером до 5 МиБ';
+  return null;
+}
 
-export async function uploadImage(file: File, rpcBaseUrl: string) {
-  if (file.size === 0 || file.size > maxImageBytes) {
-    throw new Error('Выберите изображение размером до 5 МиБ.');
-  }
+export function validateSourceImage(file: File): string | null {
+  if (file.type !== 'image/jpeg' && file.type !== 'image/png') return 'Поддерживаются изображения JPEG и PNG';
+  if (file.size === 0 || file.size > MAX_SOURCE_IMAGE_BYTES) return 'Выберите изображение размером до 20 МиБ';
+  return null;
+}
 
-  if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-    throw new Error('Поддерживаются изображения JPEG и PNG.');
-  }
-
-  const client = createClient(
-    ImageService,
-    createConnectTransport({
-      baseUrl: rpcBaseUrl,
-      fetch: (input, init) => globalThis.fetch(input, { ...init, credentials: 'include' }),
-    }),
-  );
-  const response = await client.uploadImage({ data: new Uint8Array(await file.arrayBuffer()) });
-
-  return {
-    imagePath: response.imagePath,
-    imageUrl: new URL(response.imageUrl, rpcBaseUrl).href,
-  };
+export function resolveImageUrl(url: string | undefined, baseUrl: string): string | null {
+  return url ? new URL(url, baseUrl).href : null;
 }

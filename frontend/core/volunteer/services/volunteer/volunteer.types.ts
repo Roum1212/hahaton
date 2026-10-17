@@ -8,6 +8,7 @@ export interface IVolunteer {
   lastName: string;
   middleName: string;
   fullName: string;
+  avatarUrl: string | null;
   dateOfBirth: Date | null;
   email: string;
   phone: string;
@@ -21,6 +22,7 @@ export interface ICoordinatorVolunteer {
   lastName: string;
   middleName: string;
   fullName: string;
+  avatarUrl: string | null;
   email: string | null;
   phone: string | null;
 }

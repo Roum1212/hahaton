@@ -17,7 +17,7 @@ interface IResultRow {
 const route = useRoute();
 const eventsStore = useEventsStore();
 const { list, load: loadApplications } = useEventApplications();
-const { name: volunteerName } = useVolunteerNames();
+const { name: volunteerName, avatar: volunteerAvatar } = useVolunteerNames();
 const { toast, confirm } = useApp();
 
 const eventId = computed(() => String(route.params.id));
@@ -95,7 +95,7 @@ const submit = () => {
       acceptLabel: 'Подтвердить итоги',
       accept: async () => {
         event.value = await eventsStore.complete(eventId.value, toResults(), requestId.value);
-        toast.success('Итоги подведены, коины начислены');
+        toast.success('Итоги подведены, койны начислены');
         await loadApplications(eventId.value);
       },
     },
@@ -113,11 +113,11 @@ onMounted(load);
 
     <template v-else-if="event?.status === EventStatus.COMPLETED">
       <div class="app-card">
-        <Message severity="success">Итоги зафиксированы, коины начислены участникам</Message>
+        <Message severity="success">Итоги зафиксированы, койны начислены участникам</Message>
         <div class="app-list">
           <div v-for="item in completedResults" :key="item.id" class="app-list__item">
             <div class="app-list__lead">
-              <AppAvatar :name="volunteerName(item.volunteerId)" />
+              <AppAvatar :name="volunteerName(item.volunteerId)" :image="volunteerAvatar(item.volunteerId)" />
               <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`" class="app-list__title">{{
                 volunteerName(item.volunteerId)
               }}</NuxtLink>
@@ -145,7 +145,7 @@ onMounted(load);
         <div class="app-list">
           <div v-for="row in rows" :key="row.participationId" class="app-list__item">
             <div class="app-list__lead">
-              <AppAvatar :name="volunteerName(row.volunteerId)" />
+              <AppAvatar :name="volunteerName(row.volunteerId)" :image="volunteerAvatar(row.volunteerId)" />
               <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${row.volunteerId}`" class="app-list__title">{{
                 volunteerName(row.volunteerId)
               }}</NuxtLink>

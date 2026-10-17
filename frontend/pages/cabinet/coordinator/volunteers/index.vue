@@ -11,7 +11,7 @@ definePageMeta({
 });
 
 const { store, loading, load, approve, reject, terminate, createInvitation, revokeInvitation } = useCoordinatorCooperations();
-const { name: volunteerName, view: volunteerView } = useVolunteerNames();
+const { name: volunteerName, view: volunteerView, avatar: volunteerAvatar } = useVolunteerNames();
 const { copy } = useClipboard('Ссылка скопирована');
 
 const tab = ref<CooperationStatus>(CooperationStatus.PENDING);
@@ -54,7 +54,7 @@ onMounted(load);
           <div v-for="item in visible" :key="item.volunteerId" class="app-list__item">
             <div class="app-list__lead">
               <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`"
-                ><AppAvatar :name="volunteerName(item.volunteerId)"
+                ><AppAvatar :name="volunteerName(item.volunteerId)" :image="volunteerAvatar(item.volunteerId)"
               /></NuxtLink>
               <div class="app-list__main">
                 <span class="app-list__title">

@@ -7,7 +7,6 @@ const { logout } = useAuthActions();
 const { mode, canCoordinate, switchMode, homeFor } = useCabinetMode();
 
 const name = computed(() => volunteerStore.profile?.fullName || 'Участник');
-const letter = computed(() => name.value.slice(0, 1).toLocaleUpperCase());
 
 const menu = ref();
 const menuId = useId();
@@ -38,7 +37,7 @@ const toggle = (event: Event) => menu.value.toggle(event);
 
 <template>
   <button type="button" class="app-user-button" aria-haspopup="true" :aria-controls="menuId" @click="toggle">
-    <span class="app-avatar app-avatar--sm">{{ letter }}</span>
+    <AppAvatar :name="name" :image="volunteerStore.profile?.avatarUrl" size="sm" />
     <span class="app-user-button__name">{{ name }}</span>
     <i class="pi pi-angle-down" />
   </button>

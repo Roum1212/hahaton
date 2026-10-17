@@ -6,6 +6,7 @@ import type { ICoordinator, ICoordinatorSettings, IUpdateCoordinatorDto } from '
 
 export class CoordinatorService {
   private service = COORDINATOR_API().coordinator;
+  private baseUrl = String(useRuntimeConfig().public.rpcUrl);
 
   async get(id?: string, signal?: AbortSignal): Promise<ICoordinator> {
     const coordinator = await this.service.get(id, signal);
@@ -19,7 +20,7 @@ export class CoordinatorService {
   }
 
   async update(dto: IUpdateCoordinatorDto): Promise<ICoordinator> {
-    await this.service.update({ description: dto.description, avatarUrl: dto.avatarUrl });
+    await this.service.update({ description: dto.description, avatarPath: dto.avatarPath });
     return this.get();
   }
 
@@ -38,7 +39,7 @@ export class CoordinatorService {
       id: data.id,
       displayName: data.displayName,
       description: data.description,
-      avatarUrl: data.avatarUrl,
+      avatarUrl: resolveImageUrl(data.avatarUrl, this.baseUrl),
     };
   }
 }

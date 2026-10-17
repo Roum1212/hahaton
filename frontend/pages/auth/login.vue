@@ -58,7 +58,7 @@ onMounted(() => {
     <div class="app-auth__aside">
       <img src="/images/landing/feature-coins.webp" alt="" />
       <h2>Помогайте городу —<br />копите часы волонтёрства</h2>
-      <p class="app-auth__note">1 час волонтёрства = 10 коинов, которые можно обменять на поощрения</p>
+      <p class="app-auth__note">1 час волонтёрства = 10 койнов, которые можно обменять на поощрения</p>
     </div>
   </div>
 </template>

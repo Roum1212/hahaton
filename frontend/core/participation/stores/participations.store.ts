@@ -58,7 +58,13 @@ export const useParticipationsStore = defineStore('participations', {
     },
 
     replace(participation: IParticipation) {
+      const status = this.filter?.status;
       const exists = this.list.some((item) => item.id === participation.id);
+      if (status !== undefined && participation.status !== status) {
+        this.list = this.list.filter((item) => item.id !== participation.id);
+        if (exists) this.total = Math.max(0, this.total - 1);
+        return participation;
+      }
       this.list = exists ? this.list.map((item) => (item.id === participation.id ? participation : item)) : [...this.list, participation];
       return participation;
     },

@@ -20,7 +20,9 @@ export const useAuthActions = () => {
 
   const redirectAfterLogin = async () => {
     const redirectCookie = useCookie<string | null>('redirectAfterLogin');
-    const path = redirectCookie.value || useCabinetMode().homeFor();
+    const saved = redirectCookie.value;
+    const allowed = !!saved && (modeFromPath(saved) !== 'coordinator' || authStore.hasCoordinatorProfile);
+    const path = allowed ? saved : useCabinetMode().homeFor();
     redirectCookie.value = null;
     await navigateTo(path, { replace: true });
   };
@@ -46,7 +48,6 @@ export const useAuthActions = () => {
 export const useDemoAuth = () => {
   const authStore = useAuthStore();
   const { toast, loader } = useApp();
-  const { redirectAfterLogin } = useAuthActions();
   const enabled = !!useRuntimeConfig().public.demoLogin;
 
   const signIn = async (account: IDemoAccount) => {
@@ -57,9 +58,9 @@ export const useDemoAuth = () => {
         return true;
       });
       if (!ok) return;
-      useCabinetMode().setMode(account.mode);
+      useCookie<string | null>('redirectAfterLogin').value = null;
       toast.success(`Вы вошли как ${account.name}`);
-      await redirectAfterLogin();
+      await navigateTo(useCabinetMode().homeFor(account.mode), { replace: true });
     } finally {
       loader.hide();
     }

@@ -32,7 +32,7 @@ watch([area, period], () => load(area.value, period.value), { immediate: true, d
     </div>
 
     <div v-else-if="!store.list.length" class="app-card">
-      <AppEmpty title="Рядом пока нет мероприятий">
+      <AppEmpty title="Ближайших доступных вам мероприятий не найдено">
         <div class="flex flex-wrap justify-center gap-2">
           <Button label="Расширить район" severity="secondary" outlined @click="openDialog" />
           <NuxtLink :to="ROUTES.volunteer.coordinators">

@@ -23,13 +23,14 @@ export class AuthSessionService {
   }
 
   async open(): Promise<ISession> {
-    return this.toInterface(this.required(await this.service.open()));
+    await this.service.open();
+    return this.get();
   }
 
   async authenticate(idToken: string): Promise<ISession> {
-    const session = this.toInterface(this.required(await this.service.authenticate(idToken)));
+    await this.service.authenticate(idToken);
     sessionStorage.removeItem(PASSIVE_DISABLED_KEY);
-    return session;
+    return this.get();
   }
 
   async get(): Promise<ISession> {

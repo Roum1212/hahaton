@@ -29,6 +29,7 @@ import {
   type VolunteerRec,
 } from './db';
 import { approvedCount, issuedQuantity, pendingCount, reservedQuantity } from './domain';
+import { imageUrl } from './images';
 
 const PUBLIC_URL = process.env.MOCK_PUBLIC_URL || 'http://localhost:3000';
 
@@ -39,6 +40,7 @@ export const toPoint = (point: Point) => create(GeoPointSchema, { latitude: poin
 export const toVolunteer = (item: VolunteerRec) =>
   create(VolunteerSchema, {
     id: item.id,
+    avatarUrl: imageUrl(item.avatarPath),
     dateOfBirth: create(DateSchema, item.dateOfBirth),
     firstName: item.firstName,
     lastName: item.lastName,
@@ -52,6 +54,7 @@ export const toVolunteer = (item: VolunteerRec) =>
 export const toCoordinatorVolunteer = (item: VolunteerRec, withContacts: boolean) =>
   create(CoordinatorVolunteerSchema, {
     id: item.id,
+    avatarUrl: imageUrl(item.avatarPath),
     firstName: item.firstName,
     lastName: item.lastName,
     middleName: item.middleName,
@@ -62,6 +65,7 @@ export const toCoordinatorVolunteer = (item: VolunteerRec, withContacts: boolean
 export const toAdminVolunteer = (item: VolunteerRec) =>
   create(AdminVolunteerSchema, {
     id: item.id,
+    avatarUrl: imageUrl(item.avatarPath),
     firstName: item.firstName,
     lastName: item.lastName,
     middleName: item.middleName,
@@ -74,7 +78,7 @@ export const toCoordinator = (item: CoordinatorRec) => {
   const volunteer = db.volunteers.get(item.id);
   return create(CoordinatorSchema, {
     id: item.id,
-    avatarUrl: item.avatarUrl,
+    avatarUrl: imageUrl(item.avatarPath),
     description: item.description,
     displayName: volunteer ? fullName(volunteer) : '',
   });
@@ -165,6 +169,7 @@ export const toReward = (item: RewardRec) =>
     id: item.id,
     coordinatorId: item.coordinatorId,
     description: item.description,
+    imageUrl: imageUrl(item.imagePath),
     title: item.title,
     priceCoins: BigInt(item.priceCoins),
     availableQuantity: Math.max(0, item.quantityLimit - issuedQuantity(item.id) - reservedQuantity(item.id)),

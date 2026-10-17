@@ -5,7 +5,7 @@ const { toast } = useApp();
 const loading = ref(true);
 const saving = ref(false);
 const description = ref('');
-const avatarUrl = ref('');
+const savingAvatar = ref(false);
 const cooldownHours = ref(24);
 
 onMounted(async () => {
@@ -13,7 +13,6 @@ onMounted(async () => {
     async () => {
       const [me, settings] = await Promise.all([store.fetchMe(), store.fetchSettings()]);
       description.value = me.description;
-      avatarUrl.value = me.avatarUrl;
       cooldownHours.value = Math.round(settings.cooldownSeconds / 3600);
     },
     () => {
@@ -22,16 +21,23 @@ onMounted(async () => {
   );
 });
 
+const saveAvatar = async (avatarPath: string) => {
+  savingAvatar.value = true;
+  const result = await handleAsyncOperation(
+    () => store.updateMe({ avatarPath }),
+    () => {
+      savingAvatar.value = false;
+    },
+  );
+  if (result) toast.success(avatarPath ? 'Фото обновлено' : 'Фото удалено');
+};
+
 const onSave = async () => {
-  if (avatarUrl.value && !avatarUrl.value.startsWith('https://')) {
-    toast.error('Аватар должен быть ссылкой https://');
-    return;
-  }
   saving.value = true;
   const result = await handleAsyncOperation(
     () =>
       Promise.all([
-        store.updateMe({ description: description.value.trim(), avatarUrl: avatarUrl.value.trim() }),
+        store.updateMe({ description: description.value.trim() }),
         store.updateSettings({ cooldownSeconds: Math.max(0, cooldownHours.value) * 3600 }),
       ]),
     () => {
@@ -47,13 +53,23 @@ const onSave = async () => {
 
   <form v-else class="app-card" @submit.prevent="onSave">
     <span class="app-card__title">О вас</span>
+    <div class="app-field">
+      <span class="app-field__label flex items-center gap-2">
+        Фото координатора
+        <i
+          v-tooltip.bottom="'Видят волонтёры. Не связано с фото вашего профиля волонтёра'"
+          class="pi pi-question-circle text-surface-400" />
+      </span>
+      <AppImageUpload
+        :image="store.me?.avatarUrl ?? null"
+        :name="store.me?.displayName ?? ''"
+        :disabled="savingAvatar"
+        @uploaded="saveAvatar($event.path)"
+        @remove="saveAvatar('')" />
+    </div>
     <label class="app-field">
       <span class="app-field__label">Описание</span>
       <Textarea v-model="description" rows="4" auto-resize fluid placeholder="Чем вы занимаетесь и кого ищете" />
-    </label>
-    <label class="app-field">
-      <span class="app-field__label">Ссылка на аватар</span>
-      <InputText v-model="avatarUrl" placeholder="https://" fluid />
     </label>
     <label class="app-field">
       <span class="app-field__label flex items-center gap-2">

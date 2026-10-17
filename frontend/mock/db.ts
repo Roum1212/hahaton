@@ -27,6 +27,7 @@ export interface VolunteerRec {
   email: string;
   phone: string;
   dateOfBirth: DateParts;
+  avatarPath: string;
   coinBalance: number;
   confirmedMinutes: number;
   operationSequence: number;
@@ -34,7 +35,7 @@ export interface VolunteerRec {
 
 export interface CoordinatorRec {
   id: string;
-  avatarUrl: string;
+  avatarPath: string;
   description: string;
   cooldownSeconds: number;
 }
@@ -132,7 +133,15 @@ export interface RewardRec {
   description: string;
   priceCoins: number;
   quantityLimit: number;
+  imagePath: string;
   deleted: boolean;
+}
+
+export interface ImageRec {
+  path: string;
+  ownerId: string;
+  contentType: string;
+  data: Buffer;
 }
 
 export interface RewardOrderRec {
@@ -190,6 +199,7 @@ export const db = {
   chatSequences: new Map<string, number>(),
   cities: new Map<string, CityRec>(),
   completionResults: new Map<string, string>(),
+  images: new Map<string, ImageRec>(),
 };
 
 export const newId = () => randomUUID();

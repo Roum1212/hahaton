@@ -23,14 +23,13 @@ const requirementOptions = Object.values(EventCandidateRequirement)
 const mapCenter = computed<IGeoPoint>(() => form.value.point ?? city.value.center ?? DEFAULT_CITY.center!);
 
 const search = async ({ query }: { query: string }) => {
-  suggestions.value =
-    (await handleAsyncOperation(() => geoStore.service.suggest(`${city.value.name}, ${query}`, 'street', 'house', 7))) ?? [];
+  suggestions.value = (await handleAsyncOperation(() => geoStore.service.suggest(query, 'city', 'house', 7))) ?? [];
 };
 
 const selectAddress = async ({ value }: { value: IAddressSuggestion }) => {
   let point = value.point;
   if (!point && value.fiasId) {
-    const [precise] = (await handleAsyncOperation(() => geoStore.service.suggest(value.fiasId!, 'street', 'house', 1))) ?? [];
+    const [precise] = (await handleAsyncOperation(() => geoStore.service.suggest(value.fiasId!, 'city', 'house', 1))) ?? [];
     point = precise?.point ?? null;
   }
   form.value.location = value.value;

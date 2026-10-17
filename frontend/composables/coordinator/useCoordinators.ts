@@ -7,6 +7,7 @@ export const useCoordinatorNames = () => {
   };
 
   const name = (id: string) => store.getById(id)?.displayName ?? 'Координатор';
+  const avatar = (id: string) => store.getById(id)?.avatarUrl ?? null;
 
-  return { ensure, name };
+  return { ensure, name, avatar };
 };

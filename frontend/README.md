@@ -118,22 +118,20 @@ AuthService.LoginWithFlida({ flidaAccessToken }) ──▶ бэкенд: GET id.
 
 ## Загрузка аватаров и изображений поощрений
 
-Новый `ImageService` использует актуальную cookie-сессию бэкенда. Приведённое выше описание
-старого AuthService относится к текущему шаблону UI; его миграция на SessionService ещё нужна.
-Helper `utils/helpers/image.helper.ts` отправляет файл с `credentials: 'include'`:
+Загрузка идёт через домен `core/image` (ImageApi → ImageService → `useImagesStore`) по общему
+Connect transport с cookie-сессией и перехватчиком ошибок:
 
 ```ts
-const image = await uploadImage(file, useRuntimeConfig().public.rpcUrl);
-// Для превью: image.imageUrl.
-// Для UpdateVolunteer/UpdateCoordinator: { avatarPath: image.imagePath }.
-// Для CreateReward/UpdateReward: { imagePath: image.imagePath }.
+const image = await useImagesStore().upload(file);
+// image.url — полный URL для превью, image.path — для сохранения карточки.
+// UpdateVolunteer/UpdateCoordinator: { avatarPath: image.path }.
+// CreateReward/UpdateReward: { imagePath: image.path }.
 ```
 
-Поле выбора файла должно иметь `accept="image/jpeg,image/png"`; лимит — 5 МиБ.
-После выбора можно показать локальное превью, затем дождаться UploadImage и сохранить карточку.
-Сервер сам проверяет файл и ограничивает каждую сторону 4096 пикселями.
-URL из ответа относится к origin бэкенда; helper возвращает полный URL для отдельного фронтенда.
-Для удаления картинки передаётся пустой путь, для сохранения прежней — поле не отправляется.
-Аватары волонтёра и координатора независимы. Пока нет полной интеграции поля выбора в формы:
-профильные сервисы и сервис поощрений ещё не реализованы на бэкенде.
-
+Готовый компонент выбора файла — `AppImageUpload` (`components/app/ImageUpload.vue`):
+`accept="image/jpeg,image/png"`, проверка размера до 5 МиБ на клиенте, превью и кнопка удаления.
+Относительные `/storage/...` из ответов бэкенда превращаются в полный URL через `resolveImageUrl`
+(`utils/helpers/image.helper.ts`) в сервисах волонтёра, координатора и поощрений.
+Пустой путь удаляет картинку, отсутствующее поле сохраняет прежнюю.
+Аватары профиля волонтёра и координатора независимы.
+Mock-сервер хранит загруженные файлы в памяти и раздаёт их по `/storage/...`.
