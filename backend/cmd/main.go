@@ -24,9 +24,5 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	if len(os.Args) > 1 && os.Args[1] == "seed" {
-		return hahaton.RunSeed(ctx, os.Args[2:])
-	}
-
 	return hahaton.Run(ctx)
 }

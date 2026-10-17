@@ -135,3 +135,21 @@ const image = await useImagesStore().upload(file);
 Пустой путь удаляет картинку, отсутствующее поле сохраняет прежнюю.
 Аватары профиля волонтёра и координатора независимы.
 Mock-сервер хранит загруженные файлы в памяти и раздаёт их по `/storage/...`.
+
+## Docker
+
+Полный запуск описан в [корневой инструкции](../README.md). `frontend/Dockerfile`
+собирает Nuxt с preset `node-server` и `nitro.noExternals`, чтобы зависимости PrimeVue
+попали в серверный bundle целиком. Runtime содержит только `.output` и Node.js,
+запускается от пользователя `node`, слушает HTTP на `0.0.0.0:3000` и имеет healthcheck.
+Nginx и сертификаты настраиваются отдельно. В образ не попадают `.env`, node_modules
+разработчика, mock-сервер и отчёты браузерных тестов.
+
+Production-настройки передаются при запуске через стандартные переменные Nuxt:
+`NUXT_PUBLIC_RPC_URL`, `NUXT_PUBLIC_SITE_URL`, `NUXT_PUBLIC_FLIDA_CLIENT_ID`,
+`NUXT_PUBLIC_FLIDA_REDIRECT_URI` и остальные `NUXT_PUBLIC_*` из корневого Compose.
+Это публичные значения для браузера: RPC URL должен быть внешним HTTPS-адресом,
+а не внутренним `http://backend:8080`. Настройки API/входа меняются без пересборки.
+Название и meta-description задаются также build arguments для статического HTML head;
+при их изменении пересоберите frontend.
+Серверные ключи, пароль PostgreSQL и ADMIN_API_KEY frontend не передаются.

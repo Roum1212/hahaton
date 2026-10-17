@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -17,6 +16,7 @@ import (
 	aggregate_event_chat "github.com/Roum1212/hahaton/internal/domain/aggregate/event-chat"
 	aggregate_participation "github.com/Roum1212/hahaton/internal/domain/aggregate/participation"
 	model_participation_id "github.com/Roum1212/hahaton/internal/domain/model/participation-id"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

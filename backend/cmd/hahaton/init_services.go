@@ -3,8 +3,6 @@ package hahaton
 import (
 	"net/http"
 
-	"go.flida.dev/cookies/pkg/cookies"
-
 	service_accept_cooperation_invitation "github.com/Roum1212/hahaton/internal/app/service/accept-cooperation-invitation"
 	service_approve_cooperation "github.com/Roum1212/hahaton/internal/app/service/approve-cooperation"
 	service_approve_participation "github.com/Roum1212/hahaton/internal/app/service/approve-participation"
@@ -65,6 +63,7 @@ import (
 	service_update_volunteer "github.com/Roum1212/hahaton/internal/app/service/update-volunteer"
 	service_upload_image "github.com/Roum1212/hahaton/internal/app/service/upload-image"
 	"github.com/Roum1212/hahaton/internal/config"
+	"github.com/Roum1212/hahaton/internal/pkg/cookies"
 	session_cookie "github.com/Roum1212/hahaton/internal/pkg/session/cookie"
 )
 

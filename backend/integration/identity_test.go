@@ -75,7 +75,7 @@ func checkIdentity(x *fixture) {
 	}
 
 	denied := x.request(a, "admin.v1.AdminService/FindVolunteers", map[string]any{"volunteer_id": a.id}, false)
-	require(x.t, denied.Code == http.StatusNotFound, "admin route exposed on client listener")
+	require(x.t, denied.Code == http.StatusUnauthorized, "user session bypassed admin token")
 	request := x.request(actor{}, "admin.v1.AdminService/CreateCoordinator", map[string]any{
 		"volunteer_id":                         a.id,
 		"cooperation_request_cooldown_seconds": "60",

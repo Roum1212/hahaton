@@ -1,3 +1,10 @@
+.git
 .env
-storage
+.env.*
 certs
+storage
+bin
+integration
+tests
+*.log
+*.cover

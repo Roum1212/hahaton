@@ -5,13 +5,13 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	volunteer_v1 "github.com/Roum1212/hahaton/genproto/volunteer/v1"
 	rpc_service_volunteer_serde "github.com/Roum1212/hahaton/internal/api/rpc/service/volunteer/serde"
 	service_list_volunteer_operations "github.com/Roum1212/hahaton/internal/app/service/list-volunteer-operations"
 	model_page "github.com/Roum1212/hahaton/internal/domain/model/page"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

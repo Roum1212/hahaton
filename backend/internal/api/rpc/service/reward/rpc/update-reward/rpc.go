@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -15,6 +14,7 @@ import (
 	aggregate_reward "github.com/Roum1212/hahaton/internal/domain/aggregate/reward"
 	model_image_path "github.com/Roum1212/hahaton/internal/domain/model/image-path"
 	model_reward_id "github.com/Roum1212/hahaton/internal/domain/model/reward-id"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

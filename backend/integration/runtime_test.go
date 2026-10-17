@@ -17,7 +17,6 @@ import (
 
 	"github.com/Roum1212/hahaton/cmd/hahaton"
 	"github.com/Roum1212/hahaton/internal/config"
-	model_user_id "github.com/Roum1212/hahaton/internal/domain/model/user-id"
 )
 
 func checkCORS(x *fixture) {
@@ -35,7 +34,7 @@ func checkCORS(x *fixture) {
 			"volunteer.v1.VolunteerService/GetVolunteer",
 		},
 		{
-			x.admin,
+			x.handler,
 			"admin.v1.AdminService/FindVolunteers",
 		},
 	}
@@ -119,41 +118,15 @@ func checkCORS(x *fixture) {
 func checkRuntime(x *fixture) {
 	checkCORS(x)
 
-	coordinator, volunteer := x.coordinator("seed-owner"), x.login("seed-volunteer")
-
 	var cfg config.Config
-	must(x.t, env.ParseWithOptions(&cfg, config.ParseOptions()))
-	must(x.t, cfg.Validate())
 
-	key := cfg.DataEncryptionKey
-	coordinatorID, err := model_user_id.NewUserID(coordinator.id)
-	must(x.t, err)
-	volunteerID, err := model_user_id.NewUserID(volunteer.id)
-	must(x.t, err)
-	must(x.t, hahaton.Seed(x.t.Context(), x.pool, coordinatorID, volunteerID, key[:]))
-	must(x.t, hahaton.Seed(x.t.Context(), x.pool, coordinatorID, volunteerID, key[:]))
-
-	var eventCount, rewardCount int
-	must(
-		x.t,
-		x.pool.QueryRow(x.t.Context(), "SELECT count(*) FROM events WHERE coordinator_id=$1", coordinator.id).Scan(
-			&eventCount,
-		),
-	)
-	must(
-		x.t,
-		x.pool.QueryRow(x.t.Context(), "SELECT count(*) FROM rewards WHERE coordinator_id=$1", coordinator.id).Scan(
-			&rewardCount,
-		),
-	)
-	require(x.t, eventCount == 3 && rewardCount == 3, "repeat seed duplicated or missed MVP fixtures")
 	x.t.Setenv("CITY_CATALOG_CSV_PATH", "/missing-catalog.csv")
 
 	originalKey := os.Getenv("SESSION_TOKEN_V4_SYMMETRIC_KEY")
 
 	x.t.Setenv("SESSION_TOKEN_V4_SYMMETRIC_KEY", "invalid")
 
-	err = env.ParseWithOptions(&cfg, config.ParseOptions())
+	err := env.ParseWithOptions(&cfg, config.ParseOptions())
 	require(x.t, err != nil, "invalid session encryption key was accepted")
 	x.t.Setenv("SESSION_TOKEN_V4_SYMMETRIC_KEY", originalKey)
 	x.t.Setenv("SESSION_TOKEN_TTL", "0s")
@@ -161,9 +134,8 @@ func checkRuntime(x *fixture) {
 	must(x.t, env.ParseWithOptions(&cfg, config.ParseOptions()))
 	require(x.t, cfg.Validate() != nil, "zero session ttl was accepted")
 	x.t.Setenv("SESSION_TOKEN_TTL", "24h")
-	clientAddress, adminAddress := unusedAddresses(x)
+	clientAddress := unusedAddress(x)
 	x.t.Setenv("HTTP_SERVER_ADDRESS", clientAddress)
-	x.t.Setenv("ADMIN_HTTP_SERVER_ADDRESS", adminAddress)
 
 	databaseURL, err := url.Parse(os.Getenv("POSTGRESQL_DSN"))
 	must(x.t, err)
@@ -210,7 +182,7 @@ func checkRuntime(x *fixture) {
 	require(x.t, ready, "server did not become ready")
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		"http://"+adminAddress+"/admin.v1.AdminService/FindVolunteers", strings.NewReader(
+		"http://"+clientAddress+"/admin.v1.AdminService/FindVolunteers", strings.NewReader(
 			`{"email_address":"missing@example.com"}`,
 		))
 	must(x.t, err)
@@ -221,7 +193,7 @@ func checkRuntime(x *fixture) {
 	data, err := io.ReadAll(response.Body)
 	must(x.t, err)
 	must(x.t, response.Body.Close())
-	require(x.t, response.StatusCode == http.StatusOK, "admin listener failed: "+string(data))
+	require(x.t, response.StatusCode == http.StatusOK, "admin route on shared listener failed: "+string(data))
 	cancel()
 
 	select {
@@ -232,7 +204,7 @@ func checkRuntime(x *fixture) {
 	}
 }
 
-func unusedAddresses(x *fixture) (string, string) {
+func unusedAddress(x *fixture) string {
 	var cfg net.ListenConfig
 
 	first, err := cfg.Listen(x.t.Context(), "tcp", "127.0.0.1:0")
@@ -242,12 +214,5 @@ func unusedAddresses(x *fixture) (string, string) {
 		must(x.t, first.Close())
 	}()
 
-	second, err := cfg.Listen(x.t.Context(), "tcp", "127.0.0.1:0")
-	must(x.t, err)
-
-	defer func() {
-		must(x.t, second.Close())
-	}()
-
-	return first.Addr().String(), second.Addr().String()
+	return first.Addr().String()
 }

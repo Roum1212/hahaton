@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	event_chat_v1 "github.com/Roum1212/hahaton/genproto/event-chat/v1"
@@ -20,6 +19,7 @@ import (
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
 	model_chat_message "github.com/Roum1212/hahaton/internal/domain/model/chat-message"
 	model_event_id "github.com/Roum1212/hahaton/internal/domain/model/event-id"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 	stream_controller "github.com/Roum1212/hahaton/internal/pkg/stream/controller"
 )

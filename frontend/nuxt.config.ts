@@ -21,6 +21,10 @@ export default defineNuxtConfig({
 
   modules: ['@vueuse/nuxt', '@nuxt/eslint', '@primevue/nuxt-module', '@pinia/nuxt'],
 
+  nitro: {
+    noExternals: true,
+  },
+
   css: ['primeicons/primeicons.css', '@/assets/style.scss', '@/assets/tailwind.css'],
 
   runtimeConfig: {

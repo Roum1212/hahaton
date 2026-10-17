@@ -14,7 +14,7 @@ INTEGRATION_POSTGRESQL_DSN="$POSTGRESQL_DSN" go test -count=1 -tags=integration 
 
 Каждый сценарий создаёт собственную схему и удаляет её после завершения. Рабочие таблицы
 не используются. Goose применяется только для подготовки этих тестовых схем;
-сервер и seed миграций не запускают. На пустой схеме проверяются Up, Down до нуля,
+сервер миграций не запускает. На пустой схеме проверяются Up, Down до нуля,
 повторный Up и повторный вызов без неприменённых миграций.
 
 `contracts_test.go` читает актуальные proto и проверяет, что каждый RPC был вызван.
@@ -28,7 +28,7 @@ RPC, serde, app, агрегаты и pgx/Squirrel-репозитории.
 | Flida | Подписанный RS256 ID token, discovery/JWKS; чужие iss/aud/azp, пустой sub, exp, будущие iat/nbf отклоняются. Первый неполный профиль — FailedPrecondition. Профиль и Wallet создаются через агрегаты в одной транзакции. |
 | Volunteer: Get, Update, GetCoordinatorVolunteer, ListOperations | `identity_test.go`, `cooperation_test.go`, `rewards_test.go`: только свой полный профиль, общее ФИО, корректная дата, контакты только при ACTIVE, скрытый баланс другого участника, неизменяемый журнал и фильтр типа операции. |
 | Coordinator: Get, List, Update, GetSettings, UpdateSettings | `identity_test.go`: публичная для авторизованного участника карточка, общий display_name, редактирование своего описания, нулевой cooldown, отсутствие поля сохраняет настройку, отрицательный cooldown запрещён. Отсутствие необходимого профиля — PermissionDenied. |
-| Admin: FindVolunteers, CreateCoordinator | `identity_test.go`, `cooperation_test.go`: точные ID/телефон/нормализованная почта, существующий Volunteer, тот же ID, повтор — AlreadyExists, пустой критерий — InvalidArgument. Admin отсутствует на клиентском listener; выделенный listener требует служебный ключ. |
+| Admin: FindVolunteers, CreateCoordinator | `identity_test.go`, `cooperation_test.go`: точные ID/телефон/нормализованная почта, существующий Volunteer, тот же ID, повтор — AlreadyExists, пустой критерий — InvalidArgument. Admin доступен на общем listener и требует служебный ключ; пользовательская сессия его не заменяет. |
 | Cooperation: Request, Approve, Reject, Get, List, Terminate | `cooperation_test.go`: единственная пара, PENDING/ACTIVE повторы, запрет самой себе, cooldown и неизменность retry_after после изменения настройки, обе стороны чтения/прекращения. `events_test.go` и `rewards_test.go` проверяют сохранение исторических карточек, начисленного и выданного, отмену и возврат невыданного заказа при прекращении сотрудничества. |
 | Invitations: Create, List, Revoke, Accept | `cooperation_test.go`: стабильная ссылка, зашифрованный секрет в БД, доступ владельца, несколько участников, приглашение обходит cooldown, ACTIVE не меняется, чужой отзыв запрещён, повтор отзыва успешен, отозванный токен — NotFound. Проверка срока реализована через IsActive на серверном времени. |
 | История Cooperation | `00016_cooperation_changes.sql`, модель CooperationChange, запись из app в callback транзакции. Проверка количества переходов и отсутствия дубля при повторном принятии ACTIVE в `cooperation_test.go`. |
@@ -45,7 +45,7 @@ RPC, serde, app, агрегаты и pgx/Squirrel-репозитории.
 | Image: Upload | `geo_images_test.go`: PNG, сохранённый файл и публичное чтение, привязка к Volunteer/Coordinator/Event/Reward, независимые аватары, очистка, чужой путь запрещён, не-изображение отклоняется. Модели ограничивают JPEG/PNG, 5 МиБ и 4096 пикселей на сторону; app проверяет наличие файла. |
 | Общий ввод/ошибки | Все RPC используют заполненные BadRequest для InvalidArgument, ResourceInfo для NotFound и отдельный case на ошибку. HTTP-проверки декодируют ResourceInfo, проверяют тип/описание, ID координатора и города; секрет приглашения в детали не включается. `identity_test.go`: неизвестный/пустой ID, отрицательные offset и limit выше 100 для списков; доменные модели и serde отвергают неизвестные enum/UNSPECIFIED и неверные точки/даты. |
 
-| Запуск и seed | `runtime_test.go`: настоящий hahaton.Run поднимает клиентский и административный listeners, healthz отвечает, отмена context корректно завершает сервер. Повторный seed оставляет ровно три мероприятия и три поощрения; повторная сборка читает каталог из БД без CSV. Неверные ключи и TTL отклоняются конфигурацией. |
+| Запуск | `runtime_test.go`: настоящий hahaton.Run поднимает общий listener пользовательского и административного API, healthz отвечает, отмена context корректно завершает сервер. Повторная сборка читает каталог из БД без CSV. Неверные ключи и TTL отклоняются конфигурацией. |
 
 | Optional-поля | `optional_fields_test.go`: частичное обновление Coordinator/Volunteer/Event/Reward, сохранение отсутствующих полей, очистка строк, явный ноль cooldown/остатка/snapshot, срок приглашения. Все 18 Request используют With…/RequestOption и Optional[T]; в Request нет указателей для presence. |
 
@@ -63,7 +63,7 @@ RPC, serde, app, агрегаты и pgx/Squirrel-репозитории.
 - Callback репозитория передаёт context pgx transaction, вложенные обращения используют его.
 - Схема без бизнес-CHECK; одна таблица на миграцию; миграции запускаются вручную.
 - Нет ES, CQRS, service_session, SessionKey, closedAt, ролей в сессии, Origin-проверки в Authentication,
-  логирования/трассировки приложения и служебного API на клиентском listener.
+  логирования/трассировки приложения. Admin RPC на общем listener защищены Bearer-токеном.
 - Короткие сигнатуры/вызовы занимают одну строку до 120 символов. Длинные параметры и поля структур
   оформляются отдельно; сгенерированный код не форматируется вручную.
 
@@ -93,8 +93,8 @@ Gmail/Yandex/Proton/Apple, хранение 29 февраля, запрет не
 Истории заявок и операции кошелька проходят существующие сценарии после переноса
 хранения под репозитории агрегатов и типизации составных значений.
 
-Runtime-сценарий дополнительно проверяет CORS двух произвольных origins на обоих
-listener: preflight без сессии/API key, заголовки Connect/gRPC-Web/Authorization,
+Runtime-сценарий дополнительно проверяет CORS двух произвольных origins для пользовательских
+и административных RPC на общем listener: preflight без сессии/API key, заголовки Connect/gRPC-Web/Authorization,
 доступность RPC-ошибок браузеру, сохранение аутентификации обычных запросов,
 открытие/закрытие сессии и cookie SameSite=None; Secure; HttpOnly.
 
@@ -162,14 +162,14 @@ go test -tags=integration -count=1 -p 2 ./tests/integration/repository/...
 
 Набор `backend/tests/e2e/rpc` использует generated Connect clients и testify/suite по образцу
 Flida. PostgreSQL 17 поднимается в Testcontainers с миграциями Goose; `hahaton.Run` запускается
-дочерним процессом тестового бинарника с настоящими HTTPS client API и HTTP admin API.
+дочерним процессом тестового бинарника с настоящим общим HTTPS listener для пользовательского и административного API.
 Подменяются только внешние Flida OIDC/JWKS и DaData. Подпись токена и проверка TLS реальны.
 В рабочую БД тесты не обращаются. Прямой SQL используется только для подготовки прошедшего
 времени мероприятия; начисления, покупки и проверки результатов выполняются RPC.
 
 Успешные вызовы сверяются с protobuf descriptors: все 58 RPC обязательны в полном прогоне.
 Все 50 RPC авторизованного участника дополнительно проверяются без cookie, с анонимной,
-закрытой и поддельной сессией. Проверяются admin key/изоляция listener, чужие ресурсы,
+закрытой и поддельной сессией. Проверяются admin key на общем listener, чужие ресурсы,
 InvalidArgument/NotFound details, пагинация, optional-поля, подпись/claims ID token,
 права на изображения, начисления/списания/возвраты, история чата и отзыв открытого стрима.
 

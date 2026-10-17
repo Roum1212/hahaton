@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	reward_order_v1 "github.com/Roum1212/hahaton/genproto/reward-order/v1"
@@ -14,6 +13,7 @@ import (
 	aggregate_coordinator "github.com/Roum1212/hahaton/internal/domain/aggregate/coordinator"
 	aggregate_reward_order "github.com/Roum1212/hahaton/internal/domain/aggregate/reward-order"
 	model_reward_order_id "github.com/Roum1212/hahaton/internal/domain/model/reward-order-id"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

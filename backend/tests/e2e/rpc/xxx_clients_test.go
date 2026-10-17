@@ -41,9 +41,9 @@ type rpcClients struct {
 	volunteer     volunteer_v1connect.VolunteerServiceClient
 }
 
-func newRPCClients(client *http.Client, baseURL, adminURL string) rpcClients {
+func newRPCClients(client *http.Client, baseURL string) rpcClients {
 	return rpcClients{
-		admin:         admin_v1connect.NewAdminServiceClient(client, adminURL),
+		admin:         admin_v1connect.NewAdminServiceClient(client, baseURL),
 		cooperation:   cooperation_v1connect.NewCooperationServiceClient(client, baseURL),
 		coordinator:   coordinator_v1connect.NewCoordinatorServiceClient(client, baseURL),
 		event:         event_v1connect.NewEventServiceClient(client, baseURL),

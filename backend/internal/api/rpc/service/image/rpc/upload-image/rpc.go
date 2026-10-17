@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
 	image_v1 "github.com/Roum1212/hahaton/genproto/image/v1"
 	service_upload_image "github.com/Roum1212/hahaton/internal/app/service/upload-image"
 	model_image_data "github.com/Roum1212/hahaton/internal/domain/model/image-data"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

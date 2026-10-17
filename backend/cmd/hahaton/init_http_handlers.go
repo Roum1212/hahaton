@@ -24,16 +24,14 @@ import (
 
 const imageReadLimit = 8 << 20
 
-func initHTTPHandlers(
+func initHTTPHandler(
 	cfg config.Config,
 	repos repositorySet,
 	tokens tokenSet,
 	supportServices supportServiceSet,
 	rpcServices rpcServiceSet,
-) (http.Handler, http.Handler) {
+) http.Handler {
 	mux := http.NewServeMux()
-	adminMux := http.NewServeMux()
-	adminMux.Handle(admin_v1connect.NewAdminServiceHandler(rpcServices.admin))
 	mux.Handle(cooperation_v1connect.NewCooperationServiceHandler(rpcServices.cooperation))
 	mux.Handle(coordinator_v1connect.NewCoordinatorServiceHandler(rpcServices.coordinator))
 	mux.Handle(event_v1connect.NewEventServiceHandler(rpcServices.event))
@@ -54,8 +52,10 @@ func initHTTPHandlers(
 		tokens.sessionToken,
 	)
 	clientHandler := authn.NewMiddleware(authentication.Authenticate).Wrap(mux)
-	clientHandler = withStreamingController(clientHandler)
-	clientHandler = withCORS(clientHandler)
+	router := http.NewServeMux()
+	adminPath, adminHandler := admin_v1connect.NewAdminServiceHandler(rpcServices.admin)
+	router.Handle(adminPath, withAdminAuthentication(adminHandler, cfg.AdminAPIKey))
+	router.Handle("/", clientHandler)
 
-	return clientHandler, withCORS(withAdminAuthentication(adminMux, cfg.AdminAPIKey))
+	return withCORS(withStreamingController(router))
 }

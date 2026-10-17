@@ -45,7 +45,6 @@ type fixture struct {
 
 	pool         *pgxpool.Pool
 	handler      http.Handler
-	admin        http.Handler
 	provider     *httptest.Server
 	signer       jose.Signer
 	dadataStatus atomic.Int32
@@ -245,9 +244,8 @@ func (x *fixture) request(a actor, method string, body map[string]any, admin boo
 	}
 
 	handler := x.handler
-	if admin {
-		handler = x.admin
 
+	if admin {
 		r.Header.Set("Authorization", "Bearer integration-admin")
 	}
 
@@ -525,7 +523,7 @@ func newFixture(t *testing.T) *fixture {
 	var cfg config.Config
 	must(t, env.ParseWithOptions(&cfg, config.ParseOptions()))
 	must(t, cfg.Validate())
-	x.handler, x.admin, err = hahaton.NewHandlers(ctx, cfg, pool)
+	x.handler, err = hahaton.NewHTTPHandler(ctx, cfg, pool)
 	must(t, err)
 
 	return x

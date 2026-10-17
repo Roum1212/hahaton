@@ -5,13 +5,13 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	coordinator_v1 "github.com/Roum1212/hahaton/genproto/coordinator/v1"
 	service_update_coordinator_settings "github.com/Roum1212/hahaton/internal/app/service/update-coordinator-settings"
 	aggregate_coordinator "github.com/Roum1212/hahaton/internal/domain/aggregate/coordinator"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 

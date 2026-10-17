@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	"go.flida.dev/cookies/pkg/cookies"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	service_open_session "github.com/Roum1212/hahaton/internal/app/service/open-session"
+	"github.com/Roum1212/hahaton/internal/pkg/cookies"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 )
 
 type RPC struct {

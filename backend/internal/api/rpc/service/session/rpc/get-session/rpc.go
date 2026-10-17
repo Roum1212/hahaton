@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"connectrpc.com/connect"
-	rpc_error "go.flida.dev/rpc-error"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/Roum1212/hahaton/internal/api/rpc/service/session/serde"
 	service_get_session "github.com/Roum1212/hahaton/internal/app/service/get-session"
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
+	rpc_error "github.com/Roum1212/hahaton/internal/pkg/rpc-error"
 )
 
 type RPC struct {
