@@ -43,6 +43,14 @@ const onAddressInput = (value: IAddressSuggestion | string) => {
   if (typeof value === 'string') form.value.location = value;
 };
 
+watch(
+  () => form.value.location,
+  (location) => {
+    const current = typeof addressQuery.value === 'string' ? addressQuery.value : addressQuery.value?.value;
+    if (location !== current) addressQuery.value = location;
+  },
+);
+
 const { resolving, resolve } = useReverseGeocode();
 
 const setImage = (path: string, url: string | null) => {
