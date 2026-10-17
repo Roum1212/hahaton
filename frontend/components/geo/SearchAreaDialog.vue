@@ -11,9 +11,26 @@ const { toast } = useApp();
 
 const draft = ref<ISearchAreaState>(createDefaultArea());
 const cityQuery = ref<ICity | string>('');
-const citySuggestions = ref<ICity[]>([]);
+const {
+  suggestions: citySuggestions,
+  searched: citySearched,
+  searching: citySearching,
+  emptyMessage: cityEmptyMessage,
+  search: searchCities,
+  reset: resetCities,
+} = useSuggestionSearch((query) => geoStore.searchCities(query, 10), 'Начните вводить город');
 const addressQuery = ref<IAddressSuggestion | string>('');
-const addressSuggestions = ref<IAddressSuggestion[]>([]);
+const {
+  suggestions: addressSuggestions,
+  searched: addressSearched,
+  searching: addressSearching,
+  emptyMessage: addressEmptyMessage,
+  search: searchAddresses,
+  reset: resetAddresses,
+} = useSuggestionSearch(
+  (query) => geoStore.service.suggest(`${draft.value.city.name}, ${query}`, 'street', 'house', 7),
+  'Начните вводить адрес',
+);
 const count = ref<number | null>(null);
 const counting = ref(false);
 const { resolving, resolve, findCity } = useReverseGeocode();
@@ -25,7 +42,9 @@ const addressPlaceholder = computed(() => {
 let pickToken = 0;
 
 const center = computed<IGeoPoint>(() => draft.value.center ?? draft.value.city.center ?? DEFAULT_CITY.center!);
-const effectiveRadius = computed(() => draft.value.radiusKm ?? (draft.value.city.hasBoundary ? null : DEFAULT_SEARCH_RADIUS_KM));
+const effectiveRadius = computed(
+  () => draft.value.radiusKm ?? (draft.value.city.hasBoundary ? null : DEFAULT_SEARCH_RADIUS_KM),
+);
 const canReset = computed(() => !!draft.value.radiusKm && draft.value.city.hasBoundary);
 
 const applyLabel = computed(() => {
@@ -35,16 +54,15 @@ const applyLabel = computed(() => {
 
 watch(dialogVisible, (visible) => {
   if (!visible) return;
+  resetCities();
+  resetAddresses();
   draft.value = JSON.parse(JSON.stringify(state.value));
   cityQuery.value = draft.value.city.name;
   addressQuery.value = draft.value.address;
 });
 
-const searchCities = async ({ query }: { query: string }) => {
-  citySuggestions.value = (await handleAsyncOperation(() => geoStore.searchCities(query, 10))) ?? [];
-};
-
 const selectCity = ({ value }: { value: ICity }) => {
+  resetAddresses();
   pickToken++;
   draft.value = {
     city: value,
@@ -56,17 +74,12 @@ const selectCity = ({ value }: { value: ICity }) => {
   addressQuery.value = '';
 };
 
-const searchAddresses = async ({ query }: { query: string }) => {
-  if (!authStore.isLoggedIn) return;
-  const result = await handleAsyncOperation(() => geoStore.service.suggest(`${draft.value.city.name}, ${query}`, 'street', 'house', 7));
-  addressSuggestions.value = result ?? [];
-};
-
 const selectAddress = async ({ value }: { value: IAddressSuggestion }) => {
   pickToken++;
   let point = value.point;
   if (!point && value.fiasId) {
-    const [precise] = (await handleAsyncOperation(() => geoStore.service.suggest(value.fiasId!, 'street', 'house', 1))) ?? [];
+    const [precise] =
+      (await handleAsyncOperation(() => geoStore.service.suggest(value.fiasId!, 'street', 'house', 1))) ?? [];
     point = precise?.point ?? null;
   }
   draft.value.address = value.value;
@@ -120,7 +133,12 @@ watchDebounced(
     const result = await handleAsyncOperation(
       () =>
         eventsStore.service.find(
-          { scope: EventListScope.CATALOG, searchArea: toSearchArea(draft.value), status: EventStatus.PUBLISHED, startsFrom: new Date() },
+          {
+            scope: EventListScope.CATALOG,
+            searchArea: toSearchArea(draft.value),
+            status: EventStatus.PUBLISHED,
+            startsFrom: new Date(),
+          },
           { limit: 1, offset: 0 },
         ),
       () => {
@@ -148,9 +166,13 @@ watchDebounced(
         v-model="cityQuery"
         :suggestions="citySuggestions"
         option-label="name"
+        :show-empty-message="citySearched && !citySearching"
+        :empty-search-message="cityEmptyMessage"
+        :loading="citySearching"
         placeholder="Город"
         :delay="300"
         fluid
+        @clear="resetCities"
         @complete="searchCities"
         @option-select="selectCity">
         <template #option="{ option }">
@@ -169,9 +191,12 @@ watchDebounced(
         option-label="value"
         :placeholder="addressPlaceholder"
         :delay="300"
-        :loading="resolving"
+        :loading="resolving || addressSearching"
+        :show-empty-message="addressSearched && !addressSearching"
+        :empty-search-message="addressEmptyMessage"
         :disabled="!authStore.isLoggedIn"
         fluid
+        @clear="resetAddresses"
         @complete="searchAddresses"
         @option-select="selectAddress" />
 

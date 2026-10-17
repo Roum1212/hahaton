@@ -108,7 +108,8 @@ export const canCompleteEvent = (event: IEvent) => event.status === EventStatus.
 
 export type IEventForm = IEventDto & { durationMinutes: number; imageUrl: string | null };
 
-export const eventImage = (event: IEvent | null | undefined, id: string) => event?.imageUrl ?? pickIllustration(EVENT_ILLUSTRATIONS, id);
+export const eventImage = (event: IEvent | null | undefined, id: string) =>
+  event?.imageUrl ?? pickIllustration(EVENT_ILLUSTRATIONS, id);
 
 export const useEventForm = () => {
   const generateInitialData = (event?: IEvent): IEventForm => {
@@ -127,15 +128,23 @@ export const useEventForm = () => {
     };
   };
 
-  const validate = (dto: IEventForm): string | null => {
-    if (!dto.title.trim()) return 'Укажите название';
-    if (!dto.point) return 'Отметьте место проведения на карте';
-    if (!dto.startsAt || isPast(dto.startsAt)) return 'Начало должно быть в будущем';
-    if (dto.durationMinutes <= 0) return 'Укажите длительность';
-    if (dto.durationMinutes % MINUTES_STEP !== 0) return 'Длительность должна быть кратна 30 минутам';
-    if (dto.volunteerLimit <= 0) return 'Укажите количество мест';
-    if (dto.requirements.filter((item) => EVENT_AGE_REQUIREMENTS.includes(item)).length > 1) return 'Выберите один возрастной порог';
-    return null;
+  const getErrors = (dto: IEventForm): Partial<Record<keyof IEventForm, string>> => {
+    const errors: Partial<Record<keyof IEventForm, string>> = {};
+    if (!dto.title.trim()) errors.title = 'Укажите название';
+    if (!dto.point) errors.point = 'Отметьте место проведения на карте';
+    if (!dto.startsAt || isPast(dto.startsAt)) errors.startsAt = 'Начало должно быть в будущем';
+    if (!Number.isFinite(dto.durationMinutes) || dto.durationMinutes <= 0) {
+      errors.durationMinutes = 'Укажите длительность';
+    } else if (dto.durationMinutes % MINUTES_STEP !== 0) {
+      errors.durationMinutes = 'Длительность должна быть кратна 30 минутам';
+    }
+    if (!Number.isInteger(dto.volunteerLimit) || dto.volunteerLimit < 1 || dto.volunteerLimit > 1000) {
+      errors.volunteerLimit = 'Укажите от 1 до 1000 мест';
+    }
+    if (dto.requirements.filter((item) => EVENT_AGE_REQUIREMENTS.includes(item)).length > 1) {
+      errors.requirements = 'Выберите один возрастной порог';
+    }
+    return errors;
   };
 
   const toDto = (form: IEventForm): IEventDto => {
@@ -154,7 +163,7 @@ export const useEventForm = () => {
     };
   };
 
-  return { generateInitialData, validate, toDto };
+  return { generateInitialData, getErrors, toDto };
 };
 
 export const nextHalfHour = (value: Date) => {

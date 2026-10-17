@@ -5,6 +5,8 @@ const minutes = defineModel<number>({ required: true });
 
 defineProps<{
   disabled?: boolean;
+  invalid?: boolean;
+  ariaDescribedby?: string;
 }>();
 
 const MAX_HOURS = 23;
@@ -43,13 +45,27 @@ const rest = computed<number>({
 
 <template>
   <InputGroup ref="root">
-    <InputNumber v-model="hours" :min="0" :max="MAX_HOURS" show-buttons suffix=" ч" :disabled="disabled" :allow-empty="false" fluid />
+    <InputNumber
+      v-model="hours"
+      aria-label="Часы"
+      :pt="{ pcInputText: { root: { 'aria-describedby': ariaDescribedby } } }"
+      :min="0"
+      :max="MAX_HOURS"
+      show-buttons
+      suffix=" ч"
+      :disabled="disabled"
+      :invalid="invalid"
+      :allow-empty="false"
+      fluid />
     <Select
       v-model="rest"
+      aria-label="Минуты"
+      :aria-describedby="ariaDescribedby"
       :options="minuteOptions"
       option-label="label"
       option-value="value"
       :disabled="disabled"
+      :invalid="invalid"
       class="app-duration__minutes" />
   </InputGroup>
 </template>

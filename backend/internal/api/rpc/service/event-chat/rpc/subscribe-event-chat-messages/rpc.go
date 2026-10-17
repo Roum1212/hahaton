@@ -55,6 +55,8 @@ func (x RPC) SubscribeEventChatMessages(
 		})
 	}
 
+	stream.ResponseHeader().Set("X-Accel-Buffering", "no")
+
 	afterSequence := r.Msg.GetAfterSequence()
 
 	ticker := time.NewTicker(pollInterval)

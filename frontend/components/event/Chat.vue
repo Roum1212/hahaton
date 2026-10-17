@@ -4,7 +4,8 @@ const props = defineProps<{
 }>();
 
 const eventId = computed(() => props.eventId);
-const { chat, messages, loading, loadingOlder, sending, accessLost, hasOlder, isOwn, open, loadOlder, send } = useEventChat(eventId);
+const { chat, messages, loading, loadingOlder, sending, accessLost, hasOlder, isOwn, open, loadOlder, send } =
+  useEventChat(eventId);
 
 const text = ref('');
 const feed = ref<HTMLElement | null>(null);
@@ -43,16 +44,30 @@ onMounted(open);
   <div v-else class="app-chat">
     <div ref="feed" class="app-chat__feed app-scroll">
       <div v-if="hasOlder" class="app-more">
-        <Button label="Предыдущие сообщения" severity="secondary" text size="small" :loading="loadingOlder" @click="loadOlder" />
+        <Button
+          label="Предыдущие сообщения"
+          severity="secondary"
+          text
+          size="small"
+          :loading="loadingOlder"
+          @click="loadOlder" />
       </div>
       <div v-if="loading" class="flex flex-col gap-3">
         <Skeleton v-for="n in 4" :key="n" height="48px" width="60%" />
       </div>
-      <div v-else-if="!messages.length" class="app-chat__empty">Напишите первое сообщение участникам</div>
-      <div v-for="message in messages" :key="message.id" class="app-chat__message" :class="{ 'app-chat__message--own': isOwn(message) }">
+      <div v-else-if="!messages.length" class="app-chat__empty">
+        {{ chat?.readOnly ? 'Сообщений пока нет' : 'Напишите первое сообщение участникам' }}
+      </div>
+      <div
+        v-for="message in messages"
+        :key="message.id"
+        class="app-chat__message"
+        :class="{ 'app-chat__message--own': isOwn(message) }">
         <div class="app-chat__author">
           {{ message.authorDisplayName }}
-          <span v-if="message.author === 'coordinator'" class="app-chip app-chip--violet app-chat__badge">Координатор</span>
+          <span v-if="message.author === 'coordinator'" class="app-chip app-chip--violet app-chat__badge"
+            >Координатор</span
+          >
         </div>
         <div class="app-chat__bubble">{{ message.text }}</div>
         <span class="app-chat__time">{{ formatDateTime(message.createdAt) }}</span>

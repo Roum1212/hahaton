@@ -27,7 +27,7 @@ defineEmits<{
           <span class="app-card__hint">Осталось {{ reward.availableQuantity }}</span>
         </div>
         <Button
-          :label="reward.priceCoins > balance ? `Ещё ${reward.priceCoins - balance}` : 'Обменять'"
+          :label="reward.priceCoins > balance ? `Не хватает ${formatCoins(reward.priceCoins - balance)}` : 'Обменять'"
           size="small"
           :severity="reward.priceCoins > balance ? 'secondary' : undefined"
           :disabled="!reward.availableQuantity || reward.priceCoins > balance"

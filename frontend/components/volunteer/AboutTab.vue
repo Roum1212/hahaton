@@ -27,19 +27,27 @@ const saveAvatar = async (avatarPath: string) => {
   if (profile) toast.success(avatarPath ? 'Фото обновлено' : 'Фото удалено');
 };
 const today = new Date();
+const formElement = ref<HTMLFormElement | null>(null);
+const { errors, errorId, validate, reset } = useFormValidation(formElement, () => {
+  const errors: Partial<Record<'firstName' | 'lastName' | 'dateOfBirth', string>> = {};
+  if (!dto.value.firstName.trim()) errors.firstName = 'Укажите имя';
+  if (!dto.value.lastName.trim()) errors.lastName = 'Укажите фамилию';
+  const date = dto.value.dateOfBirth;
+  if (date && (!Number.isFinite(date.getTime()) || date > today))
+    errors.dateOfBirth = 'Дата рождения не может быть в будущем';
+  return errors;
+});
 
 watch(
   () => volunteerStore.profile,
   () => {
     dto.value = generateInitialData();
+    reset();
   },
 );
 
 const onSave = async () => {
-  if (!dto.value.firstName || !dto.value.lastName) {
-    toast.error('Укажите имя и фамилию');
-    return;
-  }
+  if (!(await validate())) return;
   submitting.value = true;
   const profile = await handleAsyncOperation(
     () => volunteerStore.update(dto.value),
@@ -52,7 +60,7 @@ const onSave = async () => {
 </script>
 
 <template>
-  <form v-if="volunteerStore.profile" class="app-card" @submit.prevent="onSave">
+  <form v-if="volunteerStore.profile" ref="formElement" class="app-card" @submit.prevent="onSave">
     <span class="app-card__title">Фото профиля</span>
     <AppImageUpload
       :image="volunteerStore.profile.avatarUrl"
@@ -63,21 +71,49 @@ const onSave = async () => {
 
     <span class="app-card__title mt-2">Личные данные</span>
     <div class="app-form-grid">
-      <label class="app-field">
+      <label class="app-field" :data-invalid="!!errors.lastName">
         <span class="app-field__label">Фамилия</span>
-        <InputText v-model.trim="dto.lastName" :disabled="submitting" fluid />
+        <InputText
+          v-model.trim="dto.lastName"
+          :invalid="!!errors.lastName"
+          :aria-describedby="errors.lastName ? errorId('lastName') : undefined"
+          :disabled="submitting"
+          fluid />
+        <small v-if="errors.lastName" :id="errorId('lastName')" class="app-field__error">{{ errors.lastName }}</small>
       </label>
-      <label class="app-field">
+      <label class="app-field" :data-invalid="!!errors.firstName">
         <span class="app-field__label">Имя</span>
-        <InputText v-model.trim="dto.firstName" :disabled="submitting" fluid />
+        <InputText
+          v-model.trim="dto.firstName"
+          :invalid="!!errors.firstName"
+          :aria-describedby="errors.firstName ? errorId('firstName') : undefined"
+          :disabled="submitting"
+          fluid />
+        <small v-if="errors.firstName" :id="errorId('firstName')" class="app-field__error">{{
+          errors.firstName
+        }}</small>
       </label>
       <label class="app-field">
         <span class="app-field__label">Отчество</span>
         <InputText v-model.trim="dto.middleName" :disabled="submitting" fluid />
       </label>
-      <label class="app-field">
+      <label class="app-field" :data-invalid="!!errors.dateOfBirth">
         <span class="app-field__label">Дата рождения</span>
-        <DatePicker v-model="dto.dateOfBirth" :max-date="today" date-format="dd.mm.yy" :disabled="submitting" show-icon fluid />
+        <DatePicker
+          v-model="dto.dateOfBirth"
+          :invalid="!!errors.dateOfBirth"
+          :aria-describedby="errors.dateOfBirth ? errorId('dateOfBirth') : undefined"
+          :max-date="today"
+          date-format="dd.mm.yy"
+          :disabled="submitting"
+          show-icon
+          fluid
+          :pt="{
+            pcInputText: { root: { 'aria-describedby': errors.dateOfBirth ? errorId('dateOfBirth') : undefined } },
+          }" />
+        <small v-if="errors.dateOfBirth" :id="errorId('dateOfBirth')" class="app-field__error">{{
+          errors.dateOfBirth
+        }}</small>
       </label>
     </div>
 

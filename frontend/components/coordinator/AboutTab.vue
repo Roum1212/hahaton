@@ -7,6 +7,13 @@ const saving = ref(false);
 const description = ref('');
 const savingAvatar = ref(false);
 const cooldownHours = ref(24);
+const formElement = ref<HTMLFormElement | null>(null);
+const { errors, errorId, validate } = useFormValidation(formElement, () => ({
+  cooldownHours:
+    !Number.isInteger(cooldownHours.value) || cooldownHours.value < 0 || cooldownHours.value > 8760
+      ? 'Укажите целое число часов от 0 до 8760'
+      : undefined,
+}));
 
 onMounted(async () => {
   await handleAsyncOperation(
@@ -33,6 +40,7 @@ const saveAvatar = async (avatarPath: string) => {
 };
 
 const onSave = async () => {
+  if (!(await validate())) return;
   saving.value = true;
   const result = await handleAsyncOperation(
     () =>
@@ -51,7 +59,7 @@ const onSave = async () => {
 <template>
   <Skeleton v-if="loading" height="320px" border-radius="20px" />
 
-  <form v-else class="app-card" @submit.prevent="onSave">
+  <form v-else ref="formElement" class="app-card" @submit.prevent="onSave">
     <span class="app-card__title">О вас</span>
     <div class="app-field">
       <span class="app-field__label flex items-center gap-2">
@@ -71,16 +79,30 @@ const onSave = async () => {
       <span class="app-field__label">Описание</span>
       <Textarea v-model="description" rows="4" auto-resize fluid placeholder="Чем вы занимаетесь и кого ищете" />
     </label>
-    <label class="app-field">
+    <label class="app-field" :data-invalid="!!errors.cooldownHours">
       <span class="app-field__label flex items-center gap-2">
         Повторная заявка после отказа, часов
         <i
           v-tooltip.bottom="
-            'Через сколько часов волонтёр сможет снова подать заявку на сотрудничество после отказа. Приглашение по ссылке действует сразу.'
+            'Через сколько часов волонтёр сможет снова подать заявку на сотрудничество после отказа. ' +
+            'Приглашение по ссылке действует сразу.'
           "
           class="pi pi-question-circle text-surface-400" />
       </span>
-      <InputNumber v-model="cooldownHours" :min="0" :max="8760" show-buttons fluid />
+      <InputNumber
+        v-model="cooldownHours"
+        :invalid="!!errors.cooldownHours"
+        :aria-describedby="errors.cooldownHours ? errorId('cooldownHours') : undefined"
+        :min="0"
+        :max="8760"
+        show-buttons
+        fluid
+        :pt="{
+          pcInputText: { root: { 'aria-describedby': errors.cooldownHours ? errorId('cooldownHours') : undefined } },
+        }" />
+      <small v-if="errors.cooldownHours" :id="errorId('cooldownHours')" class="app-field__error">{{
+        errors.cooldownHours
+      }}</small>
     </label>
     <div class="app-form__actions">
       <Button type="submit" label="Сохранить" :loading="saving" />

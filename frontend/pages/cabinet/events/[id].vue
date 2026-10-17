@@ -33,6 +33,12 @@ const participation = ref<IParticipation | null>(null);
 
 const CHAT_STATUSES = [ParticipationStatus.APPROVED, ParticipationStatus.CONFIRMED, ParticipationStatus.NOT_ATTENDED];
 
+const result = computed(() => {
+  const value = participation.value;
+  if (event.value?.status !== EventStatus.COMPLETED || value?.awardedCoins == null) return null;
+  return { coins: value.awardedCoins, minutes: value.awardedMinutes ?? 0 };
+});
+
 const canApply = computed(() => !!event.value && canApplyToEvent(event.value));
 const canCancel = computed(() => canApply.value && isParticipationActive(participation.value));
 const canRestore = computed(() => canApply.value && participation.value?.status === ParticipationStatus.CANCELLED);
@@ -93,7 +99,7 @@ onMounted(load);
           <div class="app-event-aside__image" :class="{ 'app-event-aside__image--photo': event.imageUrl }">
             <img :src="eventImage(event, event.id)" alt="" />
           </div>
-          <span class="app-event-aside__count">
+          <span v-if="event.status === EventStatus.PUBLISHED" class="app-event-aside__count">
             Участвуют <b>{{ event.approvedCount }}</b> из {{ event.volunteerLimit }}
           </span>
           <div v-if="participation" class="flex justify-center">
@@ -113,7 +119,13 @@ onMounted(load);
               fluid
               @click="tab = 'chat'" />
             <Button v-if="canCancel" label="Отменить заявку" severity="secondary" text fluid @click="onCancel" />
-            <Button v-if="participation" label="История заявки" severity="secondary" text fluid @click="history.open(participation.id)" />
+            <Button
+              v-if="participation"
+              label="История заявки"
+              severity="secondary"
+              text
+              fluid
+              @click="history.open(participation.id)" />
           </div>
           <span v-if="!participation && !canApply" class="app-card__hint text-center">Приём заявок закрыт</span>
         </div>
@@ -126,9 +138,12 @@ onMounted(load);
               v-if="event.status !== EventStatus.PUBLISHED"
               :label="EVENT_STATUS_LABELS[event.status]"
               :severity="EVENT_STATUS_SEVERITY[event.status]" />
-            <span class="app-chip app-chip--accent"
-              ><i class="pi pi-star" />+{{ formatCoins(coinsForMinutes(event.durationMinutes)) }}</span
-            >
+            <span v-if="result" class="app-chip app-chip--accent">
+              <i class="pi pi-star" />Начислено {{ formatCoins(result.coins) }}
+            </span>
+            <span v-else-if="event.status === EventStatus.PUBLISHED" class="app-chip app-chip--accent">
+              <i class="pi pi-star" />План: +{{ formatCoins(coinsForMinutes(event.durationMinutes)) }}
+            </span>
           </div>
           <h1 class="app-page__title">{{ event.title }}</h1>
           <div class="app-info">
@@ -147,7 +162,11 @@ onMounted(load);
             </div>
             <div class="app-info__item">
               <i class="pi pi-clock" />
-              <span><b>Засчитаем</b>{{ formatDuration(event.durationMinutes) }}</span>
+              <span><b>Плановая длительность</b>{{ formatDuration(event.durationMinutes) }}</span>
+            </div>
+            <div v-if="result" class="app-info__item">
+              <i class="pi pi-check-circle" />
+              <span><b>Подтверждено</b>{{ formatDuration(result.minutes) }}</span>
             </div>
           </div>
         </div>
@@ -161,16 +180,21 @@ onMounted(load);
 
           <div
             v-if="
-              participation && (participation.rejectionReason || participation.cancellationReason || participation.awardedCoins !== null)
+              participation &&
+              (participation.rejectionReason || participation.cancellationReason || participation.awardedCoins !== null)
             "
             class="app-card">
             <span class="app-card__title">Моя заявка</span>
             <span v-if="participation.cancellationReason" class="app-card__hint">
               {{ PARTICIPATION_CANCELLATION_LABELS[participation.cancellationReason] }}
             </span>
-            <Message v-if="participation.rejectionReason" severity="warn" size="small">{{ participation.rejectionReason }}</Message>
+            <Message v-if="participation.rejectionReason" severity="warn" size="small">{{
+              participation.rejectionReason
+            }}</Message>
             <span v-if="participation.awardedCoins !== null" class="app-text">
-              Подтверждено {{ formatDuration(participation.awardedMinutes ?? 0) }}, начислено +{{ formatCoins(participation.awardedCoins) }}
+              Подтверждено {{ formatDuration(participation.awardedMinutes ?? 0) }}, начислено +{{
+                formatCoins(participation.awardedCoins)
+              }}
             </span>
           </div>
 
@@ -182,13 +206,18 @@ onMounted(load);
           <div v-if="event.requirements.length" class="app-card">
             <span class="app-card__title">Условия участия</span>
             <div class="app-hero__chips">
-              <span v-for="item in event.requirements" :key="item" class="app-chip">{{ EVENT_REQUIREMENT_LABELS[item] }}</span>
+              <span v-for="item in event.requirements" :key="item" class="app-chip">{{
+                EVENT_REQUIREMENT_LABELS[item]
+              }}</span>
             </div>
           </div>
         </template>
       </div>
     </div>
 
-    <ParticipationHistoryDialog v-model:visible="history.visible.value" :loading="history.loading.value" :changes="history.changes.value" />
+    <ParticipationHistoryDialog
+      v-model:visible="history.visible.value"
+      :loading="history.loading.value"
+      :changes="history.changes.value" />
   </AppPage>
 </template>

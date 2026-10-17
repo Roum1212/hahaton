@@ -10,7 +10,8 @@ definePageMeta({
   permissions: [ROLES.coordinator],
 });
 
-const { store, loading, load, approve, reject, terminate, createInvitation, revokeInvitation } = useCoordinatorCooperations();
+const { store, loading, load, approve, reject, terminate, createInvitation, revokeInvitation } =
+  useCoordinatorCooperations();
 const { name: volunteerName, view: volunteerView, avatar: volunteerAvatar } = useVolunteerNames();
 const { copy } = useClipboard('Ссылка скопирована');
 
@@ -20,10 +21,13 @@ const qrUrl = ref<string | null>(null);
 const minDate = new Date();
 
 const tabs = computed(() =>
-  [CooperationStatus.PENDING, CooperationStatus.ACTIVE, CooperationStatus.REJECTED, CooperationStatus.TERMINATED].map((value) => ({
-    value,
-    label: `${COOPERATION_STATUS_LABELS[value]} ${store.asCoordinator.filter((item) => item.status === value).length}`,
-  })),
+  [CooperationStatus.PENDING, CooperationStatus.ACTIVE, CooperationStatus.REJECTED, CooperationStatus.TERMINATED].map(
+    (value) => ({
+      value,
+      label:
+        `${COOPERATION_STATUS_LABELS[value]} ` + store.asCoordinator.filter((item) => item.status === value).length,
+    }),
+  ),
 );
 
 const visible = computed(() => store.asCoordinator.filter((item) => item.status === tab.value));
@@ -58,8 +62,12 @@ onMounted(load);
               /></NuxtLink>
               <div class="app-list__main">
                 <span class="app-list__title">
-                  <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`">{{ volunteerName(item.volunteerId) }}</NuxtLink>
-                  <AppStatus :label="COOPERATION_STATUS_LABELS[item.status]" :severity="COOPERATION_STATUS_SEVERITY[item.status]" />
+                  <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`">{{
+                    volunteerName(item.volunteerId)
+                  }}</NuxtLink>
+                  <AppStatus
+                    :label="COOPERATION_STATUS_LABELS[item.status]"
+                    :severity="COOPERATION_STATUS_SEVERITY[item.status]" />
                 </span>
                 <div class="app-list__meta">
                   <span v-if="volunteerView(item.volunteerId)?.phone"
@@ -121,10 +129,25 @@ onMounted(load);
             </span>
           </div>
           <div class="flex shrink-0 gap-1">
-            <Button v-tooltip.top="'Скопировать'" icon="pi pi-copy" severity="secondary" text size="small" @click="copy(invitation.url)" />
-            <Button v-tooltip.top="'QR-код'" icon="pi pi-qrcode" severity="secondary" text size="small" @click="qrUrl = invitation.url" />
             <Button
-              v-tooltip.top="'Отозвать'"
+              v-tooltip.top="'Скопировать ссылку приглашения'"
+              aria-label="Скопировать ссылку приглашения"
+              icon="pi pi-copy"
+              severity="secondary"
+              text
+              size="small"
+              @click="copy(invitation.url)" />
+            <Button
+              v-tooltip.top="'Показать QR-код приглашения'"
+              aria-label="Показать QR-код приглашения"
+              icon="pi pi-qrcode"
+              severity="secondary"
+              text
+              size="small"
+              @click="qrUrl = invitation.url" />
+            <Button
+              v-tooltip.top="'Отозвать приглашение'"
+              aria-label="Отозвать приглашение"
               icon="pi pi-trash"
               severity="danger"
               text
@@ -145,7 +168,13 @@ onMounted(load);
       @update:visible="(value: boolean) => !value && (qrUrl = null)">
       <div class="flex flex-col items-center gap-3">
         <CooperationInvitationQr v-if="qrUrl" :url="qrUrl" />
-        <Button label="Скопировать ссылку" icon="pi pi-copy" severity="secondary" outlined size="small" @click="qrUrl && copy(qrUrl)" />
+        <Button
+          label="Скопировать ссылку"
+          icon="pi pi-copy"
+          severity="secondary"
+          outlined
+          size="small"
+          @click="qrUrl && copy(qrUrl)" />
       </div>
     </Dialog>
   </AppPage>

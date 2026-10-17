@@ -32,22 +32,35 @@ const event = ref<IEvent | null>(null);
 const tab = ref<'pending' | 'approved' | 'other'>('pending');
 const rejectTarget = ref<string | null>(null);
 const rejectReason = ref('');
+const participantStatuses = [
+  ParticipationStatus.APPROVED,
+  ParticipationStatus.CONFIRMED,
+  ParticipationStatus.NOT_ATTENDED,
+];
 
 const tabs = computed(() => [
-  { value: 'pending', label: `Новые ${list.value.filter((item) => item.status === ParticipationStatus.PENDING).length}` },
+  {
+    value: 'pending',
+    label: `Новые ${list.value.filter((item) => item.status === ParticipationStatus.PENDING).length}`,
+  },
   {
     value: 'approved',
-    label: `Участники ${list.value.filter((item) => [ParticipationStatus.APPROVED, ParticipationStatus.CONFIRMED, ParticipationStatus.NOT_ATTENDED].includes(item.status)).length}`,
+    label: `Участники ${list.value.filter((item) => participantStatuses.includes(item.status)).length}`,
   },
   { value: 'other', label: 'Остальные' },
 ]);
 
+const confirmedCount = computed(
+  () => list.value.filter((item) => item.status === ParticipationStatus.CONFIRMED).length,
+);
+
 const visible = computed(() =>
   list.value.filter((item) => {
     if (tab.value === 'pending') return item.status === ParticipationStatus.PENDING;
-    if (tab.value === 'approved')
-      return [ParticipationStatus.APPROVED, ParticipationStatus.CONFIRMED, ParticipationStatus.NOT_ATTENDED].includes(item.status);
-    return [ParticipationStatus.REJECTED, ParticipationStatus.CANCELLED, ParticipationStatus.CLOSED].includes(item.status);
+    if (tab.value === 'approved') return participantStatuses.includes(item.status);
+    return [ParticipationStatus.REJECTED, ParticipationStatus.CANCELLED, ParticipationStatus.CLOSED].includes(
+      item.status,
+    );
   }),
 );
 
@@ -112,18 +125,40 @@ onMounted(load);
           <div class="app-event-aside__image" :class="{ 'app-event-aside__image--photo': event.imageUrl }">
             <img :src="eventImage(event, event.id)" alt="" />
           </div>
-          <span class="app-event-aside__count">
+          <span v-if="event.status === EventStatus.PUBLISHED" class="app-event-aside__count">
             Участвуют <b>{{ event.approvedCount }}</b> из {{ event.volunteerLimit }}
           </span>
+          <span
+            v-else-if="event.status === EventStatus.COMPLETED && !applicationsLoading"
+            class="app-event-aside__count">
+            Подтверждённых участников: {{ confirmedCount }}
+          </span>
           <div class="app-event-aside__actions">
+            <NuxtLink
+              v-if="event.status === EventStatus.COMPLETED"
+              :to="`${ROUTES.coordinator.events}/${event.id}/complete`">
+              <Button label="Посмотреть итоги" severity="secondary" outlined fluid />
+            </NuxtLink>
             <NuxtLink v-if="canCompleteEvent(event)" :to="`${ROUTES.coordinator.events}/${event.id}/complete`">
               <Button label="Подвести итоги" size="large" fluid />
             </NuxtLink>
-            <Button label="Чат мероприятия" icon="pi pi-comments" severity="secondary" outlined fluid @click="section = 'chat'" />
+            <Button
+              label="Чат мероприятия"
+              icon="pi pi-comments"
+              severity="secondary"
+              outlined
+              fluid
+              @click="section = 'chat'" />
             <NuxtLink v-if="canEditEvent(event)" :to="`${ROUTES.coordinator.events}/${event.id}/edit`">
               <Button label="Редактировать" icon="pi pi-pencil" severity="secondary" outlined fluid />
             </NuxtLink>
-            <Button v-if="canCancelEvent(event)" label="Отменить мероприятие" severity="danger" text fluid @click="onCancelEvent" />
+            <Button
+              v-if="canCancelEvent(event)"
+              label="Отменить мероприятие"
+              severity="danger"
+              text
+              fluid
+              @click="onCancelEvent" />
           </div>
         </div>
       </aside>
@@ -132,9 +167,9 @@ onMounted(load);
         <div class="app-card">
           <div class="app-hero__chips">
             <AppStatus :label="EVENT_STATUS_LABELS[event.status]" :severity="EVENT_STATUS_SEVERITY[event.status]" />
-            <span class="app-chip app-chip--accent"
-              ><i class="pi pi-star" />+{{ formatCoins(coinsForMinutes(event.durationMinutes)) }}</span
-            >
+            <span v-if="event.status === EventStatus.PUBLISHED" class="app-chip app-chip--accent">
+              <i class="pi pi-star" />План: +{{ formatCoins(coinsForMinutes(event.durationMinutes)) }}
+            </span>
           </div>
           <h1 class="app-page__title">{{ event.title }}</h1>
           <div class="app-info">
@@ -144,7 +179,7 @@ onMounted(load);
             </div>
             <div class="app-info__item">
               <i class="pi pi-clock" />
-              <span><b>Засчитаем</b>{{ formatDuration(event.durationMinutes) }}</span>
+              <span><b>Плановая длительность</b>{{ formatDuration(event.durationMinutes) }}</span>
             </div>
             <div class="app-info__item">
               <i class="pi pi-inbox" />
@@ -153,7 +188,9 @@ onMounted(load);
           </div>
           <p v-if="event.description" class="app-text">{{ event.description }}</p>
           <div v-if="event.requirements.length" class="app-hero__chips">
-            <span v-for="item in event.requirements" :key="item" class="app-chip">{{ EVENT_REQUIREMENT_LABELS[item] }}</span>
+            <span v-for="item in event.requirements" :key="item" class="app-chip">{{
+              EVENT_REQUIREMENT_LABELS[item]
+            }}</span>
           </div>
         </div>
 
@@ -180,8 +217,12 @@ onMounted(load);
                 /></NuxtLink>
                 <div class="app-list__main">
                   <span class="app-list__title">
-                    <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`">{{ volunteerName(item.volunteerId) }}</NuxtLink>
-                    <AppStatus :label="PARTICIPATION_STATUS_LABELS[item.status]" :severity="PARTICIPATION_STATUS_SEVERITY[item.status]" />
+                    <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`">{{
+                      volunteerName(item.volunteerId)
+                    }}</NuxtLink>
+                    <AppStatus
+                      :label="PARTICIPATION_STATUS_LABELS[item.status]"
+                      :severity="PARTICIPATION_STATUS_SEVERITY[item.status]" />
                   </span>
                   <div class="app-list__meta">
                     <span v-if="volunteerView(item.volunteerId)?.phone">
@@ -190,7 +231,9 @@ onMounted(load);
                     <span v-if="volunteerView(item.volunteerId)?.email">
                       <i class="pi pi-envelope" />{{ volunteerView(item.volunteerId)?.email }}
                     </span>
-                    <span v-if="item.awardedCoins !== null"><i class="pi pi-star" />+{{ formatCoins(item.awardedCoins) }}</span>
+                    <span v-if="item.awardedCoins !== null"
+                      ><i class="pi pi-star" />+{{ formatCoins(item.awardedCoins) }}</span
+                    >
                   </div>
                   <span v-if="item.cancellationReason" class="app-list__comment">
                     {{ PARTICIPATION_CANCELLATION_LABELS[item.cancellationReason] }}
@@ -207,8 +250,19 @@ onMounted(load);
                   size="small"
                   @click="openReject(item.id)" />
                 <template v-if="item.status === ParticipationStatus.PENDING">
-                  <Button v-if="canReject" label="Отклонить" severity="secondary" text size="small" @click="openReject(item.id)" />
-                  <Button v-if="canDecide" label="Принять" size="small" :disabled="event.freePlaces === 0" @click="onApprove(item.id)" />
+                  <Button
+                    v-if="canReject"
+                    label="Отклонить"
+                    severity="secondary"
+                    text
+                    size="small"
+                    @click="openReject(item.id)" />
+                  <Button
+                    v-if="canDecide"
+                    label="Принять"
+                    size="small"
+                    :disabled="event.freePlaces === 0"
+                    @click="onApprove(item.id)" />
                 </template>
                 <Button
                   v-tooltip.bottom="'История заявки'"
@@ -236,7 +290,8 @@ onMounted(load);
       <p class="app-text mb-4">
         {{
           rejectingApproved
-            ? 'Волонтёр потеряет место и доступ к чату, койны за мероприятие не начислятся. Подать заявку на это мероприятие снова он не сможет.'
+            ? 'Волонтёр потеряет место и доступ к чату, койны за мероприятие не начислятся. ' +
+              'Подать заявку на это мероприятие снова он не сможет.'
             : 'Подать заявку на это мероприятие снова волонтёр не сможет.'
         }}
       </p>
@@ -246,10 +301,16 @@ onMounted(load);
       </label>
       <template #footer>
         <Button label="Отмена" severity="secondary" text @click="rejectTarget = null" />
-        <Button :label="rejectingApproved ? 'Снять с мероприятия' : 'Отклонить'" severity="danger" @click="confirmReject" />
+        <Button
+          :label="rejectingApproved ? 'Снять с мероприятия' : 'Отклонить'"
+          severity="danger"
+          @click="confirmReject" />
       </template>
     </Dialog>
 
-    <ParticipationHistoryDialog v-model:visible="history.visible.value" :loading="history.loading.value" :changes="history.changes.value" />
+    <ParticipationHistoryDialog
+      v-model:visible="history.visible.value"
+      :loading="history.loading.value"
+      :changes="history.changes.value" />
   </AppPage>
 </template>

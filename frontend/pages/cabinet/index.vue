@@ -30,7 +30,7 @@ const stats = computed(() => [
   { label: 'Койны', value: profile.value?.coinBalance ?? 0 },
   { label: 'Часы', value: formatHours(profile.value?.confirmedMinutes ?? 0) },
   { label: 'Мероприятия', value: doneCount.value },
-  { label: 'Покупки', value: purchasesCount.value },
+  { label: 'Всего заказов', value: purchasesCount.value },
 ]);
 const coordinatorIds = computed(() => cooperationsStore.activeCoordinatorIds);
 
@@ -85,7 +85,9 @@ watch(
       :loading="!profile">
       <template #chips>
         <span class="app-chip app-chip--accent"><i class="pi pi-heart-fill" />Волонтёр</span>
-        <span v-if="authStore.hasCoordinatorProfile" class="app-chip app-chip--violet"><i class="pi pi-briefcase" />Координатор</span>
+        <span v-if="authStore.hasCoordinatorProfile" class="app-chip app-chip--violet"
+          ><i class="pi pi-briefcase" />Координатор</span
+        >
       </template>
       <template #meta>
         <span><i class="pi pi-map-marker" />{{ cityLabel }}</span>
@@ -117,7 +119,9 @@ watch(
           <div v-if="loading" class="flex flex-col gap-3">
             <Skeleton v-for="n in 2" :key="n" height="56px" border-radius="14px" />
           </div>
-          <span v-else-if="!upcoming.length" class="app-card__hint">Когда координатор примет заявку, мероприятие появится здесь</span>
+          <span v-else-if="!upcoming.length" class="app-card__hint"
+            >Когда координатор примет заявку, мероприятие появится здесь</span
+          >
           <div v-else class="app-mini-list">
             <NuxtLink
               v-for="item in upcoming"
@@ -141,9 +145,15 @@ watch(
           <div v-if="loading" class="flex flex-col gap-3">
             <Skeleton v-for="n in 2" :key="n" height="44px" border-radius="14px" />
           </div>
-          <span v-else-if="!coordinatorIds.length" class="app-card__hint">Подайте заявку координатору, чтобы видеть его мероприятия</span>
+          <span v-else-if="!coordinatorIds.length" class="app-card__hint"
+            >Подайте заявку координатору, чтобы видеть его мероприятия</span
+          >
           <div v-else class="app-mini-list">
-            <NuxtLink v-for="id in coordinatorIds" :key="id" :to="`${ROUTES.volunteer.coordinators}/${id}`" class="app-mini-list__item">
+            <NuxtLink
+              v-for="id in coordinatorIds"
+              :key="id"
+              :to="`${ROUTES.volunteer.coordinators}/${id}`"
+              class="app-mini-list__item">
               <AppAvatar :name="coordinatorName(id)" :image="coordinatorAvatar(id)" size="sm" />
               <span class="app-mini-list__text">
                 <b>{{ coordinatorName(id) }}</b>

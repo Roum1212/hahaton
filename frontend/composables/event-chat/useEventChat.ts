@@ -54,9 +54,10 @@ export const useEventChat = (eventId: Ref<string>) => {
     while (!stopped && chat.value && !chat.value.readOnly) {
       controller = new AbortController();
       try {
-        for await (const message of service.subscribe(eventId.value, lastSequence.value, controller.signal)) merge([message]);
+        for await (const message of service.subscribe(eventId.value, lastSequence.value, controller.signal))
+          merge([message]);
         chat.value = await service.get(eventId.value);
-        return;
+        if (chat.value.readOnly) return;
       } catch (e) {
         const error = ConnectError.from(e);
         if (stopped || error.code === Code.Canceled) return;
@@ -69,8 +70,8 @@ export const useEventChat = (eventId: Ref<string>) => {
           authStore.expire();
           return;
         }
-        await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
       }
+      await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
     }
   };
 

@@ -25,6 +25,16 @@ const loading = ref(true);
 const event = ref<IEvent | null>(null);
 const rows = ref<IResultRow[]>([]);
 const requestId = ref(createRequestId());
+const formElement = ref<HTMLFormElement | null>(null);
+const { errors, errorId, validate } = useFormValidation(formElement, () => {
+  const errors: Record<string, string> = {};
+  for (const row of rows.value) {
+    if (!row.attended) continue;
+    if (!Number.isFinite(row.minutes) || row.minutes <= 0) errors[row.participationId] = 'Укажите отработанное время';
+    else if (row.minutes % MINUTES_STEP !== 0) errors[row.participationId] = 'Время должно быть кратно 30 минутам';
+  }
+  return errors;
+});
 
 const attendanceOptions = [
   { label: 'Был', value: true },
@@ -33,7 +43,9 @@ const attendanceOptions = [
 
 const pendingCount = computed(() => list.value.filter((item) => item.status === ParticipationStatus.PENDING).length);
 const completedResults = computed(() =>
-  list.value.filter((item) => item.status === ParticipationStatus.CONFIRMED || item.status === ParticipationStatus.NOT_ATTENDED),
+  list.value.filter(
+    (item) => item.status === ParticipationStatus.CONFIRMED || item.status === ParticipationStatus.NOT_ATTENDED,
+  ),
 );
 const summary = computed(() => {
   const attended = rows.value.filter((row) => row.attended);
@@ -82,14 +94,13 @@ const toResults = (): IEventResult[] =>
       : { participationId: row.participationId, absent: true },
   );
 
-const submit = () => {
-  if (rows.value.some((row) => row.attended && row.minutes <= 0)) {
-    toast.error('Укажите отработанное время для каждого присутствовавшего');
-    return;
-  }
+const submit = async () => {
+  if (!(await validate())) return;
   const { attended, absent, minutes, coins } = summary.value;
   confirm.accept(
-    `Подтвердить итоги? Присутствовали ${attended}, не пришли ${absent}. Будет начислено ${formatDuration(minutes)} и ${formatCoins(coins)}. Изменить итоги после подтверждения нельзя.`,
+    `Подтвердить итоги? Присутствовали ${attended}, не пришли ${absent}. ` +
+      `Будет начислено ${formatDuration(minutes)} и ${formatCoins(coins)}. ` +
+      'Изменить итоги после подтверждения нельзя.',
     {
       header: 'Итоговая проверка',
       acceptLabel: 'Подтвердить итоги',
@@ -135,7 +146,7 @@ onMounted(load);
       <Message severity="warn">Подвести итоги можно только после окончания опубликованного мероприятия</Message>
     </template>
 
-    <template v-else-if="event">
+    <form v-else-if="event" ref="formElement" class="app-form" @submit.prevent="submit">
       <div v-if="!rows.length" class="app-card">
         <AppEmpty title="Принятых участников нет" image="/images/landing/step-results.jpg" />
       </div>
@@ -158,8 +169,20 @@ onMounted(load);
                 option-value="value"
                 :allow-empty="false"
                 size="small" />
-              <EventDurationInput v-model="row.minutes" :disabled="!row.attended" class="app-complete__duration" />
-              <span class="app-complete__coins">{{ row.attended ? `+${formatCoins(coinsForMinutes(row.minutes))}` : '—' }}</span>
+              <div class="app-field" :data-invalid="!!errors[row.participationId]">
+                <EventDurationInput
+                  v-model="row.minutes"
+                  :disabled="!row.attended"
+                  :invalid="!!errors[row.participationId]"
+                  :aria-describedby="errors[row.participationId] ? errorId(row.participationId) : undefined"
+                  class="app-complete__duration" />
+                <small v-if="errors[row.participationId]" :id="errorId(row.participationId)" class="app-field__error">
+                  {{ errors[row.participationId] }}
+                </small>
+              </div>
+              <span class="app-complete__coins">{{
+                row.attended ? `+${formatCoins(coinsForMinutes(row.minutes))}` : '—'
+              }}</span>
             </div>
           </div>
         </div>
@@ -189,9 +212,9 @@ onMounted(load);
           </div>
         </div>
         <div class="app-form__actions">
-          <Button label="Проверить и завершить" @click="submit" />
+          <Button type="submit" label="Проверить и завершить" />
         </div>
       </div>
-    </template>
+    </form>
   </AppPage>
 </template>

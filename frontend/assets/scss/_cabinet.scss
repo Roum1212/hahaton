@@ -713,6 +713,20 @@
   flex-direction: column;
   gap: 6px;
 
+  &__error {
+    font-size: 12px;
+    color: var(--p-red-600);
+  }
+
+  &[data-invalid='true'] {
+    .p-inputtext,
+    .p-select,
+    .p-multiselect,
+    .p-textarea {
+      border-color: var(--p-red-500);
+    }
+  }
+
   &__label {
     font-size: 13px;
     font-weight: 600;

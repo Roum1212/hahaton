@@ -6,7 +6,7 @@ definePageMeta({
 
 const route = useRoute();
 const eventsStore = useEventsStore();
-const { generateInitialData, validate, toDto } = useEventForm();
+const { generateInitialData, getErrors, toDto } = useEventForm();
 const { toast } = useApp();
 
 const eventId = computed(() => String(route.params.id));
@@ -14,6 +14,8 @@ const loading = ref(true);
 const editable = ref(false);
 const form = ref(generateInitialData());
 const submitting = ref(false);
+const formElement = ref<HTMLFormElement | null>(null);
+const { errors, validate } = useFormValidation(formElement, () => getErrors(form.value));
 
 onMounted(async () => {
   const event = await handleAsyncOperation(
@@ -28,11 +30,7 @@ onMounted(async () => {
 });
 
 const onSubmit = async () => {
-  const error = validate(form.value);
-  if (error) {
-    toast.error(error);
-    return;
-  }
+  if (!(await validate())) return;
   submitting.value = true;
   const event = await handleAsyncOperation(
     () => eventsStore.update(eventId.value, toDto(form.value)),
@@ -52,11 +50,11 @@ const onSubmit = async () => {
 
     <Skeleton v-if="loading" height="420px" border-radius="20px" />
 
-    <form v-else class="app-card max-w-[860px]" @submit.prevent="onSubmit">
+    <form v-else ref="formElement" class="app-card max-w-[860px]" @submit.prevent="onSubmit">
       <Message v-if="!editable" severity="warn" size="small">
         Изменить мероприятие можно только до начала и пока на него нет активных заявок
       </Message>
-      <EventForm v-model="form" :disabled="submitting || !editable" />
+      <EventForm v-model="form" :errors="errors" :disabled="submitting || !editable" />
       <div class="app-form__actions">
         <NuxtLink :to="`${ROUTES.coordinator.events}/${eventId}`">
           <Button label="Отмена" severity="secondary" text />

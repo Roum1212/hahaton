@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { EVENT_STATUS_LABELS, EVENT_STATUS_SEVERITY, EventStatus, type IEvent } from '~/core/event/services/event/event.types';
+import {
+  EVENT_STATUS_LABELS,
+  EVENT_STATUS_SEVERITY,
+  EventStatus,
+  type IEvent,
+} from '~/core/event/services/event/event.types';
 
 const props = defineProps<{
   event: IEvent;
@@ -34,10 +39,14 @@ const image = computed(() => eventImage(props.event, props.event.id));
       <ul class="app-event-card__meta">
         <li v-if="coordinatorName"><i class="pi pi-user" />{{ coordinatorName }}</li>
         <li v-if="event.location"><i class="pi pi-map-marker" />{{ event.location }}</li>
-        <li><i class="pi pi-users" />Свободно {{ event.freePlaces }} из {{ event.volunteerLimit }}</li>
+        <li v-if="event.status === EventStatus.PUBLISHED">
+          <i class="pi pi-users" />Свободно {{ event.freePlaces }} из {{ event.volunteerLimit }}
+        </li>
       </ul>
       <div class="app-event-card__footer">
-        <span class="app-event-card__coins">+{{ formatCoins(coins) }}</span>
+        <span v-if="event.status === EventStatus.PUBLISHED" class="app-event-card__coins"
+          >План: +{{ formatCoins(coins) }}</span
+        >
         <slot name="actions" />
       </div>
     </div>
