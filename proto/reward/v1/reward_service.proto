@@ -36,19 +36,19 @@ message Reward {
 
   string description = 3 [json_name = "description"];
   // Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
-  string image_url = 9 [json_name = "image_url"];
-  string title = 4 [json_name = "title"];
+  string image_url = 4 [json_name = "image_url"];
+  string title = 5 [json_name = "title"];
 
   // Целое положительное число коинов за одну единицу.
-  int64 price_coins = 5 [json_name = "price_coins"];
+  int64 price_coins = 6 [json_name = "price_coins"];
 
   // Вычисляется сервером: quantity_limit минус выданные единицы и резервы.
   // Ноль означает отсутствие свободных единиц, а не архивирование.
   int32 available_quantity = 7 [json_name = "available_quantity"];
   // Общее количество, включая уже выданные единицы и резервы невыданных заказов.
-  int32 quantity_limit = 6 [json_name = "quantity_limit"];
+  int32 quantity_limit = 8 [json_name = "quantity_limit"];
 
-  RewardStatus status = 8 [json_name = "status"];
+  RewardStatus status = 9 [json_name = "status"];
 }
 
 enum RewardStatus {
@@ -60,15 +60,15 @@ message CreateRewardRequest {
   string description = 1 [json_name = "description"];
   // Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
   // Файл обязан существовать и принадлежать ему.
-  string image_path = 5 [json_name = "image_path"];
+  string image_path = 2 [json_name = "image_path"];
   // Непустое название.
-  string title = 2 [json_name = "title"];
+  string title = 3 [json_name = "title"];
 
   // Строго больше нуля.
-  int64 price_coins = 3 [json_name = "price_coins"];
+  int64 price_coins = 4 [json_name = "price_coins"];
 
   // Строго больше нуля.
-  int32 quantity_limit = 4 [json_name = "quantity_limit"];
+  int32 quantity_limit = 5 [json_name = "quantity_limit"];
 }
 
 message CreateRewardResponse {
@@ -93,17 +93,17 @@ enum RewardListScope {
 
 message ListRewardsRequest {
   // Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-  RewardListScope scope = 6 [json_name = "scope"];
+  RewardListScope scope = 1 [json_name = "scope"];
 
   // Необязательный непустой фильтр внутри доступных поощрений; не расширяет права.
-  optional string coordinator_id = 1 [json_name = "coordinator_id"];
+  optional string coordinator_id = 2 [json_name = "coordinator_id"];
 
   // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
   int32 limit = 3 [json_name = "limit"];
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
-  int64 offset = 5 [json_name = "offset"];
+  int64 offset = 4 [json_name = "offset"];
 }
 
 message ListRewardsResponse {
@@ -111,7 +111,7 @@ message ListRewardsResponse {
   repeated Reward rewards = 1 [json_name = "rewards"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 message UpdateRewardRequest {
@@ -121,16 +121,16 @@ message UpdateRewardRequest {
   optional string description = 2 [json_name = "description"];
   // Отсутствует — сохранить; пустая строка — убрать изображение.
   // Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
-  optional string image_path = 6 [json_name = "image_path"];
+  optional string image_path = 3 [json_name = "image_path"];
   // Непустое название.
-  optional string title = 3 [json_name = "title"];
+  optional string title = 4 [json_name = "title"];
 
   // Строго больше нуля. Новая цена применяется только к новым заказам.
-  optional int64 price_coins = 4 [json_name = "price_coins"];
+  optional int64 price_coins = 5 [json_name = "price_coins"];
 
   // Неотрицательное число, не меньше суммы выданных единиц и текущих резервов.
   // Нарушение ограничения по резервам/выдачам означает FailedPrecondition.
-  optional int32 quantity_limit = 5 [json_name = "quantity_limit"];
+  optional int32 quantity_limit = 6 [json_name = "quantity_limit"];
 }
 
 message DeleteRewardRequest {

@@ -12,13 +12,15 @@ import (
 
 	session_v1 "github.com/Roum1212/hahaton/genproto/session/v1"
 	service_authenticate_session "github.com/Roum1212/hahaton/internal/app/service/authenticate-session"
+	service_get_or_register_volunteer "github.com/Roum1212/hahaton/internal/app/service/get-or-register-volunteer"
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
 	session_context "github.com/Roum1212/hahaton/internal/pkg/session/context"
 )
 
 type RPC struct {
-	cookiesService cookies.Service
-	service        service_authenticate_session.Service
+	cookiesService                cookies.Service
+	getOrRegisterVolunteerService service_get_or_register_volunteer.Service
+	authenticateSessionService    service_authenticate_session.Service
 }
 
 func (x RPC) AuthenticateSession(
@@ -30,13 +32,13 @@ func (x RPC) AuthenticateSession(
 		return nil, rpc_error.NewUnauthenticatedError(nil)
 	}
 
-	encryptedSessionToken, err := x.service.AuthenticateSession(
+	volunteer, err := x.getOrRegisterVolunteerService.GetOrRegisterVolunteer(
 		ctx,
-		service_authenticate_session.NewRequest(session.GetSessionID(), r.Msg.GetIdToken()),
+		service_get_or_register_volunteer.NewRequest(r.Msg.GetIdToken()),
 	)
 	if err != nil {
 		switch {
-		case errors.Is(err, service_authenticate_session.ErrInvalidRequest):
+		case errors.Is(err, service_get_or_register_volunteer.ErrInvalidRequest):
 			return nil, rpc_error.NewInvalidArgumentError(&errdetails.BadRequest{
 				FieldViolations: []*errdetails.BadRequest_FieldViolation{
 					{
@@ -45,11 +47,31 @@ func (x RPC) AuthenticateSession(
 					},
 				},
 			})
+		case errors.Is(err, service_get_or_register_volunteer.ErrInvalidIDToken):
+			return nil, rpc_error.NewUnauthenticatedError(nil)
+		case errors.Is(err, service_get_or_register_volunteer.ErrIncompleteProfile):
+			return nil, rpc_error.NewFailedPreconditionError(&errdetails.PreconditionFailure{
+				Violations: []*errdetails.PreconditionFailure_Violation{
+					{
+						Type:        "profile",
+						Description: "identity profile is incomplete",
+					},
+				},
+			})
+		default:
+			return nil, rpc_error.NewInternalError()
+		}
+	}
+
+	encryptedSessionToken, err := x.authenticateSessionService.AuthenticateSession(
+		ctx,
+		service_authenticate_session.NewRequest(session.GetSessionID(), volunteer.GetUserID()),
+	)
+	if err != nil {
+		switch {
 		case errors.Is(err, aggregate_session.ErrNotFound):
 			return nil, rpc_error.NewUnauthenticatedError(nil)
 		case errors.Is(err, aggregate_session.ErrInvalidCredentials):
-			return nil, rpc_error.NewUnauthenticatedError(nil)
-		case errors.Is(err, service_authenticate_session.ErrInvalidIDToken):
 			return nil, rpc_error.NewUnauthenticatedError(nil)
 		case errors.Is(err, aggregate_session.ErrAlreadyAuthenticated):
 			return nil, rpc_error.NewFailedPreconditionError(&errdetails.PreconditionFailure{
@@ -57,15 +79,6 @@ func (x RPC) AuthenticateSession(
 					{
 						Type:        "session",
 						Description: "session is already authenticated",
-					},
-				},
-			})
-		case errors.Is(err, service_authenticate_session.ErrIncompleteProfile):
-			return nil, rpc_error.NewFailedPreconditionError(&errdetails.PreconditionFailure{
-				Violations: []*errdetails.PreconditionFailure_Violation{
-					{
-						Type:        "profile",
-						Description: "identity profile is incomplete",
 					},
 				},
 			})
@@ -80,9 +93,14 @@ func (x RPC) AuthenticateSession(
 	return response, nil
 }
 
-func NewRPC(cookiesService cookies.Service, service service_authenticate_session.Service) RPC {
+func NewRPC(
+	cookiesService cookies.Service,
+	getOrRegisterVolunteerService service_get_or_register_volunteer.Service,
+	authenticateSessionService service_authenticate_session.Service,
+) RPC {
 	return RPC{
-		cookiesService: cookiesService,
-		service:        service,
+		cookiesService:                cookiesService,
+		getOrRegisterVolunteerService: getOrRegisterVolunteerService,
+		authenticateSessionService:    authenticateSessionService,
 	}
 }

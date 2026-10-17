@@ -22,6 +22,15 @@ func (x UserID) Validate() error {
 	return x.value.Validate()
 }
 
+func GenerateUserID() (UserID, error) {
+	id, err := types_uuid_v7.GenerateUUIDv7()
+	if err != nil {
+		return UserID{}, fmt.Errorf("generate user id: %w", err)
+	}
+
+	return NewUserID(id.String())
+}
+
 func NewUserID(value string) (UserID, error) {
 	id, err := types_uuid_v7.NewUUIDv7(value)
 	if err != nil {

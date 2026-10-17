@@ -11,7 +11,7 @@ option go_package = "github.com/Roum1212/hahaton/genproto/event-chat/v1;event_ch
 // в статусе APPROVED, CONFIRMED или NOT_ATTENDED при сохранённом периоде доступа.
 // Итоговая неявка не равна выходу из переписки; завершённые чаты доступны для чтения.
 // Права проверяются при каждом чтении и отправке, включая повтор запросов.
-// Отмена записи или прекращение кооперации закрывает волонтёру доступ к истории чата.
+// Отмена или отклонение заявки, прекращение кооперации закрывают волонтёру доступ к истории чата.
 // Действующий участник — user_id сессии. Владелец мероприятия с профилем Coordinator
 // выступает координатором; остальные допущенные участники — волонтёрами.
 service EventChatService {
@@ -24,7 +24,7 @@ service EventChatService {
   // Только PUBLISHED и при наличии доступа к чату; после CompleteEvent чат read-only.
   // ID автора берётся из сессии, его тип определяется отношением к мероприятию,
   // ФИО — из общего Volunteer. Клиент не задаёт тип автора.
-  // Отправка согласована с отменой участия/мероприятия и прекращением кооперации.
+  // Отправка согласована с отменой/отклонением участия, отменой мероприятия и прекращением кооперации.
   rpc SendEventChatMessage(SendEventChatMessageRequest) returns (SendEventChatMessageResponse) {}
   // История чата. Координатор сохраняет право чтения своего отменённого мероприятия.
   rpc ListEventChatMessages(ListEventChatMessagesRequest) returns (ListEventChatMessagesResponse) {}
@@ -48,18 +48,18 @@ service EventChatService {
 
 // Координатор-создатель видит весь свой чат; для него visible_after_sequence = 0.
 // У волонтёра срез последовательности фиксируется атомарно при APPROVED.
-// Отмена заявки/мероприятия и прекращение Cooperation закрывают период навсегда.
+// Отмена/отклонение заявки, отмена мероприятия и прекращение Cooperation закрывают период навсегда.
 // Открытый старый стрим закрывается даже при быстром новом вступлении.
 message EventChat {
   string event_id = 1 [json_name = "event_id"];
 
   string event_title = 2 [json_name = "event_title"];
 
-  bool read_only = 6 [json_name = "read_only"];
+  bool read_only = 3 [json_name = "read_only"];
 
-  uint64 latest_sequence = 5 [json_name = "latest_sequence"];
+  uint64 latest_sequence = 4 [json_name = "latest_sequence"];
   // Доступны только сообщения со sequence строго больше этой границы.
-  uint64 visible_after_sequence = 4 [json_name = "visible_after_sequence"];
+  uint64 visible_after_sequence = 5 [json_name = "visible_after_sequence"];
 }
 
 message GetEventChatRequest {
@@ -103,9 +103,9 @@ message EventChatMessage {
   // Положительный уникальный возрастающий номер внутри event_id, назначаемый сервером.
   // Нумерация и сохранение сериализуются по чату: нельзя позже зафиксировать сообщение
   // с sequence ниже уже видимой границы. Это обеспечивает восстановление без пропусков.
-  uint64 sequence = 8 [json_name = "sequence"];
+  uint64 sequence = 7 [json_name = "sequence"];
 
-  google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
+  google.protobuf.Timestamp created_at = 8 [json_name = "created_at"];
 }
 
 message SendEventChatMessageRequest {
@@ -133,10 +133,10 @@ message ListEventChatMessagesRequest {
   // Для следующих страниц клиент повторяет snapshot_sequence из первого ответа:
   // новые сообщения стрима не сдвигают offset в этой выборке.
   // Граница вне [visible_after_sequence, latest_sequence] означает InvalidArgument.
-  optional uint64 snapshot_sequence = 5 [json_name = "snapshot_sequence"];
+  optional uint64 snapshot_sequence = 2 [json_name = "snapshot_sequence"];
 
   // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-  int32 limit = 2 [json_name = "limit"];
+  int32 limit = 3 [json_name = "limit"];
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
@@ -150,12 +150,12 @@ message ListEventChatMessagesResponse {
   // Верхняя граница выбранной истории, а не sequence последнего элемента страницы.
   // Клиент загружает историю, затем открывает стрим с after_sequence = snapshot_sequence.
   // Сообщения, появившиеся между этими запросами, будут доставлены стримом.
-  uint64 snapshot_sequence = 4 [json_name = "snapshot_sequence"];
-  uint64 visible_after_sequence = 6 [json_name = "visible_after_sequence"];
+  uint64 snapshot_sequence = 2 [json_name = "snapshot_sequence"];
+  uint64 visible_after_sequence = 3 [json_name = "visible_after_sequence"];
 
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 4 [json_name = "total_count"];
 }
 
 message SubscribeEventChatMessagesRequest {

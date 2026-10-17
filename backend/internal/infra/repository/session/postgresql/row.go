@@ -28,11 +28,5 @@ func (x sessionRow) toSession(sessionID model_session_id.SessionID) (*aggregate_
 		userID = value
 	}
 
-	return aggregate_session.NewSessionFromFields(
-		sessionID,
-		userID,
-		x.createdAt,
-		x.updatedAt,
-		x.expiresAt,
-	), nil
+	return aggregate_session.NewSessionFromFields(sessionID, userID, x.createdAt, x.updatedAt, x.expiresAt), nil
 }

@@ -193,8 +193,8 @@ type RewardOrder struct {
 	PriceCoins  int64  `protobuf:"varint,5,opt,name=price_coins,proto3" json:"price_coins,omitempty"`
 	RewardTitle string `protobuf:"bytes,6,opt,name=reward_title,proto3" json:"reward_title,omitempty"`
 	// UNSPECIFIED для PENDING и ISSUED; причина выбирается сервером при отмене.
-	CancellationReason RewardOrderCancellationReason `protobuf:"varint,8,opt,name=cancellation_reason,proto3,enum=reward_order.v1.RewardOrderCancellationReason" json:"cancellation_reason,omitempty"`
-	Status             RewardOrderStatus             `protobuf:"varint,7,opt,name=status,proto3,enum=reward_order.v1.RewardOrderStatus" json:"status,omitempty"`
+	CancellationReason RewardOrderCancellationReason `protobuf:"varint,7,opt,name=cancellation_reason,proto3,enum=reward_order.v1.RewardOrderCancellationReason" json:"cancellation_reason,omitempty"`
+	Status             RewardOrderStatus             `protobuf:"varint,8,opt,name=status,proto3,enum=reward_order.v1.RewardOrderStatus" json:"status,omitempty"`
 	CreatedAt          *timestamppb.Timestamp        `protobuf:"bytes,9,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	UpdatedAt          *timestamppb.Timestamp        `protobuf:"bytes,10,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
 	unknownFields      protoimpl.UnknownFields
@@ -504,15 +504,15 @@ func (x *GetRewardOrderResponse) GetRewardOrder() *RewardOrder {
 type ListRewardOrdersRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
-	Scope RewardOrderListScope `protobuf:"varint,8,opt,name=scope,proto3,enum=reward_order.v1.RewardOrderListScope" json:"scope,omitempty"`
+	Scope RewardOrderListScope `protobuf:"varint,1,opt,name=scope,proto3,enum=reward_order.v1.RewardOrderListScope" json:"scope,omitempty"`
 	// Дополнительные непустые фильтры внутри доступных заказов, не расширяют права.
-	CoordinatorId *string `protobuf:"bytes,1,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
-	RewardId      *string `protobuf:"bytes,2,opt,name=reward_id,proto3,oneof" json:"reward_id,omitempty"`
-	VolunteerId   *string `protobuf:"bytes,3,opt,name=volunteer_id,proto3,oneof" json:"volunteer_id,omitempty"`
+	CoordinatorId *string `protobuf:"bytes,2,opt,name=coordinator_id,proto3,oneof" json:"coordinator_id,omitempty"`
+	RewardId      *string `protobuf:"bytes,3,opt,name=reward_id,proto3,oneof" json:"reward_id,omitempty"`
 	// Отсутствует — все статусы; UNSPECIFIED и неизвестные значения недопустимы.
-	Status *RewardOrderStatus `protobuf:"varint,4,opt,name=status,proto3,enum=reward_order.v1.RewardOrderStatus,oneof" json:"status,omitempty"`
+	Status      *RewardOrderStatus `protobuf:"varint,4,opt,name=status,proto3,enum=reward_order.v1.RewardOrderStatus,oneof" json:"status,omitempty"`
+	VolunteerId *string            `protobuf:"bytes,5,opt,name=volunteer_id,proto3,oneof" json:"volunteer_id,omitempty"`
 	// 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-	Limit int32 `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	Limit int32 `protobuf:"varint,6,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
 	// Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
 	// На каждом запросе применяются текущие права доступа и фильтры.
@@ -572,18 +572,18 @@ func (x *ListRewardOrdersRequest) GetRewardId() string {
 	return ""
 }
 
-func (x *ListRewardOrdersRequest) GetVolunteerId() string {
-	if x != nil && x.VolunteerId != nil {
-		return *x.VolunteerId
-	}
-	return ""
-}
-
 func (x *ListRewardOrdersRequest) GetStatus() RewardOrderStatus {
 	if x != nil && x.Status != nil {
 		return *x.Status
 	}
 	return RewardOrderStatus_REWARD_ORDER_STATUS_UNSPECIFIED
+}
+
+func (x *ListRewardOrdersRequest) GetVolunteerId() string {
+	if x != nil && x.VolunteerId != nil {
+		return *x.VolunteerId
+	}
+	return ""
 }
 
 func (x *ListRewardOrdersRequest) GetLimit() int32 {
@@ -606,7 +606,7 @@ type ListRewardOrdersResponse struct {
 	RewardOrders []*RewardOrder `protobuf:"bytes,1,rep,name=reward_orders,proto3" json:"reward_orders,omitempty"`
 	// Общее число доступных записей с текущими фильтрами, без limit и offset.
 	// Подсчитывается в том же снимке данных, что и элементы страницы.
-	TotalCount    int64 `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	TotalCount    int64 `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -755,8 +755,8 @@ const file_reward_order_v1_reward_order_service_proto_rawDesc = "" +
 	"\fvolunteer_id\x18\x04 \x01(\tR\fvolunteer_id\x12 \n" +
 	"\vprice_coins\x18\x05 \x01(\x03R\vprice_coins\x12\"\n" +
 	"\freward_title\x18\x06 \x01(\tR\freward_title\x12`\n" +
-	"\x13cancellation_reason\x18\b \x01(\x0e2..reward_order.v1.RewardOrderCancellationReasonR\x13cancellation_reason\x12:\n" +
-	"\x06status\x18\a \x01(\x0e2\".reward_order.v1.RewardOrderStatusR\x06status\x12:\n" +
+	"\x13cancellation_reason\x18\a \x01(\x0e2..reward_order.v1.RewardOrderCancellationReasonR\x13cancellation_reason\x12:\n" +
+	"\x06status\x18\b \x01(\x0e2\".reward_order.v1.RewardOrderStatusR\x06status\x12:\n" +
 	"\n" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"created_at\x12:\n" +
@@ -777,21 +777,21 @@ const file_reward_order_v1_reward_order_service_proto_rawDesc = "" +
 	"\x16GetRewardOrderResponse\x12@\n" +
 	"\freward_order\x18\x01 \x01(\v2\x1c.reward_order.v1.RewardOrderR\freward_order\"\xfb\x02\n" +
 	"\x17ListRewardOrdersRequest\x12;\n" +
-	"\x05scope\x18\b \x01(\x0e2%.reward_order.v1.RewardOrderListScopeR\x05scope\x12+\n" +
-	"\x0ecoordinator_id\x18\x01 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x12!\n" +
-	"\treward_id\x18\x02 \x01(\tH\x01R\treward_id\x88\x01\x01\x12'\n" +
-	"\fvolunteer_id\x18\x03 \x01(\tH\x02R\fvolunteer_id\x88\x01\x01\x12?\n" +
-	"\x06status\x18\x04 \x01(\x0e2\".reward_order.v1.RewardOrderStatusH\x03R\x06status\x88\x01\x01\x12\x14\n" +
-	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x05scope\x18\x01 \x01(\x0e2%.reward_order.v1.RewardOrderListScopeR\x05scope\x12+\n" +
+	"\x0ecoordinator_id\x18\x02 \x01(\tH\x00R\x0ecoordinator_id\x88\x01\x01\x12!\n" +
+	"\treward_id\x18\x03 \x01(\tH\x01R\treward_id\x88\x01\x01\x12?\n" +
+	"\x06status\x18\x04 \x01(\x0e2\".reward_order.v1.RewardOrderStatusH\x02R\x06status\x88\x01\x01\x12'\n" +
+	"\fvolunteer_id\x18\x05 \x01(\tH\x03R\fvolunteer_id\x88\x01\x01\x12\x14\n" +
+	"\x05limit\x18\x06 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\a \x01(\x03R\x06offsetB\x11\n" +
 	"\x0f_coordinator_idB\f\n" +
 	"\n" +
-	"_reward_idB\x0f\n" +
-	"\r_volunteer_idB\t\n" +
-	"\a_status\"\x80\x01\n" +
+	"_reward_idB\t\n" +
+	"\a_statusB\x0f\n" +
+	"\r_volunteer_id\"\x80\x01\n" +
 	"\x18ListRewardOrdersResponse\x12B\n" +
 	"\rreward_orders\x18\x01 \x03(\v2\x1c.reward_order.v1.RewardOrderR\rreward_orders\x12 \n" +
-	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\")\n" +
+	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\")\n" +
 	"\x17IssueRewardOrderRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"*\n" +
 	"\x18CancelRewardOrderRequest\x12\x0e\n" +

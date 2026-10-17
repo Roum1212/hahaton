@@ -27,10 +27,10 @@ type Session struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Внутренний ID участника, равный Volunteer.id и при наличии Coordinator.id.
 	// Отсутствует у анонимной сессии; ID Flida sub сюда напрямую не копируется.
-	UserId *string `protobuf:"bytes,4,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`
+	UserId *string `protobuf:"bytes,1,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`
 	// Вычисляемый признак для интерфейса; false у анонимной сессии.
 	// Клиент не может установить его или выдать себе права выбором режима.
-	HasCoordinatorProfile bool `protobuf:"varint,5,opt,name=has_coordinator_profile,proto3" json:"has_coordinator_profile,omitempty"`
+	HasCoordinatorProfile bool `protobuf:"varint,2,opt,name=has_coordinator_profile,proto3" json:"has_coordinator_profile,omitempty"`
 	// Абсолютный срок сессии; GetSession его не продлевает.
 	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expires_at,proto3" json:"expires_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -95,7 +95,7 @@ type AuthenticateSessionRequest struct {
 	// (iss, sub) уникальны для Volunteer; aud проверяет получателя.
 	// Первый вход заполняет профиль, последующие не перезаписывают локальные правки.
 	// Отсутствие обязательных сведений при регистрации — FailedPrecondition.
-	IdToken       string `protobuf:"bytes,3,opt,name=id_token,proto3" json:"id_token,omitempty"`
+	IdToken       string `protobuf:"bytes,1,opt,name=id_token,proto3" json:"id_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -188,15 +188,15 @@ const file_session_v1_session_service_proto_rawDesc = "" +
 	" session/v1/session_service.proto\x12\n" +
 	"session.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x01\n" +
 	"\aSession\x12\x1d\n" +
-	"\auser_id\x18\x04 \x01(\tH\x00R\auser_id\x88\x01\x01\x128\n" +
-	"\x17has_coordinator_profile\x18\x05 \x01(\bR\x17has_coordinator_profile\x12:\n" +
+	"\auser_id\x18\x01 \x01(\tH\x00R\auser_id\x88\x01\x01\x128\n" +
+	"\x17has_coordinator_profile\x18\x02 \x01(\bR\x17has_coordinator_profile\x12:\n" +
 	"\n" +
 	"expires_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expires_atB\n" +
 	"\n" +
 	"\b_user_id\"8\n" +
 	"\x1aAuthenticateSessionRequest\x12\x1a\n" +
-	"\bid_token\x18\x03 \x01(\tR\bid_token\"C\n" +
+	"\bid_token\x18\x01 \x01(\tR\bid_token\"C\n" +
 	"\x12GetSessionResponse\x12-\n" +
 	"\asession\x18\x01 \x01(\v2\x13.session.v1.SessionR\asession2\xb4\x02\n" +
 	"\x0eSessionService\x12?\n" +

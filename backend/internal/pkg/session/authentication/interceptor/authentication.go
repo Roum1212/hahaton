@@ -11,9 +11,19 @@ import (
 	"connectrpc.com/authn"
 	"go.flida.dev/cookies/pkg/cookies"
 	rpc_error "go.flida.dev/rpc-error"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
+	"github.com/Roum1212/hahaton/genproto/cooperation/v1/cooperation_v1connect"
+	"github.com/Roum1212/hahaton/genproto/coordinator/v1/coordinator_v1connect"
+	"github.com/Roum1212/hahaton/genproto/event-chat/v1/event_chat_v1connect"
+	"github.com/Roum1212/hahaton/genproto/event/v1/event_v1connect"
+	"github.com/Roum1212/hahaton/genproto/geo/v1/geo_v1connect"
 	"github.com/Roum1212/hahaton/genproto/image/v1/image_v1connect"
+	"github.com/Roum1212/hahaton/genproto/participation/v1/participation_v1connect"
+	"github.com/Roum1212/hahaton/genproto/reward-order/v1/reward_order_v1connect"
+	"github.com/Roum1212/hahaton/genproto/reward/v1/reward_v1connect"
 	"github.com/Roum1212/hahaton/genproto/session/v1/session_v1connect"
+	"github.com/Roum1212/hahaton/genproto/volunteer/v1/volunteer_v1connect"
 	aggregate_session "github.com/Roum1212/hahaton/internal/domain/aggregate/session"
 	session_token "github.com/Roum1212/hahaton/internal/pkg/session/token"
 	"github.com/Roum1212/hahaton/internal/pkg/token"
@@ -27,7 +37,7 @@ type Authentication struct {
 
 //nolint:nilnil // authn uses nil authentication info for requests without an applicable session.
 func (x Authentication) Authenticate(ctx context.Context, r *http.Request) (any, error) {
-	if strings.HasPrefix(r.URL.Path, "/storage/") {
+	if strings.HasPrefix(r.URL.Path, "/storage/") || r.URL.Path == "/healthz" {
 		return nil, nil
 	}
 
@@ -35,7 +45,15 @@ func (x Authentication) Authenticate(ctx context.Context, r *http.Request) (any,
 
 	mode, ok := authModeByProcedure(procedure)
 	if !ok {
-		return nil, rpc_error.NewNotFoundError(nil)
+		return nil, rpc_error.NewNotFoundError(&errdetails.ResourceInfo{
+			ResourceType: "connect.Procedure",
+			ResourceName: r.URL.Path,
+			Description:  "procedure not found",
+		})
+	}
+
+	if mode == authModePublic {
+		return nil, nil
 	}
 
 	session, err := x.getActiveSession(ctx, r)
@@ -58,6 +76,8 @@ func (x Authentication) Authenticate(ctx context.Context, r *http.Request) (any,
 			return nil, nil
 		}
 	case authModeActiveSession:
+	case authModePublic:
+		return nil, nil
 	default:
 		return nil, rpc_error.NewInternalError()
 	}
@@ -71,6 +91,7 @@ const (
 	authModeUnauthenticated authMode = iota
 	authModeAuthenticated
 	authModeActiveSession
+	authModePublic
 )
 
 func (x Authentication) getActiveSession(ctx context.Context, r *http.Request) (*aggregate_session.Session, error) {
@@ -116,18 +137,77 @@ func (x Authentication) getSessionToken(r *http.Request) (session_token.Token, b
 }
 
 func authModeByProcedure(procedure string) (authMode, bool) {
-	switch procedure {
-	case session_v1connect.SessionServiceAuthenticateSessionProcedure:
-		return authModeUnauthenticated, true
-	case image_v1connect.ImageServiceUploadImageProcedure:
-		return authModeAuthenticated, true
-	case session_v1connect.SessionServiceCloseSessionProcedure,
-		session_v1connect.SessionServiceGetSessionProcedure,
-		session_v1connect.SessionServiceOpenSessionProcedure:
-		return authModeActiveSession, true
-	default:
-		return authModeActiveSession, false
+	modes := map[string]authMode{
+		session_v1connect.SessionServiceAuthenticateSessionProcedure: authModeUnauthenticated,
+		session_v1connect.SessionServiceCloseSessionProcedure:        authModeActiveSession,
+		session_v1connect.SessionServiceGetSessionProcedure:          authModeActiveSession,
+		session_v1connect.SessionServiceOpenSessionProcedure:         authModeActiveSession,
+
+		cooperation_v1connect.CooperationServiceAcceptCooperationInvitationProcedure: authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceApproveCooperationProcedure:          authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceCreateCooperationInvitationProcedure: authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceGetCooperationProcedure:              authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceListCooperationInvitationsProcedure:  authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceListCooperationsProcedure:            authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceRejectCooperationProcedure:           authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceRequestCooperationProcedure:          authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceRevokeCooperationInvitationProcedure: authModeAuthenticated,
+		cooperation_v1connect.CooperationServiceTerminateCooperationProcedure:        authModeAuthenticated,
+
+		coordinator_v1connect.CoordinatorServiceGetCoordinatorProcedure:            authModeAuthenticated,
+		coordinator_v1connect.CoordinatorServiceGetCoordinatorSettingsProcedure:    authModeAuthenticated,
+		coordinator_v1connect.CoordinatorServiceListCoordinatorsProcedure:          authModeAuthenticated,
+		coordinator_v1connect.CoordinatorServiceUpdateCoordinatorProcedure:         authModeAuthenticated,
+		coordinator_v1connect.CoordinatorServiceUpdateCoordinatorSettingsProcedure: authModeAuthenticated,
+
+		event_chat_v1connect.EventChatServiceGetEventChatProcedure:               authModeAuthenticated,
+		event_chat_v1connect.EventChatServiceListEventChatMessagesProcedure:      authModeAuthenticated,
+		event_chat_v1connect.EventChatServiceListMyEventChatsProcedure:           authModeAuthenticated,
+		event_chat_v1connect.EventChatServiceSendEventChatMessageProcedure:       authModeAuthenticated,
+		event_chat_v1connect.EventChatServiceSubscribeEventChatMessagesProcedure: authModeAuthenticated,
+
+		event_v1connect.EventServiceCancelEventProcedure:   authModeAuthenticated,
+		event_v1connect.EventServiceCompleteEventProcedure: authModeAuthenticated,
+		event_v1connect.EventServiceCreateEventProcedure:   authModeAuthenticated,
+		event_v1connect.EventServiceGetEventProcedure:      authModeAuthenticated,
+		event_v1connect.EventServiceListEventsProcedure:    authModeAuthenticated,
+		event_v1connect.EventServiceUpdateEventProcedure:   authModeAuthenticated,
+
+		geo_v1connect.GeoServiceGetCityProcedure:          authModePublic,
+		geo_v1connect.GeoServiceListCitiesProcedure:       authModePublic,
+		geo_v1connect.GeoServiceSuggestAddressesProcedure: authModeAuthenticated,
+
+		image_v1connect.ImageServiceUploadImageProcedure: authModeAuthenticated,
+
+		participation_v1connect.ParticipationServiceApproveParticipationProcedure:     authModeAuthenticated,
+		participation_v1connect.ParticipationServiceCancelParticipationProcedure:      authModeAuthenticated,
+		participation_v1connect.ParticipationServiceGetParticipationProcedure:         authModeAuthenticated,
+		participation_v1connect.ParticipationServiceListParticipationChangesProcedure: authModeAuthenticated,
+		participation_v1connect.ParticipationServiceListParticipationsProcedure:       authModeAuthenticated,
+		participation_v1connect.ParticipationServiceRejectParticipationProcedure:      authModeAuthenticated,
+		participation_v1connect.ParticipationServiceRequestParticipationProcedure:     authModeAuthenticated,
+		participation_v1connect.ParticipationServiceRestoreParticipationProcedure:     authModeAuthenticated,
+
+		reward_order_v1connect.RewardOrderServiceCancelRewardOrderProcedure: authModeAuthenticated,
+		reward_order_v1connect.RewardOrderServiceCreateRewardOrderProcedure: authModeAuthenticated,
+		reward_order_v1connect.RewardOrderServiceGetRewardOrderProcedure:    authModeAuthenticated,
+		reward_order_v1connect.RewardOrderServiceIssueRewardOrderProcedure:  authModeAuthenticated,
+		reward_order_v1connect.RewardOrderServiceListRewardOrdersProcedure:  authModeAuthenticated,
+
+		reward_v1connect.RewardServiceCreateRewardProcedure: authModeAuthenticated,
+		reward_v1connect.RewardServiceDeleteRewardProcedure: authModeAuthenticated,
+		reward_v1connect.RewardServiceGetRewardProcedure:    authModeAuthenticated,
+		reward_v1connect.RewardServiceListRewardsProcedure:  authModeAuthenticated,
+		reward_v1connect.RewardServiceUpdateRewardProcedure: authModeAuthenticated,
+
+		volunteer_v1connect.VolunteerServiceGetCoordinatorVolunteerProcedure: authModeAuthenticated,
+		volunteer_v1connect.VolunteerServiceGetVolunteerProcedure:            authModeAuthenticated,
+		volunteer_v1connect.VolunteerServiceListVolunteerOperationsProcedure: authModeAuthenticated,
+		volunteer_v1connect.VolunteerServiceUpdateVolunteerProcedure:         authModeAuthenticated,
 	}
+	mode, ok := modes[procedure]
+
+	return mode, ok
 }
 
 func NewAuthentication(

@@ -158,6 +158,9 @@ export const ApproveParticipationRequestSchema: GenMessage<ApproveParticipationR
  */
 export type RejectParticipationRequest = Message<"participation.v1.RejectParticipationRequest"> & {
   /**
+   * Заявка своего мероприятия в PENDING или APPROVED, мероприятие — PUBLISHED.
+   * Иное состояние — FailedPrecondition; заявка чужого мероприятия — PermissionDenied.
+   *
    * @generated from field: string id = 1;
    */
   id: string;
@@ -575,7 +578,9 @@ export const ParticipationService: GenService<{
     output: typeof EmptySchema;
   },
   /**
-   * Создатель: PENDING -> REJECTED пока Event PUBLISHED, в том числе после начала.
+   * Создатель: PENDING/APPROVED -> REJECTED пока Event PUBLISHED, в том числе после начала.
+   * Для APPROVED освобождает место и отзывает весь доступ к чату, включая действующий стрим.
+   * Начислений нет; отклонённый участник исключается из итогового списка CompleteEvent.
    * Отклонение окончательно: повторная подача на это мероприятие запрещена.
    *
    * @generated from rpc participation.v1.ParticipationService.RejectParticipation

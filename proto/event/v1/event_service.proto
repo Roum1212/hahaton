@@ -48,28 +48,30 @@ message Event {
   string coordinator_id = 2 [json_name = "coordinator_id"];
 
   string description = 3 [json_name = "description"];
+  // Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
+  string image_url = 4 [json_name = "image_url"];
   string title = 5 [json_name = "title"];
 
   // Дополнительное текстовое описание места; область поиска определяется точкой.
-  string location = 4 [json_name = "location"];
+  string location = 6 [json_name = "location"];
   // Обязательная точка на карте, WGS84; не выводится из location на сервере.
-  geo.v1.GeoPoint point = 16 [json_name = "point"];
+  geo.v1.GeoPoint point = 7 [json_name = "point"];
 
-  google.protobuf.Timestamp starts_at = 6 [json_name = "starts_at"];
+  google.protobuf.Timestamp starts_at = 8 [json_name = "starts_at"];
 
-  google.protobuf.Timestamp ends_at = 7 [json_name = "ends_at"];
+  google.protobuf.Timestamp ends_at = 9 [json_name = "ends_at"];
 
   // Все перечисленные требования обязательны одновременно; пустой список означает отсутствие требований.
   // Не более одного возрастного порога. Повторы, неизвестные значения и UNSPECIFIED недопустимы.
-  repeated EventCandidateRequirement candidate_requirements = 13 [json_name = "candidate_requirements"];
+  repeated EventCandidateRequirement candidate_requirements = 10 [json_name = "candidate_requirements"];
   // Больше нуля. Ожидающие одобрения заявки места не занимают.
-  int32 volunteer_limit = 8 [json_name = "volunteer_limit"];
+  int32 volunteer_limit = 11 [json_name = "volunteer_limit"];
 
   EventStatus status = 12 [json_name = "status"];
 
   // Вычисляемые счётчики текущих записей; клиент не может их изменять.
-  int32 approved_participant_count = 14 [json_name = "approved_participant_count"];
-  int32 pending_application_count = 15 [json_name = "pending_application_count"];
+  int32 approved_participant_count = 13 [json_name = "approved_participant_count"];
+  int32 pending_application_count = 14 [json_name = "pending_application_count"];
 }
 
 enum EventStatus {
@@ -110,24 +112,27 @@ message EventCandidateRequirements {
 
 message CreateEventRequest {
   string description = 1 [json_name = "description"];
+  // Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
+  // Файл обязан существовать и принадлежать ему.
+  string image_path = 2 [json_name = "image_path"];
   // Обязательное непустое название.
   string title = 3 [json_name = "title"];
 
-  string location = 2 [json_name = "location"];
-  geo.v1.GeoPoint point = 11 [json_name = "point"];
+  string location = 4 [json_name = "location"];
+  geo.v1.GeoPoint point = 5 [json_name = "point"];
 
   // Обе даты обязательны. Начало в будущем и строго раньше окончания.
   // Разность ends_at - starts_at положительна и кратна ровно 1800 секундам.
-  google.protobuf.Timestamp starts_at = 4 [json_name = "starts_at"];
+  google.protobuf.Timestamp starts_at = 6 [json_name = "starts_at"];
 
-  google.protobuf.Timestamp ends_at = 5 [json_name = "ends_at"];
+  google.protobuf.Timestamp ends_at = 7 [json_name = "ends_at"];
 
   // Пустой список означает отсутствие требований; все заданные требования применяются одновременно.
   // Допустим не более одного возрастного порога.
   // Повторы, неизвестные значения и UNSPECIFIED означают InvalidArgument.
-  repeated EventCandidateRequirement candidate_requirements = 10 [json_name = "candidate_requirements"];
+  repeated EventCandidateRequirement candidate_requirements = 8 [json_name = "candidate_requirements"];
   // Больше нуля.
-  int32 volunteer_limit = 6 [json_name = "volunteer_limit"];
+  int32 volunteer_limit = 9 [json_name = "volunteer_limit"];
 }
 
 message CreateEventResponse {
@@ -153,35 +158,35 @@ enum EventListScope {
 message ListEventsRequest {
   // Обязательно: UNSPECIFIED/неизвестное значение — InvalidArgument.
   // Наличие Coordinator не меняет scope автоматически.
-  EventListScope scope = 11 [json_name = "scope"];
+  EventListScope scope = 1 [json_name = "scope"];
 
   // Дополнительный фильтр внутри доступного каталога; не расширяет права доступа.
   // При передаче должен быть непустым.
-  optional string coordinator_id = 1 [json_name = "coordinator_id"];
+  optional string coordinator_id = 2 [json_name = "coordinator_id"];
   // Для CATALOG обязательно; для OWNED необязательный фильтр своих мероприятий.
   // Сервер применяет область вместе с правами и всеми остальными фильтрами до пагинации.
-  geo.v1.SearchArea search_area = 8 [json_name = "search_area"];
+  geo.v1.SearchArea search_area = 3 [json_name = "search_area"];
   // Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
-  optional EventStatus status = 2 [json_name = "status"];
+  optional EventStatus status = 4 [json_name = "status"];
 
   // Интервал начала мероприятия: from включительно, to исключительно.
   // Каждая граница необязательна; при наличии обеих from должен быть меньше to.
-  optional google.protobuf.Timestamp starts_at_from = 3 [json_name = "starts_at_from"];
-  optional google.protobuf.Timestamp starts_at_to = 4 [json_name = "starts_at_to"];
+  optional google.protobuf.Timestamp starts_at_from = 5 [json_name = "starts_at_from"];
+  optional google.protobuf.Timestamp starts_at_to = 6 [json_name = "starts_at_to"];
 
   // Интервал окончания: from включительно, to исключительно.
   // Каждая граница необязательна; при наличии обеих from должен быть меньше to.
   // Например, ends_at_to = now выбирает уже закончившиеся по времени мероприятия,
   // в том числе PUBLISHED без подведённых итогов. Все заданные фильтры применяются вместе.
-  optional google.protobuf.Timestamp ends_at_from = 9 [json_name = "ends_at_from"];
-  optional google.protobuf.Timestamp ends_at_to = 10 [json_name = "ends_at_to"];
+  optional google.protobuf.Timestamp ends_at_from = 7 [json_name = "ends_at_from"];
+  optional google.protobuf.Timestamp ends_at_to = 8 [json_name = "ends_at_to"];
 
   // 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
-  int32 limit = 5 [json_name = "limit"];
+  int32 limit = 9 [json_name = "limit"];
   // Число пропускаемых записей после фильтрации и сортировки; 0 — с начала.
   // Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
   // На каждом запросе применяются текущие права доступа и фильтры.
-  int64 offset = 7 [json_name = "offset"];
+  int64 offset = 10 [json_name = "offset"];
 }
 
 message ListEventsResponse {
@@ -189,7 +194,7 @@ message ListEventsResponse {
   repeated Event events = 1 [json_name = "events"];
   // Общее число доступных записей с текущими фильтрами, без limit и offset.
   // Подсчитывается в том же снимке данных, что и элементы страницы.
-  int64 total_count = 3 [json_name = "total_count"];
+  int64 total_count = 2 [json_name = "total_count"];
 }
 
 // Отсутствующие поля не меняются. Отменённое или начавшееся мероприятие
@@ -202,26 +207,30 @@ message UpdateEventRequest {
 
   // Пустая строка очищает описание или место проведения.
   optional string description = 2 [json_name = "description"];
+  // Отсутствует — сохранить; пустая строка — убрать изображение.
+  // Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
+  // Действует общий запрет правок при наличии PENDING/APPROVED или после начала.
+  optional string image_path = 3 [json_name = "image_path"];
   // Пустая строка недопустима.
   optional string title = 4 [json_name = "title"];
 
-  optional string location = 3 [json_name = "location"];
-  geo.v1.GeoPoint point = 12 [json_name = "point"];
+  optional string location = 5 [json_name = "location"];
+  geo.v1.GeoPoint point = 6 [json_name = "point"];
 
   // Даты нельзя менять при наличии PENDING или APPROVED.
   // Итоговое начало должно оставаться в будущем и строго раньше окончания.
   // После применения всех изменений разность ends_at - starts_at должна быть
   // положительной и кратной ровно 1800 секундам, как при создании. Проверяются
   // итоговые даты, даже если передана только одна граница; нарушение — InvalidArgument.
-  optional google.protobuf.Timestamp starts_at = 5 [json_name = "starts_at"];
+  optional google.protobuf.Timestamp starts_at = 7 [json_name = "starts_at"];
 
-  optional google.protobuf.Timestamp ends_at = 6 [json_name = "ends_at"];
+  optional google.protobuf.Timestamp ends_at = 8 [json_name = "ends_at"];
 
   // Отсутствие поля оставляет требования без изменений; переданный объект полностью заменяет список.
   // Объект с пустым values очищает требования. Нельзя менять при наличии PENDING или APPROVED.
-  optional EventCandidateRequirements candidate_requirements = 11 [json_name = "candidate_requirements"];
+  optional EventCandidateRequirements candidate_requirements = 9 [json_name = "candidate_requirements"];
   // Больше нуля. Вся команда запрещена при наличии PENDING/APPROVED.
-  optional int32 volunteer_limit = 7 [json_name = "volunteer_limit"];
+  optional int32 volunteer_limit = 10 [json_name = "volunteer_limit"];
 }
 
 message CancelEventRequest {
@@ -234,23 +243,23 @@ message CancelEventRequest {
 message EventParticipationResult {
   string participation_id = 1 [json_name = "participation_id"];
   oneof outcome {
-    bool absent = 3 [json_name = "absent"];
+    bool absent = 2 [json_name = "absent"];
     // Положительное кратное 30; может превышать плановую длительность мероприятия.
     // Сервер начисляет confirmed_minutes / 30 * 5 целых коинов, проверяя переполнение.
-    int64 confirmed_minutes = 2 [json_name = "confirmed_minutes"];
+    int64 confirmed_minutes = 3 [json_name = "confirmed_minutes"];
   }
 }
 
 message CompleteEventRequest {
   string id = 1 [json_name = "id"];
 
-  repeated EventParticipationResult results = 3 [json_name = "results"];
+  repeated EventParticipationResult results = 2 [json_name = "results"];
 
   // Обязательный ключ, уникальный для координатора и RPC. Повтор того же содержимого
   // (порядок строк незначим) возвращает исходный результат без новых начислений.
   // Другой payload с тем же ключом — AlreadyExists.
   // Другой ключ для уже COMPLETED мероприятия — FailedPrecondition.
-  string request_id = 4 [json_name = "request_id"];
+  string request_id = 3 [json_name = "request_id"];
 }
 
 message CompleteEventResponse {

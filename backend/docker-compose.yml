@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hackathon}
+      POSTGRES_USER: ${POSTGRES_USER:-hackathon}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hackathon}
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    profiles: ['app']
+    build: .
+    env_file: .env
+    environment:
+      POSTGRESQL_DSN: postgres://${POSTGRES_USER:-hackathon}:${POSTGRES_PASSWORD:-hackathon}@postgres:5432/${POSTGRES_DB:-hackathon}?sslmode=disable
+      ADMIN_HTTP_SERVER_ADDRESS: :8081
+      CITY_CATALOG_CSV_PATH: /app/data/city.csv
+      STORAGE_DIRECTORY: /app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '8080:8080'
+      - '127.0.0.1:8081:8081'
+    volumes:
+      - storage-data:/app/storage
+      - ./data:/app/data:ro
+volumes:
+  postgres-data:
+  storage-data:

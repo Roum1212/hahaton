@@ -26,10 +26,7 @@ type service struct {
 	ttl                   time.Duration
 }
 
-func (x service) OpenSession(
-	ctx context.Context,
-	r Request,
-) (token.EncryptedToken, error) {
+func (x service) OpenSession(ctx context.Context, r Request) (token.EncryptedToken, error) {
 	if err := r.Validate(); err != nil {
 		return token.EncryptedToken{}, fmt.Errorf("%w: %w", ErrInvalidRequest, err)
 	}

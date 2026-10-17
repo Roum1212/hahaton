@@ -34,7 +34,7 @@ func (x service) UploadImage(ctx context.Context, r Request) (Response, error) {
 		return Response{}, err
 	}
 
-	path, err := model_image_path.NewImagePath(r.GetUserID().String() + "/" + id.String() + r.GetData().GetExtension())
+	path, err := model_image_path.NewImagePathFromFields(r.GetUserID(), id, r.GetData().GetExtension())
 	if err != nil {
 		return Response{}, err
 	}

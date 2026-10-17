@@ -74,7 +74,9 @@ type ParticipationServiceClient interface {
 	// и свободном месте. Ручной выбор из резерва, без автоматического продвижения/FIFO.
 	// Лимит нельзя превысить конкурентными одобрениями. Открывается новый период чата.
 	ApproveParticipation(context.Context, *connect.Request[v1.ApproveParticipationRequest]) (*connect.Response[emptypb.Empty], error)
-	// Создатель: PENDING -> REJECTED пока Event PUBLISHED, в том числе после начала.
+	// Создатель: PENDING/APPROVED -> REJECTED пока Event PUBLISHED, в том числе после начала.
+	// Для APPROVED освобождает место и отзывает весь доступ к чату, включая действующий стрим.
+	// Начислений нет; отклонённый участник исключается из итогового списка CompleteEvent.
 	// Отклонение окончательно: повторная подача на это мероприятие запрещена.
 	RejectParticipation(context.Context, *connect.Request[v1.RejectParticipationRequest]) (*connect.Response[emptypb.Empty], error)
 	// Волонтёр: PENDING/APPROVED -> CANCELLED строго до starts_at.
@@ -218,7 +220,9 @@ type ParticipationServiceHandler interface {
 	// и свободном месте. Ручной выбор из резерва, без автоматического продвижения/FIFO.
 	// Лимит нельзя превысить конкурентными одобрениями. Открывается новый период чата.
 	ApproveParticipation(context.Context, *connect.Request[v1.ApproveParticipationRequest]) (*connect.Response[emptypb.Empty], error)
-	// Создатель: PENDING -> REJECTED пока Event PUBLISHED, в том числе после начала.
+	// Создатель: PENDING/APPROVED -> REJECTED пока Event PUBLISHED, в том числе после начала.
+	// Для APPROVED освобождает место и отзывает весь доступ к чату, включая действующий стрим.
+	// Начислений нет; отклонённый участник исключается из итогового списка CompleteEvent.
 	// Отклонение окончательно: повторная подача на это мероприятие запрещена.
 	RejectParticipation(context.Context, *connect.Request[v1.RejectParticipationRequest]) (*connect.Response[emptypb.Empty], error)
 	// Волонтёр: PENDING/APPROVED -> CANCELLED строго до starts_at.

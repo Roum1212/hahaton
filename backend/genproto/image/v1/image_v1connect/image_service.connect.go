@@ -43,7 +43,7 @@ type ImageServiceClient interface {
 	// Только авторизованный участник. Загружает JPEG/PNG до 5 МиБ, не более 4096 пикселей
 	// по каждой стороне. Формат определяется сервером; имя файла и внешний URL не принимаются.
 	// Файл сохраняется локально в storage/{user_id}/{image_id}.jpg или .png.
-	// Сам вызов не изменяет профиль или поощрение: image_path передаётся в их Create/Update.
+	// Сам вызов не изменяет профиль, мероприятие или поощрение: image_path передаётся в их Create/Update.
 	// Изображения доступны на чтение без авторизации; загружаются только публичные картинки.
 	UploadImage(context.Context, *connect.Request[v1.UploadImageRequest]) (*connect.Response[v1.UploadImageResponse], error)
 }
@@ -83,7 +83,7 @@ type ImageServiceHandler interface {
 	// Только авторизованный участник. Загружает JPEG/PNG до 5 МиБ, не более 4096 пикселей
 	// по каждой стороне. Формат определяется сервером; имя файла и внешний URL не принимаются.
 	// Файл сохраняется локально в storage/{user_id}/{image_id}.jpg или .png.
-	// Сам вызов не изменяет профиль или поощрение: image_path передаётся в их Create/Update.
+	// Сам вызов не изменяет профиль, мероприятие или поощрение: image_path передаётся в их Create/Update.
 	// Изображения доступны на чтение без авторизации; загружаются только публичные картинки.
 	UploadImage(context.Context, *connect.Request[v1.UploadImageRequest]) (*connect.Response[v1.UploadImageResponse], error)
 }

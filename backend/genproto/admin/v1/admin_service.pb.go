@@ -24,13 +24,13 @@ const (
 type AdminVolunteer struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AvatarUrl             string                 `protobuf:"bytes,8,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
-	FirstName             string                 `protobuf:"bytes,2,opt,name=first_name,proto3" json:"first_name,omitempty"`
-	LastName              string                 `protobuf:"bytes,3,opt,name=last_name,proto3" json:"last_name,omitempty"`
-	MiddleName            string                 `protobuf:"bytes,4,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
-	EmailAddress          string                 `protobuf:"bytes,5,opt,name=email_address,proto3" json:"email_address,omitempty"`
-	PhoneNumber           string                 `protobuf:"bytes,6,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
-	HasCoordinatorProfile bool                   `protobuf:"varint,7,opt,name=has_coordinator_profile,proto3" json:"has_coordinator_profile,omitempty"`
+	AvatarUrl             string                 `protobuf:"bytes,2,opt,name=avatar_url,proto3" json:"avatar_url,omitempty"`
+	FirstName             string                 `protobuf:"bytes,3,opt,name=first_name,proto3" json:"first_name,omitempty"`
+	LastName              string                 `protobuf:"bytes,4,opt,name=last_name,proto3" json:"last_name,omitempty"`
+	MiddleName            string                 `protobuf:"bytes,5,opt,name=middle_name,proto3" json:"middle_name,omitempty"`
+	EmailAddress          string                 `protobuf:"bytes,6,opt,name=email_address,proto3" json:"email_address,omitempty"`
+	PhoneNumber           string                 `protobuf:"bytes,7,opt,name=phone_number,proto3" json:"phone_number,omitempty"`
+	HasCoordinatorProfile bool                   `protobuf:"varint,8,opt,name=has_coordinator_profile,proto3" json:"has_coordinator_profile,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -297,13 +297,13 @@ func (x *FindVolunteersResponse) GetTotalCount() int64 {
 type CreateCoordinatorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Обязательный внутренний ID существующего волонтёра.
-	VolunteerId string `protobuf:"bytes,7,opt,name=volunteer_id,proto3" json:"volunteer_id,omitempty"`
+	VolunteerId string `protobuf:"bytes,1,opt,name=volunteer_id,proto3" json:"volunteer_id,omitempty"`
 	// Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
 	// Файл обязан существовать и принадлежать этому участнику.
-	AvatarPath  string `protobuf:"bytes,5,opt,name=avatar_path,proto3" json:"avatar_path,omitempty"`
-	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	AvatarPath  string `protobuf:"bytes,2,opt,name=avatar_path,proto3" json:"avatar_path,omitempty"`
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
-	CooperationRequestCooldownSeconds *int64 `protobuf:"varint,6,opt,name=cooperation_request_cooldown_seconds,proto3,oneof" json:"cooperation_request_cooldown_seconds,omitempty"`
+	CooperationRequestCooldownSeconds *int64 `protobuf:"varint,4,opt,name=cooperation_request_cooldown_seconds,proto3,oneof" json:"cooperation_request_cooldown_seconds,omitempty"`
 	unknownFields                     protoimpl.UnknownFields
 	sizeCache                         protoimpl.SizeCache
 }
@@ -419,16 +419,16 @@ const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"\x0eAdminVolunteer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
-	"avatar_url\x18\b \x01(\tR\n" +
+	"avatar_url\x18\x02 \x01(\tR\n" +
 	"avatar_url\x12\x1e\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tR\n" +
+	"first_name\x18\x03 \x01(\tR\n" +
 	"first_name\x12\x1c\n" +
-	"\tlast_name\x18\x03 \x01(\tR\tlast_name\x12 \n" +
-	"\vmiddle_name\x18\x04 \x01(\tR\vmiddle_name\x12$\n" +
-	"\remail_address\x18\x05 \x01(\tR\remail_address\x12\"\n" +
-	"\fphone_number\x18\x06 \x01(\tR\fphone_number\x128\n" +
-	"\x17has_coordinator_profile\x18\a \x01(\bR\x17has_coordinator_profile\"\xc6\x01\n" +
+	"\tlast_name\x18\x04 \x01(\tR\tlast_name\x12 \n" +
+	"\vmiddle_name\x18\x05 \x01(\tR\vmiddle_name\x12$\n" +
+	"\remail_address\x18\x06 \x01(\tR\remail_address\x12\"\n" +
+	"\fphone_number\x18\a \x01(\tR\fphone_number\x128\n" +
+	"\x17has_coordinator_profile\x18\b \x01(\bR\x17has_coordinator_profile\"\xc6\x01\n" +
 	"\x15FindVolunteersRequest\x12&\n" +
 	"\remail_address\x18\x01 \x01(\tH\x00R\remail_address\x12$\n" +
 	"\fphone_number\x18\x02 \x01(\tH\x00R\fphone_number\x12$\n" +
@@ -442,10 +442,10 @@ const file_admin_v1_admin_service_proto_rawDesc = "" +
 	"volunteers\x12 \n" +
 	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\"\x84\x02\n" +
 	"\x18CreateCoordinatorRequest\x12\"\n" +
-	"\fvolunteer_id\x18\a \x01(\tR\fvolunteer_id\x12 \n" +
-	"\vavatar_path\x18\x05 \x01(\tR\vavatar_path\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12W\n" +
-	"$cooperation_request_cooldown_seconds\x18\x06 \x01(\x03H\x00R$cooperation_request_cooldown_seconds\x88\x01\x01B'\n" +
+	"\fvolunteer_id\x18\x01 \x01(\tR\fvolunteer_id\x12 \n" +
+	"\vavatar_path\x18\x02 \x01(\tR\vavatar_path\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12W\n" +
+	"$cooperation_request_cooldown_seconds\x18\x04 \x01(\x03H\x00R$cooperation_request_cooldown_seconds\x88\x01\x01B'\n" +
 	"%_cooperation_request_cooldown_seconds\"+\n" +
 	"\x19CreateCoordinatorResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id2\xc5\x01\n" +

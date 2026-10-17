@@ -359,8 +359,8 @@ type ListCitiesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Стабильный порядок по name, region_name, id; сортировка одинакова во всех экземплярах.
 	Cities         []*City `protobuf:"bytes,1,rep,name=cities,proto3" json:"cities,omitempty"`
-	CatalogVersion string  `protobuf:"bytes,3,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
-	TotalCount     int64   `protobuf:"varint,2,opt,name=total_count,proto3" json:"total_count,omitempty"`
+	CatalogVersion string  `protobuf:"bytes,2,opt,name=catalog_version,proto3" json:"catalog_version,omitempty"`
+	TotalCount     int64   `protobuf:"varint,3,opt,name=total_count,proto3" json:"total_count,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -631,8 +631,8 @@ func (x *SuggestAddressesRequest) GetCount() int32 {
 
 type AddressSuggestion struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
-	UnrestrictedValue string                 `protobuf:"bytes,2,opt,name=unrestricted_value,proto3" json:"unrestricted_value,omitempty"`
-	Value             string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	UnrestrictedValue string                 `protobuf:"bytes,1,opt,name=unrestricted_value,proto3" json:"unrestricted_value,omitempty"`
+	Value             string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	Data              *AddressSuggestionData `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
@@ -692,18 +692,18 @@ func (x *AddressSuggestion) GetData() *AddressSuggestionData {
 // Нормализованная часть ответа DaData; остальные поля провайдера клиенту не нужны.
 type AddressSuggestionData struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	CityFiasId         *string                `protobuf:"bytes,2,opt,name=city_fias_id,proto3,oneof" json:"city_fias_id,omitempty"`
-	FiasId             *string                `protobuf:"bytes,1,opt,name=fias_id,proto3,oneof" json:"fias_id,omitempty"`
+	CityFiasId         *string                `protobuf:"bytes,1,opt,name=city_fias_id,proto3,oneof" json:"city_fias_id,omitempty"`
+	FiasId             *string                `protobuf:"bytes,2,opt,name=fias_id,proto3,oneof" json:"fias_id,omitempty"`
 	SettlementFiasId   *string                `protobuf:"bytes,3,opt,name=settlement_fias_id,proto3,oneof" json:"settlement_fias_id,omitempty"`
-	CityWithType       *string                `protobuf:"bytes,6,opt,name=city_with_type,proto3,oneof" json:"city_with_type,omitempty"`
-	RegionWithType     *string                `protobuf:"bytes,7,opt,name=region_with_type,proto3,oneof" json:"region_with_type,omitempty"`
-	SettlementWithType *string                `protobuf:"bytes,8,opt,name=settlement_with_type,proto3,oneof" json:"settlement_with_type,omitempty"`
+	CityWithType       *string                `protobuf:"bytes,4,opt,name=city_with_type,proto3,oneof" json:"city_with_type,omitempty"`
+	RegionWithType     *string                `protobuf:"bytes,5,opt,name=region_with_type,proto3,oneof" json:"region_with_type,omitempty"`
+	SettlementWithType *string                `protobuf:"bytes,6,opt,name=settlement_with_type,proto3,oneof" json:"settlement_with_type,omitempty"`
 	// Из geo_lat/geo_lon DaData. При null/некорректных координатах отсутствует целиком.
 	// Фронт предлагает поставить точку вручную, нули не подставляются.
-	Point *GeoPoint `protobuf:"bytes,4,opt,name=point,proto3" json:"point,omitempty"`
+	Point *GeoPoint `protobuf:"bytes,7,opt,name=point,proto3" json:"point,omitempty"`
 	// Исходный код DaData: 0 — точно, 1 — ближайший дом, 2 — улица,
 	// 3 — населённый пункт, 4 — город, 5 — не определены; null остаётся отсутствием.
-	QcGeo         *int32 `protobuf:"varint,5,opt,name=qc_geo,proto3,oneof" json:"qc_geo,omitempty"`
+	QcGeo         *int32 `protobuf:"varint,8,opt,name=qc_geo,proto3,oneof" json:"qc_geo,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -872,8 +872,8 @@ const file_geo_v1_geo_service_proto_rawDesc = "" +
 	"\x06_query\"\x86\x01\n" +
 	"\x12ListCitiesResponse\x12$\n" +
 	"\x06cities\x18\x01 \x03(\v2\f.geo.v1.CityR\x06cities\x12(\n" +
-	"\x0fcatalog_version\x18\x03 \x01(\tR\x0fcatalog_version\x12 \n" +
-	"\vtotal_count\x18\x02 \x01(\x03R\vtotal_count\" \n" +
+	"\x0fcatalog_version\x18\x02 \x01(\tR\x0fcatalog_version\x12 \n" +
+	"\vtotal_count\x18\x03 \x01(\x03R\vtotal_count\" \n" +
 	"\x0eGetCityRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"]\n" +
 	"\x0fGetCityResponse\x12 \n" +
@@ -889,18 +889,18 @@ const file_geo_v1_geo_service_proto_rawDesc = "" +
 	"\bto_bound\x18\x03 \x01(\v2\x14.geo.v1.AddressBoundR\bto_bound\x12\x14\n" +
 	"\x05count\x18\x04 \x01(\x05R\x05count\"\x8c\x01\n" +
 	"\x11AddressSuggestion\x12.\n" +
-	"\x12unrestricted_value\x18\x02 \x01(\tR\x12unrestricted_value\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\x121\n" +
+	"\x12unrestricted_value\x18\x01 \x01(\tR\x12unrestricted_value\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\x121\n" +
 	"\x04data\x18\x03 \x01(\v2\x1d.geo.v1.AddressSuggestionDataR\x04data\"\xf0\x03\n" +
 	"\x15AddressSuggestionData\x12'\n" +
-	"\fcity_fias_id\x18\x02 \x01(\tH\x00R\fcity_fias_id\x88\x01\x01\x12\x1d\n" +
-	"\afias_id\x18\x01 \x01(\tH\x01R\afias_id\x88\x01\x01\x123\n" +
+	"\fcity_fias_id\x18\x01 \x01(\tH\x00R\fcity_fias_id\x88\x01\x01\x12\x1d\n" +
+	"\afias_id\x18\x02 \x01(\tH\x01R\afias_id\x88\x01\x01\x123\n" +
 	"\x12settlement_fias_id\x18\x03 \x01(\tH\x02R\x12settlement_fias_id\x88\x01\x01\x12+\n" +
-	"\x0ecity_with_type\x18\x06 \x01(\tH\x03R\x0ecity_with_type\x88\x01\x01\x12/\n" +
-	"\x10region_with_type\x18\a \x01(\tH\x04R\x10region_with_type\x88\x01\x01\x127\n" +
-	"\x14settlement_with_type\x18\b \x01(\tH\x05R\x14settlement_with_type\x88\x01\x01\x12&\n" +
-	"\x05point\x18\x04 \x01(\v2\x10.geo.v1.GeoPointR\x05point\x12\x1b\n" +
-	"\x06qc_geo\x18\x05 \x01(\x05H\x06R\x06qc_geo\x88\x01\x01B\x0f\n" +
+	"\x0ecity_with_type\x18\x04 \x01(\tH\x03R\x0ecity_with_type\x88\x01\x01\x12/\n" +
+	"\x10region_with_type\x18\x05 \x01(\tH\x04R\x10region_with_type\x88\x01\x01\x127\n" +
+	"\x14settlement_with_type\x18\x06 \x01(\tH\x05R\x14settlement_with_type\x88\x01\x01\x12&\n" +
+	"\x05point\x18\a \x01(\v2\x10.geo.v1.GeoPointR\x05point\x12\x1b\n" +
+	"\x06qc_geo\x18\b \x01(\x05H\x06R\x06qc_geo\x88\x01\x01B\x0f\n" +
 	"\r_city_fias_idB\n" +
 	"\n" +
 	"\b_fias_idB\x15\n" +

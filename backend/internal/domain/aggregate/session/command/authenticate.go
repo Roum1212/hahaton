@@ -24,11 +24,7 @@ func (x Authenticate) GetUserID() model_user_id.UserID {
 	return x.userID
 }
 
-func NewAuthenticate(
-	userID model_user_id.UserID,
-	now time.Time,
-	expiresAt time.Time,
-) Authenticate {
+func NewAuthenticate(userID model_user_id.UserID, now, expiresAt time.Time) Authenticate {
 	return Authenticate{
 		userID:    userID,
 		now:       now,

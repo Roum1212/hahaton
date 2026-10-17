@@ -24,11 +24,7 @@ func (x Token) GetSessionID() model_session_id.SessionID {
 	return x.sessionID
 }
 
-func NewToken(
-	sessionID model_session_id.SessionID,
-	issuedAt time.Time,
-	expiresAt time.Time,
-) Token {
+func NewToken(sessionID model_session_id.SessionID, issuedAt, expiresAt time.Time) Token {
 	return Token{
 		sessionID: sessionID,
 		issuedAt:  issuedAt.Truncate(time.Second),
