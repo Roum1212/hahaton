@@ -31,6 +31,7 @@ import (
 	service_get_reward "github.com/Roum1212/hahaton/internal/app/service/get-reward"
 	service_get_reward_order "github.com/Roum1212/hahaton/internal/app/service/get-reward-order"
 	service_get_session "github.com/Roum1212/hahaton/internal/app/service/get-session"
+	service_get_update_recipients "github.com/Roum1212/hahaton/internal/app/service/get-update-recipients"
 	service_get_volunteer "github.com/Roum1212/hahaton/internal/app/service/get-volunteer"
 	service_issue_reward_order "github.com/Roum1212/hahaton/internal/app/service/issue-reward-order"
 	service_list_cities "github.com/Roum1212/hahaton/internal/app/service/list-cities"
@@ -54,6 +55,7 @@ import (
 	service_revoke_cooperation_invitation "github.com/Roum1212/hahaton/internal/app/service/revoke-cooperation-invitation"
 	service_send_event_chat_message "github.com/Roum1212/hahaton/internal/app/service/send-event-chat-message"
 	service_subscribe_event_chat_messages "github.com/Roum1212/hahaton/internal/app/service/subscribe-event-chat-messages"
+	service_subscribe_updates "github.com/Roum1212/hahaton/internal/app/service/subscribe-updates"
 	service_suggest_addresses "github.com/Roum1212/hahaton/internal/app/service/suggest-addresses"
 	service_terminate_cooperation "github.com/Roum1212/hahaton/internal/app/service/terminate-cooperation"
 	service_update_coordinator "github.com/Roum1212/hahaton/internal/app/service/update-coordinator"
@@ -97,6 +99,7 @@ type serviceSet struct {
 	getReward                   service_get_reward.Service
 	getRewardOrder              service_get_reward_order.Service
 	getSession                  service_get_session.Service
+	getUpdateRecipients         service_get_update_recipients.Service
 	getVolunteer                service_get_volunteer.Service
 	issueRewardOrder            service_issue_reward_order.Service
 	listCities                  service_list_cities.Service
@@ -120,6 +123,7 @@ type serviceSet struct {
 	revokeCooperationInvitation service_revoke_cooperation_invitation.Service
 	sendEventChatMessage        service_send_event_chat_message.Service
 	subscribeEventChatMessages  service_subscribe_event_chat_messages.Service
+	subscribeUpdates            service_subscribe_updates.Service
 	suggestAddresses            service_suggest_addresses.Service
 	terminateCooperation        service_terminate_cooperation.Service
 	updateCoordinator           service_update_coordinator.Service
@@ -234,7 +238,10 @@ func initServices(
 		getReward:        service_get_reward.NewService(repos.rewards, repos.cooperations),
 		getRewardOrder:   service_get_reward_order.NewService(repos.orders, repos.coordinators),
 		getSession:       service_get_session.NewService(repos.coordinators),
-		getVolunteer:     service_get_volunteer.NewService(repos.volunteers, repos.wallets),
+		getUpdateRecipients: service_get_update_recipients.NewService(
+			repos.cooperations, repos.events, repos.participations, repos.rewards, repos.orders,
+		),
+		getVolunteer: service_get_volunteer.NewService(repos.volunteers, repos.wallets),
 		issueRewardOrder: service_issue_reward_order.NewService(
 			repos.orders,
 			repos.coordinators,
@@ -319,6 +326,7 @@ func initServices(
 			repos.chats,
 			repos.sessions,
 		),
+		subscribeUpdates: service_subscribe_updates.NewService(repos.sessions),
 		suggestAddresses: service_suggest_addresses.NewService(externalClients.dadata),
 		terminateCooperation: service_terminate_cooperation.NewService(
 			repos.cooperations,

@@ -23,10 +23,12 @@ import (
 	reward_order_v1connect "github.com/Roum1212/hahaton/genproto/reward-order/v1/reward_order_v1connect"
 	reward_v1connect "github.com/Roum1212/hahaton/genproto/reward/v1/reward_v1connect"
 	session_v1connect "github.com/Roum1212/hahaton/genproto/session/v1/session_v1connect"
+	updates_v1connect "github.com/Roum1212/hahaton/genproto/updates/v1/updates_v1connect"
 	volunteer_v1connect "github.com/Roum1212/hahaton/genproto/volunteer/v1/volunteer_v1connect"
 )
 
 type rpcClients struct {
+	updates       updates_v1connect.UpdatesServiceClient
 	admin         admin_v1connect.AdminServiceClient
 	cooperation   cooperation_v1connect.CooperationServiceClient
 	coordinator   coordinator_v1connect.CoordinatorServiceClient
@@ -43,6 +45,7 @@ type rpcClients struct {
 
 func newRPCClients(client *http.Client, baseURL string) rpcClients {
 	return rpcClients{
+		updates:       updates_v1connect.NewUpdatesServiceClient(client, baseURL),
 		admin:         admin_v1connect.NewAdminServiceClient(client, baseURL),
 		cooperation:   cooperation_v1connect.NewCooperationServiceClient(client, baseURL),
 		coordinator:   coordinator_v1connect.NewCoordinatorServiceClient(client, baseURL),
@@ -105,7 +108,7 @@ func (x *rpcCoverage) assertComplete(t *testing.T) {
 
 		return true
 	})
-	require.Equal(t, 58, count)
+	require.Equal(t, 59, count)
 	t.Logf("verified successful calls of all %d RPC procedures", count)
 }
 

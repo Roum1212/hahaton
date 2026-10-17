@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package updates.v1;
+
+option go_package = "github.com/Roum1212/hahaton/genproto/updates/v1;updates_v1";
+
+// Одна подписка на вкладку для обоих кабинетов текущего участника.
+// Поток содержит только уведомления: актуальные данные и сообщения читаются обычными RPC
+// с действующими проверками доступа. История сообщений остаётся в PostgreSQL.
+service UpdatesService {
+  // READY требует перечитать отображаемые данные, в том числе после переподключения.
+  // CHANGED уведомляет о зафиксированном изменении связанных с участником данных.
+  // Повторные уведомления могут объединяться. HEARTBEAT не требует обновления данных.
+  // Истечение или закрытие сессии завершает поток с Unauthenticated.
+  // При медленной отправке поток закрывается; клиент переподключается и перечитывает данные.
+  rpc SubscribeUpdates(SubscribeUpdatesRequest) returns (stream SubscribeUpdatesResponse) {}
+}
+
+message SubscribeUpdatesRequest {}
+
+message SubscribeUpdatesResponse {
+  UpdateKind kind = 1 [json_name = "kind"];
+}
+
+enum UpdateKind {
+  UPDATE_KIND_UNSPECIFIED = 0;
+  UPDATE_KIND_READY = 1;
+  UPDATE_KIND_CHANGED = 2;
+  UPDATE_KIND_HEARTBEAT = 3;
+}

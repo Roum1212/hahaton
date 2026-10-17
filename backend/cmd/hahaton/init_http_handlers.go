@@ -17,6 +17,7 @@ import (
 	"github.com/Roum1212/hahaton/genproto/reward-order/v1/reward_order_v1connect"
 	"github.com/Roum1212/hahaton/genproto/reward/v1/reward_v1connect"
 	"github.com/Roum1212/hahaton/genproto/session/v1/session_v1connect"
+	"github.com/Roum1212/hahaton/genproto/updates/v1/updates_v1connect"
 	"github.com/Roum1212/hahaton/genproto/volunteer/v1/volunteer_v1connect"
 	"github.com/Roum1212/hahaton/internal/config"
 	session_authentication_interceptor "github.com/Roum1212/hahaton/internal/pkg/session/authentication/interceptor"
@@ -31,18 +32,22 @@ func initHTTPHandler(
 	supportServices supportServiceSet,
 	rpcServices rpcServiceSet,
 ) http.Handler {
+	notifications := connect.WithInterceptors(rpcServices.updatesInterceptor)
 	mux := http.NewServeMux()
-	mux.Handle(cooperation_v1connect.NewCooperationServiceHandler(rpcServices.cooperation))
-	mux.Handle(coordinator_v1connect.NewCoordinatorServiceHandler(rpcServices.coordinator))
-	mux.Handle(event_v1connect.NewEventServiceHandler(rpcServices.event))
-	mux.Handle(event_chat_v1connect.NewEventChatServiceHandler(rpcServices.eventChat))
-	mux.Handle(geo_v1connect.NewGeoServiceHandler(rpcServices.geo))
-	mux.Handle(participation_v1connect.NewParticipationServiceHandler(rpcServices.participation))
-	mux.Handle(reward_v1connect.NewRewardServiceHandler(rpcServices.reward))
-	mux.Handle(reward_order_v1connect.NewRewardOrderServiceHandler(rpcServices.rewardOrder))
-	mux.Handle(volunteer_v1connect.NewVolunteerServiceHandler(rpcServices.volunteer))
-	mux.Handle(session_v1connect.NewSessionServiceHandler(rpcServices.session))
-	mux.Handle(image_v1connect.NewImageServiceHandler(rpcServices.image, connect.WithReadMaxBytes(imageReadLimit)))
+	mux.Handle(updates_v1connect.NewUpdatesServiceHandler(rpcServices.updates))
+	mux.Handle(cooperation_v1connect.NewCooperationServiceHandler(rpcServices.cooperation, notifications))
+	mux.Handle(coordinator_v1connect.NewCoordinatorServiceHandler(rpcServices.coordinator, notifications))
+	mux.Handle(event_v1connect.NewEventServiceHandler(rpcServices.event, notifications))
+	mux.Handle(event_chat_v1connect.NewEventChatServiceHandler(rpcServices.eventChat, notifications))
+	mux.Handle(geo_v1connect.NewGeoServiceHandler(rpcServices.geo, notifications))
+	mux.Handle(participation_v1connect.NewParticipationServiceHandler(rpcServices.participation, notifications))
+	mux.Handle(reward_v1connect.NewRewardServiceHandler(rpcServices.reward, notifications))
+	mux.Handle(reward_order_v1connect.NewRewardOrderServiceHandler(rpcServices.rewardOrder, notifications))
+	mux.Handle(volunteer_v1connect.NewVolunteerServiceHandler(rpcServices.volunteer, notifications))
+	mux.Handle(session_v1connect.NewSessionServiceHandler(rpcServices.session, notifications))
+	mux.Handle(image_v1connect.NewImageServiceHandler(
+		rpcServices.image, notifications, connect.WithReadMaxBytes(imageReadLimit),
+	))
 	mux.Handle("/storage/", http.StripPrefix("/storage/", http.FileServer(http.Dir(cfg.Storage.Directory))))
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusNoContent) })
 
@@ -53,7 +58,7 @@ func initHTTPHandler(
 	)
 	clientHandler := authn.NewMiddleware(authentication.Authenticate).Wrap(mux)
 	router := http.NewServeMux()
-	adminPath, adminHandler := admin_v1connect.NewAdminServiceHandler(rpcServices.admin)
+	adminPath, adminHandler := admin_v1connect.NewAdminServiceHandler(rpcServices.admin, notifications)
 	router.Handle(adminPath, withAdminAuthentication(adminHandler, cfg.AdminAPIKey))
 	router.Handle("/", clientHandler)
 
