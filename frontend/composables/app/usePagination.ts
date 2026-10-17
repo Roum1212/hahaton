@@ -8,12 +8,12 @@ export const usePagination = <T>(params: { page?: number; limit?: number } = { p
   const isLoadAll = ref<boolean>(false);
   const list = ref<T[]>([]);
 
-  const load = async (fn: (limit: number, offset: number) => Promise<{ list: T[]; total?: number } | T[]>) => {
+  const load = async (fn: (limit: number, offset: number) => Promise<{ list: T[]; total?: number } | T[]>, silent = false) => {
     if (isLoadAll.value) return { list: [], total: 0 };
     const offset = (page.value - 1) * limit.value;
 
-    if (page.value <= 1) loading.value = true;
-    else fetching.value = true;
+    if (page.value > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
 
     try {
       const result = await fn(limit.value, offset);

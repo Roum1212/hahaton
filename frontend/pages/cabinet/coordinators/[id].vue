@@ -37,9 +37,9 @@ const stats = computed(() =>
     : [],
 );
 
-const loadContent = async () => {
+const loadContent = async (silent = false) => {
   if (!isMember.value) return;
-  await Promise.all([loadEvents(area.value, 'upcoming', 1, coordinatorId.value), loadRewards(coordinatorId.value)]);
+  await Promise.all([loadEvents(area.value, 'upcoming', 1, coordinatorId.value, silent), loadRewards(coordinatorId.value, silent)]);
 };
 
 onMounted(async () => {
@@ -59,7 +59,14 @@ onMounted(async () => {
 watch(isMember, () => {
   if (!loading.value) loadContent();
 });
-watch(area, loadContent, { deep: true });
+watch(area, () => loadContent(), { deep: true });
+useLiveRefresh(async () => {
+  await handleAsyncOperation(async () => {
+    coordinator.value = await coordinatorsStore.fetchOne(coordinatorId.value);
+    await loadCooperations(true);
+  });
+  await loadContent(true);
+});
 </script>
 
 <template>

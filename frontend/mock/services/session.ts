@@ -6,6 +6,7 @@ import { clearSessionCookie, createSession, findSession, requireSession, setSess
 import { chatHub } from '../chat-hub';
 import { db, fail, newId, type DateParts, type SessionRec, type VolunteerRec } from '../db';
 import { provisionCoordinator } from '../seed';
+import { updatesHub } from '../updates-hub';
 
 interface IdTokenClaims {
   iss?: string;
@@ -111,6 +112,7 @@ export const registerSessionService = (router: ConnectRouter) =>
         session.revoked = true;
         db.sessions.delete(session.id);
         chatHub.closeSession(session.id);
+        updatesHub.closeSession(session.id);
       }
       clearSessionCookie(ctx);
       return {};

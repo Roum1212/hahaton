@@ -106,6 +106,10 @@ const onCancelEvent = () => {
 };
 
 onMounted(load);
+useLiveRefresh(async () => {
+  await handleAsyncOperation(refresh);
+  await loadApplications(eventId.value, true);
+});
 </script>
 
 <template>

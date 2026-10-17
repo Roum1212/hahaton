@@ -57,8 +57,8 @@ export const useCoordinatorVolunteerProfile = (volunteerId: Ref<string>) => {
     rejections: rejections.value.length,
   }));
 
-  const load = async () => {
-    loading.value = true;
+  const load = async (silent = false) => {
+    if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         const id = volunteerId.value;

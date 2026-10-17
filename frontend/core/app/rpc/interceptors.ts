@@ -11,7 +11,7 @@ export const createErrorInterceptor =
     } catch (e) {
       const error = ConnectError.from(e);
       if (error.code === Code.Unauthenticated) onUnauthenticated();
-      if (!SILENT_CODES.includes(error.code)) onError(error, req.method.name);
+      if (!SILENT_CODES.includes(error.code) && !req.stream) onError(error, req.method.name);
       throw error;
     }
   };

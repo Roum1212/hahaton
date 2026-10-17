@@ -29,9 +29,9 @@ export const useEventCatalog = () => {
   const loading = ref(true);
   const fetching = ref(false);
 
-  const load = async (area: ISearchArea, period: CatalogPeriod, page = 1, coordinatorId?: string) => {
-    if (page === 1) loading.value = true;
-    else fetching.value = true;
+  const load = async (area: ISearchArea, period: CatalogPeriod, page = 1, coordinatorId?: string, silent = false) => {
+    if (page > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
     await handleAsyncOperation(
       async () => {
         await store.find(page, {
@@ -84,9 +84,9 @@ export const useOwnedEvents = () => {
   const loading = ref(true);
   const fetching = ref(false);
 
-  const load = async (filter: OwnedEventsFilter, page = 1) => {
-    if (page === 1) loading.value = true;
-    else fetching.value = true;
+  const load = async (filter: OwnedEventsFilter, page = 1, silent = false) => {
+    if (page > 1) fetching.value = true;
+    else if (!silent) loading.value = true;
     await handleAsyncOperation(
       () => store.find(page, toOwnedFilter(filter)),
       () => {

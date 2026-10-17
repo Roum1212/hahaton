@@ -76,6 +76,7 @@ const onCancel = () => {
 };
 
 onMounted(load);
+useLiveRefresh(() => handleAsyncOperation(refresh));
 </script>
 
 <template>
