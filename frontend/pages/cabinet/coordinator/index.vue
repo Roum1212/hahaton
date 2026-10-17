@@ -3,6 +3,7 @@ import { CooperationListScope, CooperationStatus } from '~/core/cooperation/serv
 import type { IEvent } from '~/core/event/services/event/event.types';
 import { ParticipationListScope, ParticipationStatus } from '~/core/participation/services/participation/participation.types';
 import { RewardOrderListScope, RewardOrderStatus } from '~/core/reward-order/services/reward-order/reward-order.types';
+import { RewardListScope } from '~/core/reward/services/reward/reward.types';
 
 definePageMeta({
   title: 'Кабинет координатора',
@@ -15,6 +16,7 @@ const participationsStore = useParticipationsStore();
 const ordersStore = useRewardOrdersStore();
 const cooperationsStore = useCooperationsStore();
 const coordinatorsStore = useCoordinatorsStore();
+const rewardsStore = useRewardsStore();
 const { active } = useProfileTabs(COORDINATOR_TABS);
 
 const loading = ref(true);
@@ -24,16 +26,24 @@ const pendingApplications = ref(0);
 const pendingOrders = ref(0);
 const pendingCooperations = ref(0);
 const activeVolunteers = ref(0);
+const eventsCount = ref(0);
+const rewardsCount = ref(0);
 
 const me = computed(() => coordinatorsStore.me);
 const attention = computed(() => pendingApplications.value + pendingCooperations.value + pendingOrders.value + awaiting.value.length);
+const stats = computed(() => [
+  { label: 'Волонтёры', value: activeVolunteers.value },
+  { label: 'Мероприятия', value: eventsCount.value },
+  { label: 'Поощрения', value: rewardsCount.value },
+  { label: 'Ждут вас', value: attention.value },
+]);
 
 onMounted(async () => {
   await handleAsyncOperation(
     async () => {
       const page = { limit: 5, offset: 0 };
       const single = { limit: 1, offset: 0 };
-      const [, waiting, next, applications, orders, cooperations, volunteers] = await Promise.all([
+      const [, waiting, next, applications, orders, cooperations, volunteers, owned, rewards] = await Promise.all([
         coordinatorsStore.fetchMe(),
         eventsStore.service.find(toOwnedFilter('awaiting'), page),
         eventsStore.service.find(toOwnedFilter('upcoming'), page),
@@ -41,6 +51,8 @@ onMounted(async () => {
         ordersStore.service.find({ scope: RewardOrderListScope.INCOMING, status: RewardOrderStatus.PENDING }, single),
         cooperationsStore.service.find({ scope: CooperationListScope.AS_COORDINATOR, status: CooperationStatus.PENDING }, single),
         cooperationsStore.service.find({ scope: CooperationListScope.AS_COORDINATOR, status: CooperationStatus.ACTIVE }, single),
+        eventsStore.service.find(toOwnedFilter('all'), single),
+        rewardsStore.service.find({ scope: RewardListScope.OWNED }, single),
       ]);
       awaiting.value = waiting.list;
       upcoming.value = next.list;
@@ -48,6 +60,8 @@ onMounted(async () => {
       pendingOrders.value = orders.total;
       pendingCooperations.value = cooperations.total;
       activeVolunteers.value = volunteers.total;
+      eventsCount.value = owned.total;
+      rewardsCount.value = rewards.total;
     },
     () => {
       loading.value = false;
@@ -58,49 +72,19 @@ onMounted(async () => {
 
 <template>
   <div class="app-page">
-    <section class="app-hero">
-      <div class="app-hero__cover app-hero__cover--violet" />
-      <div class="app-hero__card">
-        <AppAvatar :name="me?.displayName ?? ''" :image="me?.avatarUrl || null" size="lg" class="app-hero__avatar" />
-        <div class="app-hero__body">
-          <Skeleton v-if="!me" width="18rem" height="2rem" />
-          <template v-else>
-            <h1 class="app-hero__name">{{ me.displayName }}</h1>
-            <div class="app-hero__chips">
-              <span class="app-chip app-chip--violet"><i class="pi pi-briefcase" />Координатор</span>
-            </div>
-            <p v-if="me.description" class="app-hero__about">{{ me.description }}</p>
-          </template>
-        </div>
-        <div class="app-hero__side">
-          <div class="app-hero__stats">
-            <div class="app-hero__stat">
-              <b>{{ activeVolunteers }}</b>
-              <span>{{ pluralize(activeVolunteers, ['волонтёр', 'волонтёра', 'волонтёров']) }}</span>
-            </div>
-            <div class="app-hero__stat">
-              <b>{{ upcoming.length }}</b>
-              <span>впереди</span>
-            </div>
-            <div class="app-hero__stat">
-              <b>{{ attention }}</b>
-              <span>ждут вас</span>
-            </div>
-          </div>
-          <div class="app-hero__actions">
-            <Button label="Создать мероприятие" class="flex-1" fluid @click="openCreate" />
-            <NuxtLink :to="ROUTES.coordinator.volunteers">
-              <Button
-                v-tooltip.bottom="'Пригласить волонтёров'"
-                icon="pi pi-user-plus"
-                severity="secondary"
-                outlined
-                aria-label="Пригласить волонтёров" />
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+    <AppProfileHero
+      :name="me?.displayName ?? ''"
+      :avatar="me?.avatarUrl || null"
+      :cover="PROFILE_COVER_COORDINATOR"
+      :stats="stats"
+      :loading="!me">
+      <template #chips>
+        <span class="app-chip app-chip--violet"><i class="pi pi-briefcase" />Координатор</span>
+      </template>
+      <template #actions>
+        <Button label="Создать мероприятие" icon="pi pi-plus" @click="openCreate" />
+      </template>
+    </AppProfileHero>
 
     <div class="app-columns">
       <div class="app-columns__main">

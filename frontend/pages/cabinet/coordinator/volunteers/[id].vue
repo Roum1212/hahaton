@@ -25,7 +25,11 @@ const participationHistory = useParticipationHistory();
 const { active: tab } = useProfileTabs(VOLUNTEER_PUBLIC_TABS);
 
 const name = computed(() => volunteer.value?.fullName || 'Волонтёр');
-const hours = computed(() => Math.floor(stats.value.minutes / 60));
+const heroStats = computed(() => [
+  { label: 'Койны', value: stats.value.coins },
+  { label: 'Часы', value: formatHours(stats.value.minutes) },
+  { label: 'Мероприятия', value: stats.value.events },
+]);
 const counts = computed(() => ({ participations: history.value.length, rejections: rejections.value.length, orders: orders.value.length }));
 
 const onApprove = async () => {
@@ -45,57 +49,30 @@ onMounted(load);
     </div>
 
     <template v-else>
-      <section class="app-hero">
-        <div class="app-hero__cover" />
-        <div class="app-hero__card">
-          <AppAvatar :name="name" :image="volunteer.avatarUrl" size="lg" class="app-hero__avatar" />
-          <div class="app-hero__body">
-            <h1 class="app-hero__name">{{ name }}</h1>
-            <div class="app-hero__chips">
-              <span class="app-chip app-chip--accent"><i class="pi pi-heart-fill" />Волонтёр</span>
-              <AppStatus
-                v-if="cooperation"
-                :label="COOPERATION_STATUS_LABELS[cooperation.status]"
-                :severity="COOPERATION_STATUS_SEVERITY[cooperation.status]" />
-            </div>
-            <div class="app-hero__meta">
-              <span v-if="volunteer.email"><i class="pi pi-envelope" />{{ volunteer.email }}</span>
-              <span v-if="volunteer.phone"><i class="pi pi-phone" />{{ volunteer.phone }}</span>
-              <span v-if="!volunteer.email && !volunteer.phone" class="flex items-center gap-2">
-                Контакты скрыты
-                <i v-tooltip.bottom="'Контакты видны, пока с волонтёром действует сотрудничество'" class="pi pi-question-circle" />
-              </span>
-            </div>
-          </div>
-          <div class="app-hero__side">
-            <div class="app-hero__stats">
-              <div class="app-hero__stat">
-                <b>{{ stats.events }}</b>
-                <span>{{ pluralize(stats.events, ['мероприятие', 'мероприятия', 'мероприятий']) }}</span>
-              </div>
-              <div class="app-hero__stat">
-                <b>{{ hours }}</b>
-                <span>{{ pluralize(hours, ['час', 'часа', 'часов']) }}</span>
-              </div>
-              <div class="app-hero__stat">
-                <b>{{ stats.coins }}</b>
-                <span>{{ pluralize(stats.coins, ['койн', 'койна', 'койнов']) }}</span>
-              </div>
-            </div>
-            <div v-if="cooperation?.status === CooperationStatus.PENDING" class="app-hero__actions">
-              <Button label="Отклонить" severity="secondary" text @click="reject(volunteerId, name)" />
-              <Button label="Принять заявку" class="flex-1" @click="onApprove" />
-            </div>
-            <Button
-              v-else-if="cooperation?.status === CooperationStatus.ACTIVE"
-              label="Прекратить сотрудничество"
-              severity="secondary"
-              text
-              fluid
-              @click="terminate(volunteerId, name)" />
-          </div>
-        </div>
-      </section>
+      <AppProfileHero :name="name" :avatar="volunteer.avatarUrl" :cover="PROFILE_COVER_VOLUNTEER" :stats="heroStats">
+        <template #chips>
+          <span class="app-chip app-chip--accent"><i class="pi pi-heart-fill" />Волонтёр</span>
+          <AppStatus
+            v-if="cooperation"
+            :label="COOPERATION_STATUS_LABELS[cooperation.status]"
+            :severity="COOPERATION_STATUS_SEVERITY[cooperation.status]" />
+        </template>
+        <template #meta>
+          <span v-if="volunteer.email"><i class="pi pi-envelope" />{{ volunteer.email }}</span>
+          <span v-if="volunteer.phone"><i class="pi pi-phone" />{{ volunteer.phone }}</span>
+          <span v-if="!volunteer.email && !volunteer.phone">
+            Контакты скрыты
+            <i v-tooltip.bottom="'Контакты видны, пока с волонтёром действует сотрудничество'" class="pi pi-question-circle" />
+          </span>
+        </template>
+        <template v-if="cooperation?.status === CooperationStatus.PENDING || cooperation?.status === CooperationStatus.ACTIVE" #actions>
+          <template v-if="cooperation.status === CooperationStatus.PENDING">
+            <Button label="Отклонить" severity="secondary" text @click="reject(volunteerId, name)" />
+            <Button label="Принять заявку" @click="onApprove" />
+          </template>
+          <Button v-else label="Прекратить сотрудничество" severity="secondary" outlined @click="terminate(volunteerId, name)" />
+        </template>
+      </AppProfileHero>
 
       <AppTabs v-model="tab" :tabs="VOLUNTEER_PUBLIC_TABS" :counts="counts" />
 

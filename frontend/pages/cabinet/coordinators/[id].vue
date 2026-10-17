@@ -28,6 +28,14 @@ const cooperation = computed(() => cooperationsStore.withCoordinator(coordinator
 const isMember = computed(() => cooperation.value?.status === CooperationStatus.ACTIVE);
 const canJoin = computed(() => canRequestCooperation(cooperation.value));
 const balance = computed(() => volunteerStore.profile?.coinBalance ?? 0);
+const stats = computed(() =>
+  isMember.value
+    ? [
+        { label: 'Мероприятия', value: eventsStore.total },
+        { label: 'Поощрения', value: rewardsStore.list.length },
+      ]
+    : [],
+);
 
 const loadContent = async () => {
   if (!isMember.value) return;
@@ -63,49 +71,35 @@ watch(area, loadContent, { deep: true });
     </div>
 
     <template v-else>
-      <section class="app-hero">
-        <div class="app-hero__cover app-hero__cover--violet" />
-        <div class="app-hero__card">
-          <AppAvatar :name="coordinator.displayName" :image="coordinator.avatarUrl || null" size="lg" class="app-hero__avatar" />
-          <div class="app-hero__body">
-            <h1 class="app-hero__name">{{ coordinator.displayName }}</h1>
-            <div class="app-hero__chips">
-              <span class="app-chip app-chip--violet"><i class="pi pi-briefcase" />Координатор</span>
-              <AppStatus
-                v-if="cooperation"
-                :label="COOPERATION_STATUS_LABELS[cooperation.status]"
-                :severity="COOPERATION_STATUS_SEVERITY[cooperation.status]" />
-            </div>
-            <p v-if="coordinator.description" class="app-hero__about">{{ coordinator.description }}</p>
-          </div>
-          <div class="app-hero__side">
-            <div v-if="isMember" class="app-hero__stats app-hero__stats--two">
-              <div class="app-hero__stat">
-                <b>{{ eventsStore.total }}</b>
-                <span>{{ pluralize(eventsStore.total, ['мероприятие', 'мероприятия', 'мероприятий']) }}</span>
-              </div>
-              <div class="app-hero__stat">
-                <b>{{ rewardsStore.list.length }}</b>
-                <span>{{ pluralize(rewardsStore.list.length, ['поощрение', 'поощрения', 'поощрений']) }}</span>
-              </div>
-            </div>
-            <Button v-if="canJoin" label="Предложить сотрудничество" fluid @click="request(coordinatorId)" />
-            <span v-else-if="cooperation?.status === CooperationStatus.REJECTED" class="app-card__hint">
-              Повторная заявка с {{ formatDateTime(cooperation.retryAfter) }}
-            </span>
-            <span v-else-if="cooperation?.status === CooperationStatus.PENDING" class="app-card__hint">
-              Координатор рассмотрит заявку и откроет доступ к мероприятиям
-            </span>
-            <Button
-              v-if="isMember"
-              label="Прекратить сотрудничество"
-              severity="secondary"
-              text
-              fluid
-              @click="terminate(coordinatorId, coordinator.displayName)" />
-          </div>
-        </div>
-      </section>
+      <AppProfileHero
+        :name="coordinator.displayName"
+        :avatar="coordinator.avatarUrl || null"
+        :cover="PROFILE_COVER_COORDINATOR"
+        :about="coordinator.description"
+        :stats="stats">
+        <template #chips>
+          <span class="app-chip app-chip--violet"><i class="pi pi-briefcase" />Координатор</span>
+          <AppStatus
+            v-if="cooperation"
+            :label="COOPERATION_STATUS_LABELS[cooperation.status]"
+            :severity="COOPERATION_STATUS_SEVERITY[cooperation.status]" />
+        </template>
+        <template #actions>
+          <Button v-if="canJoin" label="Предложить сотрудничество" @click="request(coordinatorId)" />
+          <span v-else-if="cooperation?.status === CooperationStatus.REJECTED" class="app-card__hint">
+            Повторная заявка с {{ formatDateTime(cooperation.retryAfter) }}
+          </span>
+          <span v-else-if="cooperation?.status === CooperationStatus.PENDING" class="app-card__hint">
+            Координатор рассмотрит заявку и откроет доступ к мероприятиям
+          </span>
+          <Button
+            v-if="isMember"
+            label="Прекратить сотрудничество"
+            severity="secondary"
+            outlined
+            @click="terminate(coordinatorId, coordinator.displayName)" />
+        </template>
+      </AppProfileHero>
 
       <template v-if="isMember">
         <AppTabs v-model="tab" :tabs="COORDINATOR_PUBLIC_TABS" />
