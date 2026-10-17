@@ -5,7 +5,7 @@ definePageMeta({
 
 const { siteName } = useLanding();
 
-useHead({ title: `Цифровой волонтёр Обнинска | ${siteName}` });
+useHead({ title: `Цифровой волонтёр России | ${siteName}` });
 </script>
 
 <template>

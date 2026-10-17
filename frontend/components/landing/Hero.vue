@@ -14,7 +14,7 @@ const photo: ILandingPhoto = LANDING_PHOTOS.team;
     <div class="landing-container landing-hero__inner">
       <h1 class="landing-hero__title">
         Цифровой волонтёр
-        <span class="landing-hero__accent">Обнинска</span>
+        <span class="landing-hero__accent">России</span>
       </h1>
       <p class="landing-hero__lead">Учёт добрых дел, волонтёрских часов и понятная система поощрений</p>
       <div class="landing-hero__actions">
