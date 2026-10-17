@@ -11,6 +11,7 @@ type Complete struct {
 	result      model_event_result.EventResult
 	coins       int64
 	operationID model_operation_id.OperationID
+	force       bool
 	now         time.Time
 }
 
@@ -30,6 +31,10 @@ func (x Complete) GetResult() model_event_result.EventResult {
 	return x.result
 }
 
+func (x Complete) IsForced() bool {
+	return x.force
+}
+
 func NewComplete(
 	result model_event_result.EventResult,
 	coins int64,
@@ -42,4 +47,16 @@ func NewComplete(
 		operationID: operationID,
 		now:         now,
 	}
+}
+
+func NewForceComplete(
+	result model_event_result.EventResult,
+	coins int64,
+	operationID model_operation_id.OperationID,
+	now time.Time,
+) Complete {
+	x := NewComplete(result, coins, operationID, now)
+	x.force = true
+
+	return x
 }

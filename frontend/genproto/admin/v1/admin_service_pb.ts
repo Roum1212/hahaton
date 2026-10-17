@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Event } from "../../event/v1/event_service_pb";
+import { file_event_v1_event_service } from "../../event/v1/event_service_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file admin/v1/admin_service.proto.
  */
 export const file_admin_v1_admin_service: GenFile = /*@__PURE__*/
-  fileDesc("ChxhZG1pbi92MS9hZG1pbl9zZXJ2aWNlLnByb3RvEghhZG1pbi52MSKgAgoOQWRtaW5Wb2x1bnRlZXISCgoCaWQYASABKAkSHgoKYXZhdGFyX3VybBgCIAEoCVIKYXZhdGFyX3VybBIeCgpmaXJzdF9uYW1lGAMgASgJUgpmaXJzdF9uYW1lEhwKCWxhc3RfbmFtZRgEIAEoCVIJbGFzdF9uYW1lEiAKC21pZGRsZV9uYW1lGAUgASgJUgttaWRkbGVfbmFtZRIkCg1lbWFpbF9hZGRyZXNzGAYgASgJUg1lbWFpbF9hZGRyZXNzEiIKDHBob25lX251bWJlchgHIAEoCVIMcGhvbmVfbnVtYmVyEjgKF2hhc19jb29yZGluYXRvcl9wcm9maWxlGAggASgIUhdoYXNfY29vcmRpbmF0b3JfcHJvZmlsZSK3AQoVRmluZFZvbHVudGVlcnNSZXF1ZXN0EiYKDWVtYWlsX2FkZHJlc3MYASABKAlIAFINZW1haWxfYWRkcmVzcxIkCgxwaG9uZV9udW1iZXIYAiABKAlIAFIMcGhvbmVfbnVtYmVyEiQKDHZvbHVudGVlcl9pZBgDIAEoCUgAUgx2b2x1bnRlZXJfaWQSDQoFbGltaXQYBCABKAUSDgoGb2Zmc2V0GAUgASgDQgsKCWNyaXRlcmlvbiJoChZGaW5kVm9sdW50ZWVyc1Jlc3BvbnNlEiwKCnZvbHVudGVlcnMYASADKAsyGC5hZG1pbi52MS5BZG1pblZvbHVudGVlchIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQi9wEKGENyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYASABKAlSDHZvbHVudGVlcl9pZBIgCgthdmF0YXJfcGF0aBgCIAEoCVILYXZhdGFyX3BhdGgSEwoLZGVzY3JpcHRpb24YAyABKAkSVwokY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzGAQgASgDSABSJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kc4gBAUInCiVfY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIicKGUNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2USCgoCaWQYASABKAkyxQEKDEFkbWluU2VydmljZRJVCg5GaW5kVm9sdW50ZWVycxIfLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVxdWVzdBogLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVzcG9uc2UiABJeChFDcmVhdGVDb29yZGluYXRvchIiLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBojLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2UiAEI4WjZnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vYWRtaW4vdjE7YWRtaW5fdjFiBnByb3RvMw");
+  fileDesc("ChxhZG1pbi92MS9hZG1pbl9zZXJ2aWNlLnByb3RvEghhZG1pbi52MSKgAgoOQWRtaW5Wb2x1bnRlZXISCgoCaWQYASABKAkSHgoKYXZhdGFyX3VybBgCIAEoCVIKYXZhdGFyX3VybBIeCgpmaXJzdF9uYW1lGAMgASgJUgpmaXJzdF9uYW1lEhwKCWxhc3RfbmFtZRgEIAEoCVIJbGFzdF9uYW1lEiAKC21pZGRsZV9uYW1lGAUgASgJUgttaWRkbGVfbmFtZRIkCg1lbWFpbF9hZGRyZXNzGAYgASgJUg1lbWFpbF9hZGRyZXNzEiIKDHBob25lX251bWJlchgHIAEoCVIMcGhvbmVfbnVtYmVyEjgKF2hhc19jb29yZGluYXRvcl9wcm9maWxlGAggASgIUhdoYXNfY29vcmRpbmF0b3JfcHJvZmlsZSK3AQoVRmluZFZvbHVudGVlcnNSZXF1ZXN0EiYKDWVtYWlsX2FkZHJlc3MYASABKAlIAFINZW1haWxfYWRkcmVzcxIkCgxwaG9uZV9udW1iZXIYAiABKAlIAFIMcGhvbmVfbnVtYmVyEiQKDHZvbHVudGVlcl9pZBgDIAEoCUgAUgx2b2x1bnRlZXJfaWQSDQoFbGltaXQYBCABKAUSDgoGb2Zmc2V0GAUgASgDQgsKCWNyaXRlcmlvbiJoChZGaW5kVm9sdW50ZWVyc1Jlc3BvbnNlEiwKCnZvbHVudGVlcnMYASADKAsyGC5hZG1pbi52MS5BZG1pblZvbHVudGVlchIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQi9wEKGENyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYASABKAlSDHZvbHVudGVlcl9pZBIgCgthdmF0YXJfcGF0aBgCIAEoCVILYXZhdGFyX3BhdGgSEwoLZGVzY3JpcHRpb24YAyABKAkSVwokY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzGAQgASgDSABSJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kc4gBAUInCiVfY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIicKGUNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2USCgoCaWQYASABKAkiJwoZRm9yY2VDb21wbGV0ZUV2ZW50UmVxdWVzdBIKCgJpZBgBIAEoCSI8ChpGb3JjZUNvbXBsZXRlRXZlbnRSZXNwb25zZRIeCgVldmVudBgBIAEoCzIPLmV2ZW50LnYxLkV2ZW50MqgCCgxBZG1pblNlcnZpY2USVQoORmluZFZvbHVudGVlcnMSHy5hZG1pbi52MS5GaW5kVm9sdW50ZWVyc1JlcXVlc3QaIC5hZG1pbi52MS5GaW5kVm9sdW50ZWVyc1Jlc3BvbnNlIgASXgoRQ3JlYXRlQ29vcmRpbmF0b3ISIi5hZG1pbi52MS5DcmVhdGVDb29yZGluYXRvclJlcXVlc3QaIy5hZG1pbi52MS5DcmVhdGVDb29yZGluYXRvclJlc3BvbnNlIgASYQoSRm9yY2VDb21wbGV0ZUV2ZW50EiMuYWRtaW4udjEuRm9yY2VDb21wbGV0ZUV2ZW50UmVxdWVzdBokLmFkbWluLnYxLkZvcmNlQ29tcGxldGVFdmVudFJlc3BvbnNlIgBCOFo2Z2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL2FkbWluL3YxO2FkbWluX3YxYgZwcm90bzM", [file_event_v1_event_service]);
 
 /**
  * @generated from message admin.v1.AdminVolunteer
@@ -200,7 +202,41 @@ export const CreateCoordinatorResponseSchema: GenMessage<CreateCoordinatorRespon
   messageDesc(file_admin_v1_admin_service, 4);
 
 /**
- * Отдельный служебный интерфейс разработчиков; не публикуется на клиентском listener.
+ * @generated from message admin.v1.ForceCompleteEventRequest
+ */
+export type ForceCompleteEventRequest = Message<"admin.v1.ForceCompleteEventRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message admin.v1.ForceCompleteEventRequest.
+ * Use `create(ForceCompleteEventRequestSchema)` to create a new message.
+ */
+export const ForceCompleteEventRequestSchema: GenMessage<ForceCompleteEventRequest> = /*@__PURE__*/
+  messageDesc(file_admin_v1_admin_service, 5);
+
+/**
+ * @generated from message admin.v1.ForceCompleteEventResponse
+ */
+export type ForceCompleteEventResponse = Message<"admin.v1.ForceCompleteEventResponse"> & {
+  /**
+   * @generated from field: event.v1.Event event = 1;
+   */
+  event?: Event | undefined;
+};
+
+/**
+ * Describes the message admin.v1.ForceCompleteEventResponse.
+ * Use `create(ForceCompleteEventResponseSchema)` to create a new message.
+ */
+export const ForceCompleteEventResponseSchema: GenMessage<ForceCompleteEventResponse> = /*@__PURE__*/
+  messageDesc(file_admin_v1_admin_service, 6);
+
+/**
+ * Служебный интерфейс разработчиков на общем listener.
  * Требует служебной аутентификации. Обычная cookie участника этих прав не даёт.
  *
  * @generated from service admin.v1.AdminService
@@ -228,6 +264,20 @@ export const AdminService: GenService<{
     methodKind: "unary";
     input: typeof CreateCoordinatorRequestSchema;
     output: typeof CreateCoordinatorResponseSchema;
+  },
+  /**
+   * Завершает PUBLISHED мероприятие досрочно от имени его координатора.
+   * Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
+   * Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
+   * Начисления, аудит и закрытие чата выполняются в одной транзакции.
+   * Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
+   *
+   * @generated from rpc admin.v1.AdminService.ForceCompleteEvent
+   */
+  forceCompleteEvent: {
+    methodKind: "unary";
+    input: typeof ForceCompleteEventRequestSchema;
+    output: typeof ForceCompleteEventResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_admin_v1_admin_service, 0);

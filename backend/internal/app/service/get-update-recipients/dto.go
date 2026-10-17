@@ -34,7 +34,7 @@ func (x Request) GetRewardOrderID() model_reward_order_id.RewardOrderID { return
 func (x Request) GetUserID() model_user_id.UserID { return x.userID }
 
 func (x Request) Validate() error {
-	if x.userID.IsZero() && x.counterpartID.IsZero() {
+	if x.userID.IsZero() && x.counterpartID.IsZero() && x.eventID.IsZero() {
 		return errors.New("update recipient is required")
 	}
 

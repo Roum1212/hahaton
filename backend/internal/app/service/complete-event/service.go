@@ -26,6 +26,8 @@ import (
 	utils_value "github.com/Roum1212/hahaton/internal/pkg/utils/value"
 )
 
+const demoConfirmedMinutes = 180
+
 var (
 	ErrAlreadyExists    = errors.New("already exists")
 	ErrInvalidRequest   = errors.New("invalid request")
@@ -50,6 +52,15 @@ func (x service) CompleteEvent(ctx context.Context, r Request) (Response, error)
 		return Response{}, fmt.Errorf("%w: %w", ErrInvalidRequest, err)
 	}
 
+	if r.IsForced() {
+		event, err := x.events.Load(ctx, r.GetEventID())
+		if err != nil {
+			return Response{}, err
+		}
+
+		r.userID = event.GetCoordinatorID()
+	}
+
 	if _, err := x.coordinators.Load(ctx, r.GetUserID()); err != nil {
 		switch {
 		case errors.Is(err, aggregate_coordinator.ErrNotFound):
@@ -59,14 +70,29 @@ func (x service) CompleteEvent(ctx context.Context, r Request) (Response, error)
 		}
 	}
 
-	fingerprint := resultFingerprint(r.GetResults())
-
 	var completed *aggregate_event.Event
 
 	if err := x.events.Modify(ctx, r.GetEventID(), func(
 		ctx context.Context,
 		event *aggregate_event.Event,
 	) error {
+		if r.IsForced() {
+			if event.GetCompletionRequestID() == r.GetRequestID() {
+				completed = event
+
+				return nil
+			}
+
+			results, err := x.demoResults(ctx, event)
+			if err != nil {
+				return err
+			}
+
+			r.results = results
+		}
+
+		fingerprint := resultFingerprint(r.GetResults())
+
 		events, err := x.events.List(ctx)
 		if err != nil {
 			return err
@@ -106,7 +132,13 @@ func (x service) complete(ctx context.Context, r Request, event *aggregate_event
 	}
 
 	now := time.Now().UTC()
-	if err := event.Complete(aggregate_event_command.NewComplete(r.GetRequestID(), fingerprint, now)); err != nil {
+
+	command := aggregate_event_command.NewComplete(r.GetRequestID(), fingerprint, now)
+	if r.IsForced() {
+		command = aggregate_event_command.NewForceComplete(r.GetRequestID(), fingerprint, now)
+	}
+
+	if err := event.Complete(command); err != nil {
 		return err
 	}
 
@@ -120,34 +152,35 @@ func (x service) complete(ctx context.Context, r Request, event *aggregate_event
 		results[result.GetParticipationID()] = result
 	}
 
-	approved := make([]*aggregate_participation.Participation, 0)
+	active := make([]*aggregate_participation.Participation, 0)
 
 	for _, value := range participations {
 		if value.GetEventID() != event.GetEventID() {
 			continue
 		}
 
-		if value.GetStatus() == model_participation_status.Approved {
-			approved = append(approved, value)
+		if value.GetStatus() == model_participation_status.Approved ||
+			(r.IsForced() && value.GetStatus() == model_participation_status.Pending) {
+			active = append(active, value)
 		}
 	}
 
-	if len(approved) != len(results) {
+	if len(active) != len(results) {
 		return ErrInvalidRequest
 	}
 
 	// Acquire wallet locks in the same order across independent transactions.
-	sort.Slice(approved, func(i, j int) bool {
-		return approved[i].GetVolunteerID().String() < approved[j].GetVolunteerID().String()
+	sort.Slice(active, func(i, j int) bool {
+		return active[i].GetVolunteerID().String() < active[j].GetVolunteerID().String()
 	})
 
-	for _, value := range approved {
+	for _, value := range active {
 		result, ok := results[value.GetParticipationID()]
 		if !ok {
 			return ErrInvalidRequest
 		}
 
-		if err := x.completeParticipation(ctx, event, value, result, now); err != nil {
+		if err := x.completeParticipation(ctx, event, value, result, r.IsForced(), now); err != nil {
 			return err
 		}
 	}
@@ -179,6 +212,7 @@ func (x service) completeParticipation(
 	event *aggregate_event.Event,
 	value *aggregate_participation.Participation,
 	result model_event_result.EventResult,
+	force bool,
 	now time.Time,
 ) error {
 	var (
@@ -217,7 +251,13 @@ func (x service) completeParticipation(
 	}
 
 	previous := utils_value.NewOptional(value.GetStatus())
-	if err := value.Complete(aggregate_participation_command.NewComplete(result, coins, operationID, now)); err != nil {
+
+	command := aggregate_participation_command.NewComplete(result, coins, operationID, now)
+	if force {
+		command = aggregate_participation_command.NewForceComplete(result, coins, operationID, now)
+	}
+
+	if err := value.Complete(command); err != nil {
 		return err
 	}
 
@@ -230,6 +270,37 @@ func (x service) completeParticipation(
 	}
 
 	return nil
+}
+
+func (x service) demoResults(
+	ctx context.Context,
+	event *aggregate_event.Event,
+) ([]model_event_result.EventResult, error) {
+	participations, err := x.participations.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]model_event_result.EventResult, 0, len(participations))
+	for _, value := range participations {
+		if value.GetEventID() != event.GetEventID() {
+			continue
+		}
+
+		if value.GetStatus() != model_participation_status.Approved &&
+			value.GetStatus() != model_participation_status.Pending {
+			continue
+		}
+
+		result, err := model_event_result.NewEventResult(value.GetParticipationID(), demoConfirmedMinutes, false)
+		if err != nil {
+			return nil, err
+		}
+
+		results = append(results, result)
+	}
+
+	return results, nil
 }
 
 func (x service) recordChange(

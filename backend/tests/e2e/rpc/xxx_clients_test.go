@@ -108,7 +108,7 @@ func (x *rpcCoverage) assertComplete(t *testing.T) {
 
 		return true
 	})
-	require.Equal(t, 59, count)
+	require.Equal(t, 60, count)
 	t.Logf("verified successful calls of all %d RPC procedures", count)
 }
 

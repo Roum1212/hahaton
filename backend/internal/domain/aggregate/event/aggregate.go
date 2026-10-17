@@ -117,7 +117,7 @@ func (x *Event) Complete(command aggregate_event_command.Complete) error {
 		return ErrInvalidState
 	}
 
-	if command.GetNow().Before(x.schedule.GetEndsAt()) {
+	if !command.IsForced() && command.GetNow().Before(x.schedule.GetEndsAt()) {
 		return ErrNotFinished
 	}
 

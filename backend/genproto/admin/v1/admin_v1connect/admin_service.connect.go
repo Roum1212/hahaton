@@ -39,6 +39,9 @@ const (
 	// AdminServiceCreateCoordinatorProcedure is the fully-qualified name of the AdminService's
 	// CreateCoordinator RPC.
 	AdminServiceCreateCoordinatorProcedure = "/admin.v1.AdminService/CreateCoordinator"
+	// AdminServiceForceCompleteEventProcedure is the fully-qualified name of the AdminService's
+	// ForceCompleteEvent RPC.
+	AdminServiceForceCompleteEventProcedure = "/admin.v1.AdminService/ForceCompleteEvent"
 )
 
 // AdminServiceClient is a client for the admin.v1.AdminService service.
@@ -50,6 +53,12 @@ type AdminServiceClient interface {
 	// ФИО берётся из Volunteer; локальных логина и пароля нет.
 	// Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
 	CreateCoordinator(context.Context, *connect.Request[v1.CreateCoordinatorRequest]) (*connect.Response[v1.CreateCoordinatorResponse], error)
+	// Завершает PUBLISHED мероприятие досрочно от имени его координатора.
+	// Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
+	// Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
+	// Начисления, аудит и закрытие чата выполняются в одной транзакции.
+	// Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
+	ForceCompleteEvent(context.Context, *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error)
 }
 
 // NewAdminServiceClient constructs a client for the admin.v1.AdminService service. By default, it
@@ -75,13 +84,20 @@ func NewAdminServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(adminServiceMethods.ByName("CreateCoordinator")),
 			connect.WithClientOptions(opts...),
 		),
+		forceCompleteEvent: connect.NewClient[v1.ForceCompleteEventRequest, v1.ForceCompleteEventResponse](
+			httpClient,
+			baseURL+AdminServiceForceCompleteEventProcedure,
+			connect.WithSchema(adminServiceMethods.ByName("ForceCompleteEvent")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // adminServiceClient implements AdminServiceClient.
 type adminServiceClient struct {
-	findVolunteers    *connect.Client[v1.FindVolunteersRequest, v1.FindVolunteersResponse]
-	createCoordinator *connect.Client[v1.CreateCoordinatorRequest, v1.CreateCoordinatorResponse]
+	findVolunteers     *connect.Client[v1.FindVolunteersRequest, v1.FindVolunteersResponse]
+	createCoordinator  *connect.Client[v1.CreateCoordinatorRequest, v1.CreateCoordinatorResponse]
+	forceCompleteEvent *connect.Client[v1.ForceCompleteEventRequest, v1.ForceCompleteEventResponse]
 }
 
 // FindVolunteers calls admin.v1.AdminService.FindVolunteers.
@@ -94,6 +110,11 @@ func (c *adminServiceClient) CreateCoordinator(ctx context.Context, req *connect
 	return c.createCoordinator.CallUnary(ctx, req)
 }
 
+// ForceCompleteEvent calls admin.v1.AdminService.ForceCompleteEvent.
+func (c *adminServiceClient) ForceCompleteEvent(ctx context.Context, req *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error) {
+	return c.forceCompleteEvent.CallUnary(ctx, req)
+}
+
 // AdminServiceHandler is an implementation of the admin.v1.AdminService service.
 type AdminServiceHandler interface {
 	// Ищет зарегистрированного волонтёра для выдачи координаторских прав.
@@ -103,6 +124,12 @@ type AdminServiceHandler interface {
 	// ФИО берётся из Volunteer; локальных логина и пароля нет.
 	// Неизвестный volunteer_id — NotFound, существующий Coordinator — AlreadyExists.
 	CreateCoordinator(context.Context, *connect.Request[v1.CreateCoordinatorRequest]) (*connect.Response[v1.CreateCoordinatorResponse], error)
+	// Завершает PUBLISHED мероприятие досрочно от имени его координатора.
+	// Демонстрационная ручка: всем PENDING и APPROVED заявкам подтверждает 180 минут / 30 коинов.
+	// Отменённые и отклонённые заявки не меняются. Исходные starts_at и ends_at сохраняются.
+	// Начисления, аудит и закрытие чата выполняются в одной транзакции.
+	// Повтор не начисляет повторно; отменённое или завершённое обычной ручкой мероприятие — FailedPrecondition.
+	ForceCompleteEvent(context.Context, *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error)
 }
 
 // NewAdminServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -124,12 +151,20 @@ func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(adminServiceMethods.ByName("CreateCoordinator")),
 		connect.WithHandlerOptions(opts...),
 	)
+	adminServiceForceCompleteEventHandler := connect.NewUnaryHandler(
+		AdminServiceForceCompleteEventProcedure,
+		svc.ForceCompleteEvent,
+		connect.WithSchema(adminServiceMethods.ByName("ForceCompleteEvent")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/admin.v1.AdminService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AdminServiceFindVolunteersProcedure:
 			adminServiceFindVolunteersHandler.ServeHTTP(w, r)
 		case AdminServiceCreateCoordinatorProcedure:
 			adminServiceCreateCoordinatorHandler.ServeHTTP(w, r)
+		case AdminServiceForceCompleteEventProcedure:
+			adminServiceForceCompleteEventHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -145,4 +180,8 @@ func (UnimplementedAdminServiceHandler) FindVolunteers(context.Context, *connect
 
 func (UnimplementedAdminServiceHandler) CreateCoordinator(context.Context, *connect.Request[v1.CreateCoordinatorRequest]) (*connect.Response[v1.CreateCoordinatorResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("admin.v1.AdminService.CreateCoordinator is not implemented"))
+}
+
+func (UnimplementedAdminServiceHandler) ForceCompleteEvent(context.Context, *connect.Request[v1.ForceCompleteEventRequest]) (*connect.Response[v1.ForceCompleteEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("admin.v1.AdminService.ForceCompleteEvent is not implemented"))
 }

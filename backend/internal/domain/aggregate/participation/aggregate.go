@@ -139,7 +139,12 @@ func (x *Participation) Close(command aggregate_participation_command.Close) err
 
 func (x *Participation) Complete(command aggregate_participation_command.Complete) error {
 	result := command.GetResult()
-	if x.status != model_participation_status.Approved || result.GetParticipationID() != x.participationID {
+	if x.status != model_participation_status.Approved &&
+		(!command.IsForced() || x.status != model_participation_status.Pending) {
+		return ErrInvalidState
+	}
+
+	if result.GetParticipationID() != x.participationID {
 		return ErrInvalidState
 	}
 
