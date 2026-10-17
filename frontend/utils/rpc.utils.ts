@@ -54,7 +54,7 @@ export const RPC_METHOD_ERROR_MESSAGES: Record<string, Partial<Record<Code, stri
   RestoreParticipation: { [Code.FailedPrecondition]: 'Восстановить заявку сейчас нельзя' },
   CancelParticipation: { [Code.FailedPrecondition]: 'Отменить заявку можно только до начала мероприятия' },
   ApproveParticipation: { [Code.FailedPrecondition]: 'Принять нельзя: нет свободных мест или мероприятие уже началось' },
-  RejectParticipation: { [Code.FailedPrecondition]: 'Заявка уже рассмотрена' },
+  RejectParticipation: { [Code.FailedPrecondition]: 'Эту заявку уже нельзя отклонить' },
   CreateRewardOrder: {
     [Code.Aborted]: 'Цена изменилась, проверьте карточку поощрения',
     [Code.FailedPrecondition]: 'Недостаточно койнов или поощрение закончилось',

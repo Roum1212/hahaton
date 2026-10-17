@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file session/v1/session_service.proto.
  */
 export const file_session_v1_session_service: GenFile = /*@__PURE__*/
-  fileDesc("CiBzZXNzaW9uL3YxL3Nlc3Npb25fc2VydmljZS5wcm90bxIKc2Vzc2lvbi52MSKqAQoHU2Vzc2lvbhIdCgd1c2VyX2lkGAQgASgJSABSB3VzZXJfaWSIAQESOAoXaGFzX2Nvb3JkaW5hdG9yX3Byb2ZpbGUYBSABKAhSF2hhc19jb29yZGluYXRvcl9wcm9maWxlEjoKCmV4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpleHBpcmVzX2F0QgoKCF91c2VyX2lkIjgKGkF1dGhlbnRpY2F0ZVNlc3Npb25SZXF1ZXN0EhoKCGlkX3Rva2VuGAMgASgJUghpZF90b2tlbiI6ChJHZXRTZXNzaW9uUmVzcG9uc2USJAoHc2Vzc2lvbhgBIAEoCzITLnNlc3Npb24udjEuU2Vzc2lvbjK0AgoOU2Vzc2lvblNlcnZpY2USPwoLT3BlblNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJXChNBdXRoZW50aWNhdGVTZXNzaW9uEiYuc2Vzc2lvbi52MS5BdXRoZW50aWNhdGVTZXNzaW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkYKCkdldFNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaHi5zZXNzaW9uLnYxLkdldFNlc3Npb25SZXNwb25zZSIAEkAKDENsb3NlU2Vzc2lvbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAQjxaOmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9zZXNzaW9uL3YxO3Nlc3Npb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("CiBzZXNzaW9uL3YxL3Nlc3Npb25fc2VydmljZS5wcm90bxIKc2Vzc2lvbi52MSKqAQoHU2Vzc2lvbhIdCgd1c2VyX2lkGAEgASgJSABSB3VzZXJfaWSIAQESOAoXaGFzX2Nvb3JkaW5hdG9yX3Byb2ZpbGUYAiABKAhSF2hhc19jb29yZGluYXRvcl9wcm9maWxlEjoKCmV4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpleHBpcmVzX2F0QgoKCF91c2VyX2lkIjgKGkF1dGhlbnRpY2F0ZVNlc3Npb25SZXF1ZXN0EhoKCGlkX3Rva2VuGAEgASgJUghpZF90b2tlbiI6ChJHZXRTZXNzaW9uUmVzcG9uc2USJAoHc2Vzc2lvbhgBIAEoCzITLnNlc3Npb24udjEuU2Vzc2lvbjK0AgoOU2Vzc2lvblNlcnZpY2USPwoLT3BlblNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJXChNBdXRoZW50aWNhdGVTZXNzaW9uEiYuc2Vzc2lvbi52MS5BdXRoZW50aWNhdGVTZXNzaW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkYKCkdldFNlc3Npb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaHi5zZXNzaW9uLnYxLkdldFNlc3Npb25SZXNwb25zZSIAEkAKDENsb3NlU2Vzc2lvbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAQjxaOmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9zZXNzaW9uL3YxO3Nlc3Npb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message session.v1.Session
@@ -22,7 +22,7 @@ export type Session = Message<"session.v1.Session"> & {
    * Внутренний ID участника, равный Volunteer.id и при наличии Coordinator.id.
    * Отсутствует у анонимной сессии; ID Flida sub сюда напрямую не копируется.
    *
-   * @generated from field: optional string user_id = 4 [json_name = "user_id"];
+   * @generated from field: optional string user_id = 1 [json_name = "user_id"];
    */
   userId?: string | undefined;
 
@@ -30,7 +30,7 @@ export type Session = Message<"session.v1.Session"> & {
    * Вычисляемый признак для интерфейса; false у анонимной сессии.
    * Клиент не может установить его или выдать себе права выбором режима.
    *
-   * @generated from field: bool has_coordinator_profile = 5 [json_name = "has_coordinator_profile"];
+   * @generated from field: bool has_coordinator_profile = 2 [json_name = "has_coordinator_profile"];
    */
   hasCoordinatorProfile: boolean;
 
@@ -60,7 +60,7 @@ export type AuthenticateSessionRequest = Message<"session.v1.AuthenticateSession
    * Первый вход заполняет профиль, последующие не перезаписывают локальные правки.
    * Отсутствие обязательных сведений при регистрации — FailedPrecondition.
    *
-   * @generated from field: string id_token = 3 [json_name = "id_token"];
+   * @generated from field: string id_token = 1 [json_name = "id_token"];
    */
   idToken: string;
 };

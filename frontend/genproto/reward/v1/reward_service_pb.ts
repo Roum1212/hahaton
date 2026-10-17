@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file reward/v1/reward_service.proto.
  */
 export const file_reward_v1_reward_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch5yZXdhcmQvdjEvcmV3YXJkX3NlcnZpY2UucHJvdG8SCXJld2FyZC52MSKhAgoGUmV3YXJkEgoKAmlkGAEgASgJEiYKDmNvb3JkaW5hdG9yX2lkGAIgASgJUg5jb29yZGluYXRvcl9pZBITCgtkZXNjcmlwdGlvbhgDIAEoCRIcCglpbWFnZV91cmwYCSABKAlSCWltYWdlX3VybBINCgV0aXRsZRgEIAEoCRIgCgtwcmljZV9jb2lucxgFIAEoA1ILcHJpY2VfY29pbnMSLgoSYXZhaWxhYmxlX3F1YW50aXR5GAcgASgFUhJhdmFpbGFibGVfcXVhbnRpdHkSJgoOcXVhbnRpdHlfbGltaXQYBiABKAVSDnF1YW50aXR5X2xpbWl0EicKBnN0YXR1cxgIIAEoDjIXLnJld2FyZC52MS5SZXdhcmRTdGF0dXMiowEKE0NyZWF0ZVJld2FyZFJlcXVlc3QSEwoLZGVzY3JpcHRpb24YASABKAkSHgoKaW1hZ2VfcGF0aBgFIAEoCVIKaW1hZ2VfcGF0aBINCgV0aXRsZRgCIAEoCRIgCgtwcmljZV9jb2lucxgDIAEoA1ILcHJpY2VfY29pbnMSJgoOcXVhbnRpdHlfbGltaXQYBCABKAVSDnF1YW50aXR5X2xpbWl0IiIKFENyZWF0ZVJld2FyZFJlc3BvbnNlEgoKAmlkGAEgASgJIh4KEEdldFJld2FyZFJlcXVlc3QSCgoCaWQYASABKAkiNgoRR2V0UmV3YXJkUmVzcG9uc2USIQoGcmV3YXJkGAEgASgLMhEucmV3YXJkLnYxLlJld2FyZCKeAQoSTGlzdFJld2FyZHNSZXF1ZXN0EikKBXNjb3BlGAYgASgOMhoucmV3YXJkLnYxLlJld2FyZExpc3RTY29wZRIrCg5jb29yZGluYXRvcl9pZBgBIAEoCUgAUg5jb29yZGluYXRvcl9pZIgBARINCgVsaW1pdBgDIAEoBRIOCgZvZmZzZXQYBSABKANCEQoPX2Nvb3JkaW5hdG9yX2lkIlsKE0xpc3RSZXdhcmRzUmVzcG9uc2USIgoHcmV3YXJkcxgBIAMoCzIRLnJld2FyZC52MS5SZXdhcmQSIAoLdG90YWxfY291bnQYAyABKANSC3RvdGFsX2NvdW50IpQCChNVcGRhdGVSZXdhcmRSZXF1ZXN0EgoKAmlkGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQESIwoKaW1hZ2VfcGF0aBgGIAEoCUgBUgppbWFnZV9wYXRoiAEBEhIKBXRpdGxlGAMgASgJSAKIAQESJQoLcHJpY2VfY29pbnMYBCABKANIA1ILcHJpY2VfY29pbnOIAQESKwoOcXVhbnRpdHlfbGltaXQYBSABKAVIBFIOcXVhbnRpdHlfbGltaXSIAQFCDgoMX2Rlc2NyaXB0aW9uQg0KC19pbWFnZV9wYXRoQggKBl90aXRsZUIOCgxfcHJpY2VfY29pbnNCEQoPX3F1YW50aXR5X2xpbWl0IiEKE0RlbGV0ZVJld2FyZFJlcXVlc3QSCgoCaWQYASABKAkqRwoMUmV3YXJkU3RhdHVzEh0KGVJFV0FSRF9TVEFUVVNfVU5TUEVDSUZJRUQQABIYChRSRVdBUkRfU1RBVFVTX0FDVElWRRABKnAKD1Jld2FyZExpc3RTY29wZRIhCh1SRVdBUkRfTElTVF9TQ09QRV9VTlNQRUNJRklFRBAAEh0KGVJFV0FSRF9MSVNUX1NDT1BFX0NBVEFMT0cQARIbChdSRVdBUkRfTElTVF9TQ09QRV9PV05FRBACMpADCg1SZXdhcmRTZXJ2aWNlElEKDENyZWF0ZVJld2FyZBIeLnJld2FyZC52MS5DcmVhdGVSZXdhcmRSZXF1ZXN0Gh8ucmV3YXJkLnYxLkNyZWF0ZVJld2FyZFJlc3BvbnNlIgASSAoJR2V0UmV3YXJkEhsucmV3YXJkLnYxLkdldFJld2FyZFJlcXVlc3QaHC5yZXdhcmQudjEuR2V0UmV3YXJkUmVzcG9uc2UiABJOCgtMaXN0UmV3YXJkcxIdLnJld2FyZC52MS5MaXN0UmV3YXJkc1JlcXVlc3QaHi5yZXdhcmQudjEuTGlzdFJld2FyZHNSZXNwb25zZSIAEkgKDFVwZGF0ZVJld2FyZBIeLnJld2FyZC52MS5VcGRhdGVSZXdhcmRSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASSAoMRGVsZXRlUmV3YXJkEh4ucmV3YXJkLnYxLkRlbGV0ZVJld2FyZFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiAEI6WjhnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vcmV3YXJkL3YxO3Jld2FyZF92MWIGcHJvdG8z", [file_google_protobuf_empty]);
+  fileDesc("Ch5yZXdhcmQvdjEvcmV3YXJkX3NlcnZpY2UucHJvdG8SCXJld2FyZC52MSKhAgoGUmV3YXJkEgoKAmlkGAEgASgJEiYKDmNvb3JkaW5hdG9yX2lkGAIgASgJUg5jb29yZGluYXRvcl9pZBITCgtkZXNjcmlwdGlvbhgDIAEoCRIcCglpbWFnZV91cmwYBCABKAlSCWltYWdlX3VybBINCgV0aXRsZRgFIAEoCRIgCgtwcmljZV9jb2lucxgGIAEoA1ILcHJpY2VfY29pbnMSLgoSYXZhaWxhYmxlX3F1YW50aXR5GAcgASgFUhJhdmFpbGFibGVfcXVhbnRpdHkSJgoOcXVhbnRpdHlfbGltaXQYCCABKAVSDnF1YW50aXR5X2xpbWl0EicKBnN0YXR1cxgJIAEoDjIXLnJld2FyZC52MS5SZXdhcmRTdGF0dXMiowEKE0NyZWF0ZVJld2FyZFJlcXVlc3QSEwoLZGVzY3JpcHRpb24YASABKAkSHgoKaW1hZ2VfcGF0aBgCIAEoCVIKaW1hZ2VfcGF0aBINCgV0aXRsZRgDIAEoCRIgCgtwcmljZV9jb2lucxgEIAEoA1ILcHJpY2VfY29pbnMSJgoOcXVhbnRpdHlfbGltaXQYBSABKAVSDnF1YW50aXR5X2xpbWl0IiIKFENyZWF0ZVJld2FyZFJlc3BvbnNlEgoKAmlkGAEgASgJIh4KEEdldFJld2FyZFJlcXVlc3QSCgoCaWQYASABKAkiNgoRR2V0UmV3YXJkUmVzcG9uc2USIQoGcmV3YXJkGAEgASgLMhEucmV3YXJkLnYxLlJld2FyZCKeAQoSTGlzdFJld2FyZHNSZXF1ZXN0EikKBXNjb3BlGAEgASgOMhoucmV3YXJkLnYxLlJld2FyZExpc3RTY29wZRIrCg5jb29yZGluYXRvcl9pZBgCIAEoCUgAUg5jb29yZGluYXRvcl9pZIgBARINCgVsaW1pdBgDIAEoBRIOCgZvZmZzZXQYBCABKANCEQoPX2Nvb3JkaW5hdG9yX2lkIlsKE0xpc3RSZXdhcmRzUmVzcG9uc2USIgoHcmV3YXJkcxgBIAMoCzIRLnJld2FyZC52MS5SZXdhcmQSIAoLdG90YWxfY291bnQYAiABKANSC3RvdGFsX2NvdW50IpQCChNVcGRhdGVSZXdhcmRSZXF1ZXN0EgoKAmlkGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQESIwoKaW1hZ2VfcGF0aBgDIAEoCUgBUgppbWFnZV9wYXRoiAEBEhIKBXRpdGxlGAQgASgJSAKIAQESJQoLcHJpY2VfY29pbnMYBSABKANIA1ILcHJpY2VfY29pbnOIAQESKwoOcXVhbnRpdHlfbGltaXQYBiABKAVIBFIOcXVhbnRpdHlfbGltaXSIAQFCDgoMX2Rlc2NyaXB0aW9uQg0KC19pbWFnZV9wYXRoQggKBl90aXRsZUIOCgxfcHJpY2VfY29pbnNCEQoPX3F1YW50aXR5X2xpbWl0IiEKE0RlbGV0ZVJld2FyZFJlcXVlc3QSCgoCaWQYASABKAkqRwoMUmV3YXJkU3RhdHVzEh0KGVJFV0FSRF9TVEFUVVNfVU5TUEVDSUZJRUQQABIYChRSRVdBUkRfU1RBVFVTX0FDVElWRRABKnAKD1Jld2FyZExpc3RTY29wZRIhCh1SRVdBUkRfTElTVF9TQ09QRV9VTlNQRUNJRklFRBAAEh0KGVJFV0FSRF9MSVNUX1NDT1BFX0NBVEFMT0cQARIbChdSRVdBUkRfTElTVF9TQ09QRV9PV05FRBACMpADCg1SZXdhcmRTZXJ2aWNlElEKDENyZWF0ZVJld2FyZBIeLnJld2FyZC52MS5DcmVhdGVSZXdhcmRSZXF1ZXN0Gh8ucmV3YXJkLnYxLkNyZWF0ZVJld2FyZFJlc3BvbnNlIgASSAoJR2V0UmV3YXJkEhsucmV3YXJkLnYxLkdldFJld2FyZFJlcXVlc3QaHC5yZXdhcmQudjEuR2V0UmV3YXJkUmVzcG9uc2UiABJOCgtMaXN0UmV3YXJkcxIdLnJld2FyZC52MS5MaXN0UmV3YXJkc1JlcXVlc3QaHi5yZXdhcmQudjEuTGlzdFJld2FyZHNSZXNwb25zZSIAEkgKDFVwZGF0ZVJld2FyZBIeLnJld2FyZC52MS5VcGRhdGVSZXdhcmRSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASSAoMRGVsZXRlUmV3YXJkEh4ucmV3YXJkLnYxLkRlbGV0ZVJld2FyZFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiAEI6WjhnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vcmV3YXJkL3YxO3Jld2FyZF92MWIGcHJvdG8z", [file_google_protobuf_empty]);
 
 /**
  * @generated from message reward.v1.Reward
@@ -36,19 +36,19 @@ export type Reward = Message<"reward.v1.Reward"> & {
   /**
    * Вычисляемый /storage/...; пустая строка означает отсутствие изображения.
    *
-   * @generated from field: string image_url = 9 [json_name = "image_url"];
+   * @generated from field: string image_url = 4 [json_name = "image_url"];
    */
   imageUrl: string;
 
   /**
-   * @generated from field: string title = 4;
+   * @generated from field: string title = 5;
    */
   title: string;
 
   /**
    * Целое положительное число коинов за одну единицу.
    *
-   * @generated from field: int64 price_coins = 5 [json_name = "price_coins"];
+   * @generated from field: int64 price_coins = 6 [json_name = "price_coins"];
    */
   priceCoins: bigint;
 
@@ -63,12 +63,12 @@ export type Reward = Message<"reward.v1.Reward"> & {
   /**
    * Общее количество, включая уже выданные единицы и резервы невыданных заказов.
    *
-   * @generated from field: int32 quantity_limit = 6 [json_name = "quantity_limit"];
+   * @generated from field: int32 quantity_limit = 8 [json_name = "quantity_limit"];
    */
   quantityLimit: number;
 
   /**
-   * @generated from field: reward.v1.RewardStatus status = 8;
+   * @generated from field: reward.v1.RewardStatus status = 9;
    */
   status: RewardStatus;
 };
@@ -93,28 +93,28 @@ export type CreateRewardRequest = Message<"reward.v1.CreateRewardRequest"> & {
    * Пустая строка — без изображения. Иначе image_path из UploadImage текущего координатора.
    * Файл обязан существовать и принадлежать ему.
    *
-   * @generated from field: string image_path = 5 [json_name = "image_path"];
+   * @generated from field: string image_path = 2 [json_name = "image_path"];
    */
   imagePath: string;
 
   /**
    * Непустое название.
    *
-   * @generated from field: string title = 2;
+   * @generated from field: string title = 3;
    */
   title: string;
 
   /**
    * Строго больше нуля.
    *
-   * @generated from field: int64 price_coins = 3 [json_name = "price_coins"];
+   * @generated from field: int64 price_coins = 4 [json_name = "price_coins"];
    */
   priceCoins: bigint;
 
   /**
    * Строго больше нуля.
    *
-   * @generated from field: int32 quantity_limit = 4 [json_name = "quantity_limit"];
+   * @generated from field: int32 quantity_limit = 5 [json_name = "quantity_limit"];
    */
   quantityLimit: number;
 };
@@ -184,14 +184,14 @@ export type ListRewardsRequest = Message<"reward.v1.ListRewardsRequest"> & {
   /**
    * Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
    *
-   * @generated from field: reward.v1.RewardListScope scope = 6;
+   * @generated from field: reward.v1.RewardListScope scope = 1;
    */
   scope: RewardListScope;
 
   /**
    * Необязательный непустой фильтр внутри доступных поощрений; не расширяет права.
    *
-   * @generated from field: optional string coordinator_id = 1 [json_name = "coordinator_id"];
+   * @generated from field: optional string coordinator_id = 2 [json_name = "coordinator_id"];
    */
   coordinatorId?: string | undefined;
 
@@ -207,7 +207,7 @@ export type ListRewardsRequest = Message<"reward.v1.ListRewardsRequest"> & {
    * Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
    * На каждом запросе применяются текущие права доступа и фильтры.
    *
-   * @generated from field: int64 offset = 5;
+   * @generated from field: int64 offset = 4;
    */
   offset: bigint;
 };
@@ -234,7 +234,7 @@ export type ListRewardsResponse = Message<"reward.v1.ListRewardsResponse"> & {
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };
@@ -266,21 +266,21 @@ export type UpdateRewardRequest = Message<"reward.v1.UpdateRewardRequest"> & {
    * Отсутствует — сохранить; пустая строка — убрать изображение.
    * Иначе image_path из UploadImage текущего координатора; файл обязан существовать.
    *
-   * @generated from field: optional string image_path = 6 [json_name = "image_path"];
+   * @generated from field: optional string image_path = 3 [json_name = "image_path"];
    */
   imagePath?: string | undefined;
 
   /**
    * Непустое название.
    *
-   * @generated from field: optional string title = 3;
+   * @generated from field: optional string title = 4;
    */
   title?: string | undefined;
 
   /**
    * Строго больше нуля. Новая цена применяется только к новым заказам.
    *
-   * @generated from field: optional int64 price_coins = 4 [json_name = "price_coins"];
+   * @generated from field: optional int64 price_coins = 5 [json_name = "price_coins"];
    */
   priceCoins?: bigint | undefined;
 
@@ -288,7 +288,7 @@ export type UpdateRewardRequest = Message<"reward.v1.UpdateRewardRequest"> & {
    * Неотрицательное число, не меньше суммы выданных единиц и текущих резервов.
    * Нарушение ограничения по резервам/выдачам означает FailedPrecondition.
    *
-   * @generated from field: optional int32 quantity_limit = 5 [json_name = "quantity_limit"];
+   * @generated from field: optional int32 quantity_limit = 6 [json_name = "quantity_limit"];
    */
   quantityLimit?: number | undefined;
 };

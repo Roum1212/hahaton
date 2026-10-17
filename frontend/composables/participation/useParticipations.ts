@@ -134,8 +134,9 @@ export const useEventApplications = () => {
       () => loader.hide(),
     );
     if (!result) return false;
+    const wasApproved = list.value.some((item) => item.id === id && item.status === ParticipationStatus.APPROVED);
     replace(result);
-    toast.success('Заявка отклонена');
+    toast.success(wasApproved ? 'Участник снят с мероприятия' : 'Заявка отклонена');
     return true;
   };
 

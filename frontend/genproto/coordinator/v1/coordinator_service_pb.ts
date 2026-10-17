@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file coordinator/v1/coordinator_service.proto.
  */
 export const file_coordinator_v1_coordinator_service: GenFile = /*@__PURE__*/
-  fileDesc("Cihjb29yZGluYXRvci92MS9jb29yZGluYXRvcl9zZXJ2aWNlLnByb3RvEg5jb29yZGluYXRvci52MSJyCgtDb29yZGluYXRvchIKCgJpZBgBIAEoCRIeCgphdmF0YXJfdXJsGAQgASgJUgphdmF0YXJfdXJsEhMKC2Rlc2NyaXB0aW9uGAIgASgJEiIKDGRpc3BsYXlfbmFtZRgDIAEoCVIMZGlzcGxheV9uYW1lIi8KFUdldENvb3JkaW5hdG9yUmVxdWVzdBIPCgJpZBgBIAEoCUgAiAEBQgUKA19pZCJKChZHZXRDb29yZGluYXRvclJlc3BvbnNlEjAKC2Nvb3JkaW5hdG9yGAEgASgLMhsuY29vcmRpbmF0b3IudjEuQ29vcmRpbmF0b3IiOAoXTGlzdENvb3JkaW5hdG9yc1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAMgASgDIm8KGExpc3RDb29yZGluYXRvcnNSZXNwb25zZRIxCgxjb29yZGluYXRvcnMYASADKAsyGy5jb29yZGluYXRvci52MS5Db29yZGluYXRvchIgCgt0b3RhbF9jb3VudBgDIAEoA1ILdG90YWxfY291bnQiewoYVXBkYXRlQ29vcmRpbmF0b3JSZXF1ZXN0EiUKC2F2YXRhcl9wYXRoGAMgASgJSABSC2F2YXRhcl9wYXRoiAEBEhgKC2Rlc2NyaXB0aW9uGAEgASgJSAGIAQFCDgoMX2F2YXRhcl9wYXRoQg4KDF9kZXNjcmlwdGlvbiJpChNDb29yZGluYXRvclNldHRpbmdzElIKJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kcxgBIAEoA1IkY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIh8KHUdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0IlcKHkdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXNwb25zZRI1CghzZXR0aW5ncxgBIAEoCzIjLmNvb3JkaW5hdG9yLnYxLkNvb3JkaW5hdG9yU2V0dGluZ3MipAEKIFVwZGF0ZUNvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0ElcKJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kcxgBIAEoA0gAUiRjb29wZXJhdGlvbl9yZXF1ZXN0X2Nvb2xkb3duX3NlY29uZHOIAQFCJwolX2Nvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kczKdBAoSQ29vcmRpbmF0b3JTZXJ2aWNlEmEKDkdldENvb3JkaW5hdG9yEiUuY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JSZXF1ZXN0GiYuY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JSZXNwb25zZSIAEmcKEExpc3RDb29yZGluYXRvcnMSJy5jb29yZGluYXRvci52MS5MaXN0Q29vcmRpbmF0b3JzUmVxdWVzdBooLmNvb3JkaW5hdG9yLnYxLkxpc3RDb29yZGluYXRvcnNSZXNwb25zZSIAElcKEVVwZGF0ZUNvb3JkaW5hdG9yEiguY29vcmRpbmF0b3IudjEuVXBkYXRlQ29vcmRpbmF0b3JSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASeQoWR2V0Q29vcmRpbmF0b3JTZXR0aW5ncxItLmNvb3JkaW5hdG9yLnYxLkdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0Gi4uY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JTZXR0aW5nc1Jlc3BvbnNlIgASZwoZVXBkYXRlQ29vcmRpbmF0b3JTZXR0aW5ncxIwLmNvb3JkaW5hdG9yLnYxLlVwZGF0ZUNvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgBCRFpCZ2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL2Nvb3JkaW5hdG9yL3YxO2Nvb3JkaW5hdG9yX3YxYgZwcm90bzM", [file_google_protobuf_empty]);
+  fileDesc("Cihjb29yZGluYXRvci92MS9jb29yZGluYXRvcl9zZXJ2aWNlLnByb3RvEg5jb29yZGluYXRvci52MSJyCgtDb29yZGluYXRvchIKCgJpZBgBIAEoCRIeCgphdmF0YXJfdXJsGAIgASgJUgphdmF0YXJfdXJsEhMKC2Rlc2NyaXB0aW9uGAMgASgJEiIKDGRpc3BsYXlfbmFtZRgEIAEoCVIMZGlzcGxheV9uYW1lIi8KFUdldENvb3JkaW5hdG9yUmVxdWVzdBIPCgJpZBgBIAEoCUgAiAEBQgUKA19pZCJKChZHZXRDb29yZGluYXRvclJlc3BvbnNlEjAKC2Nvb3JkaW5hdG9yGAEgASgLMhsuY29vcmRpbmF0b3IudjEuQ29vcmRpbmF0b3IiOAoXTGlzdENvb3JkaW5hdG9yc1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgDIm8KGExpc3RDb29yZGluYXRvcnNSZXNwb25zZRIxCgxjb29yZGluYXRvcnMYASADKAsyGy5jb29yZGluYXRvci52MS5Db29yZGluYXRvchIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQiewoYVXBkYXRlQ29vcmRpbmF0b3JSZXF1ZXN0EiUKC2F2YXRhcl9wYXRoGAEgASgJSABSC2F2YXRhcl9wYXRoiAEBEhgKC2Rlc2NyaXB0aW9uGAIgASgJSAGIAQFCDgoMX2F2YXRhcl9wYXRoQg4KDF9kZXNjcmlwdGlvbiJpChNDb29yZGluYXRvclNldHRpbmdzElIKJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kcxgBIAEoA1IkY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIh8KHUdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0IlcKHkdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXNwb25zZRI1CghzZXR0aW5ncxgBIAEoCzIjLmNvb3JkaW5hdG9yLnYxLkNvb3JkaW5hdG9yU2V0dGluZ3MipAEKIFVwZGF0ZUNvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0ElcKJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kcxgBIAEoA0gAUiRjb29wZXJhdGlvbl9yZXF1ZXN0X2Nvb2xkb3duX3NlY29uZHOIAQFCJwolX2Nvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kczKdBAoSQ29vcmRpbmF0b3JTZXJ2aWNlEmEKDkdldENvb3JkaW5hdG9yEiUuY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JSZXF1ZXN0GiYuY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JSZXNwb25zZSIAEmcKEExpc3RDb29yZGluYXRvcnMSJy5jb29yZGluYXRvci52MS5MaXN0Q29vcmRpbmF0b3JzUmVxdWVzdBooLmNvb3JkaW5hdG9yLnYxLkxpc3RDb29yZGluYXRvcnNSZXNwb25zZSIAElcKEVVwZGF0ZUNvb3JkaW5hdG9yEiguY29vcmRpbmF0b3IudjEuVXBkYXRlQ29vcmRpbmF0b3JSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASeQoWR2V0Q29vcmRpbmF0b3JTZXR0aW5ncxItLmNvb3JkaW5hdG9yLnYxLkdldENvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0Gi4uY29vcmRpbmF0b3IudjEuR2V0Q29vcmRpbmF0b3JTZXR0aW5nc1Jlc3BvbnNlIgASZwoZVXBkYXRlQ29vcmRpbmF0b3JTZXR0aW5ncxIwLmNvb3JkaW5hdG9yLnYxLlVwZGF0ZUNvb3JkaW5hdG9yU2V0dGluZ3NSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgBCRFpCZ2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL2Nvb3JkaW5hdG9yL3YxO2Nvb3JkaW5hdG9yX3YxYgZwcm90bzM", [file_google_protobuf_empty]);
 
 /**
  * @generated from message coordinator.v1.Coordinator
@@ -29,19 +29,19 @@ export type Coordinator = Message<"coordinator.v1.Coordinator"> & {
    * Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
    * Аватар независим от аватара Volunteer с тем же ID.
    *
-   * @generated from field: string avatar_url = 4 [json_name = "avatar_url"];
+   * @generated from field: string avatar_url = 2 [json_name = "avatar_url"];
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: string description = 2;
+   * @generated from field: string description = 3;
    */
   description: string;
 
   /**
    * Вычисляемое общее ФИО из Volunteer, отдельно не редактируется.
    *
-   * @generated from field: string display_name = 3 [json_name = "display_name"];
+   * @generated from field: string display_name = 4 [json_name = "display_name"];
    */
   displayName: string;
 };
@@ -106,7 +106,7 @@ export type ListCoordinatorsRequest = Message<"coordinator.v1.ListCoordinatorsRe
    * Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
    * На каждом запросе применяются текущие права доступа и фильтры.
    *
-   * @generated from field: int64 offset = 3;
+   * @generated from field: int64 offset = 2;
    */
   offset: bigint;
 };
@@ -133,7 +133,7 @@ export type ListCoordinatorsResponse = Message<"coordinator.v1.ListCoordinatorsR
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };
@@ -153,14 +153,14 @@ export type UpdateCoordinatorRequest = Message<"coordinator.v1.UpdateCoordinator
    * Отсутствует — сохранить; пустая строка — убрать аватар.
    * Иначе image_path из UploadImage текущего участника; файл обязан существовать.
    *
-   * @generated from field: optional string avatar_path = 3 [json_name = "avatar_path"];
+   * @generated from field: optional string avatar_path = 1 [json_name = "avatar_path"];
    */
   avatarPath?: string | undefined;
 
   /**
    * Отсутствующее поле не меняется. Пустая строка очищает описание.
    *
-   * @generated from field: optional string description = 1;
+   * @generated from field: optional string description = 2;
    */
   description?: string | undefined;
 };

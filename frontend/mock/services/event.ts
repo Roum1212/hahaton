@@ -13,6 +13,7 @@ import { activePartnerIds, hasActiveCooperation, requireCoordinator, requireUser
 import { chatHub } from '../chat-hub';
 import { coinsForMinutes, compareStrings, db, fail, newId, now, paginate, requireFound, type EventRec, type VolunteerRec } from '../db';
 import { cancelEventCascade, changeParticipation, hasOpenApplications, recordOperation } from '../domain';
+import { resolveImagePath } from '../images';
 import { toEvent } from '../mappers';
 import { buildAreaFilter, validatePoint } from './geo';
 
@@ -93,6 +94,7 @@ export const registerEventService = (router: ConnectRouter) =>
         endsAt,
         requirements: validateRequirements(req.candidateRequirements),
         volunteerLimit: req.volunteerLimit,
+        imagePath: resolveImagePath(req.imagePath, coordinator.id),
         status: EventStatus.PUBLISHED,
       };
       db.events.set(event.id, event);
@@ -144,6 +146,7 @@ export const registerEventService = (router: ConnectRouter) =>
       const endsAt = req.endsAt ? timestampDate(req.endsAt) : event.endsAt;
       validateInterval(startsAt, endsAt);
       const requirements = req.candidateRequirements ? validateRequirements(req.candidateRequirements.values) : event.requirements;
+      const imagePath = req.imagePath === undefined ? event.imagePath : resolveImagePath(req.imagePath, coordinator.id);
       Object.assign(event, {
         title: req.title?.trim() ?? event.title,
         description: req.description ?? event.description,
@@ -153,6 +156,7 @@ export const registerEventService = (router: ConnectRouter) =>
         endsAt,
         requirements,
         volunteerLimit: req.volunteerLimit ?? event.volunteerLimit,
+        imagePath,
       });
       return {};
     },

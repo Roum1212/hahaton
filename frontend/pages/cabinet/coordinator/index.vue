@@ -119,7 +119,7 @@ onMounted(async () => {
               </NuxtLink>
               <NuxtLink :to="ROUTES.coordinator.volunteers" class="app-tile">
                 <span class="app-tile__value">{{ pendingCooperations }}</span>
-                <span class="app-tile__label">хотят в команду</span>
+                <span class="app-tile__label">{{ pluralize(pendingCooperations, ['заявка', 'заявки', 'заявок']) }} на сотрудничество</span>
               </NuxtLink>
               <NuxtLink :to="ROUTES.coordinator.orders" class="app-tile">
                 <span class="app-tile__value">{{ pendingOrders }}</span>
@@ -132,7 +132,7 @@ onMounted(async () => {
               <div class="app-list">
                 <div v-for="event in awaiting" :key="event.id" class="app-list__item">
                   <div class="app-list__lead">
-                    <img :src="pickIllustration(EVENT_ILLUSTRATIONS, event.id)" alt="" class="app-thumb" />
+                    <img :src="eventImage(event, event.id)" alt="" class="app-thumb" />
                     <div class="app-list__main">
                       <span class="app-list__title">{{ event.title }}</span>
                       <div class="app-list__meta">
@@ -162,7 +162,7 @@ onMounted(async () => {
               <div v-else class="app-list">
                 <NuxtLink v-for="event in upcoming" :key="event.id" :to="`${ROUTES.coordinator.events}/${event.id}`" class="app-list__item">
                   <div class="app-list__lead">
-                    <img :src="pickIllustration(EVENT_ILLUSTRATIONS, event.id)" alt="" class="app-thumb" />
+                    <img :src="eventImage(event, event.id)" alt="" class="app-thumb" />
                     <div class="app-list__main">
                       <span class="app-list__title">{{ event.title }}</span>
                       <div class="app-list__meta">
@@ -187,8 +187,10 @@ onMounted(async () => {
       <aside class="app-columns__aside">
         <div class="app-card app-promo">
           <img src="/images/landing/step-handover.jpg" alt="" class="app-promo__image" />
-          <span class="app-card__title">Соберите команду</span>
-          <span class="app-card__hint">Отправьте ссылку или покажите QR-код — волонтёр сразу попадёт к вам в команду</span>
+          <span class="app-card__title">Пригласите волонтёров</span>
+          <span class="app-card__hint"
+            >Отправьте ссылку или покажите QR-код — сотрудничество начнётся сразу после того, как волонтёр примет приглашение</span
+          >
           <NuxtLink :to="ROUTES.coordinator.volunteers">
             <Button label="Пригласить" severity="secondary" outlined fluid />
           </NuxtLink>

@@ -80,6 +80,7 @@ export interface EventRec {
   endsAt: Date;
   requirements: EventCandidateRequirement[];
   volunteerLimit: number;
+  imagePath: string;
   status: EventStatus;
   completion?: CompletionRec;
 }

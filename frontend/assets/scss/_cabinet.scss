@@ -1389,9 +1389,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 28px;
-    padding: 48px;
-    background: linear-gradient(180deg, var(--app-brand-top) 0%, var(--app-brand) 100%);
+    gap: 20px;
+    padding: 40px 48px;
+    background-color: #feebe3;
     text-align: center;
 
     @media (min-width: 992px) {
@@ -1399,8 +1399,9 @@
     }
 
     img {
-      width: min(420px, 80%);
-      border-radius: 28px;
+      width: min(560px, 92%);
+      max-height: 62vh;
+      object-fit: contain;
     }
 
     h2 {
@@ -1757,6 +1758,11 @@
 
 .app-crop-dialog.p-dialog .p-dialog-footer {
   justify-content: center;
+}
+
+.app-event-card__image--photo img,
+.app-event-aside__image--photo img {
+  object-fit: cover;
 }
 
 .app-location {
@@ -2163,4 +2169,68 @@
 .app-select-panel-leave-to {
   opacity: 0;
   transform: translate(-50%, 12px);
+}
+
+.p-toast .p-toast-message {
+  --app-toast-accent: var(--app-accent);
+  --app-toast-soft: var(--app-accent-soft);
+
+  overflow: hidden;
+  border: 1px solid var(--app-line);
+  border-left: 4px solid var(--app-toast-accent);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px -22px rgba(42, 22, 15, 0.35);
+  backdrop-filter: none;
+  color: var(--app-ink);
+
+  .p-toast-message-content {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--app-toast-accent);
+  }
+
+  .p-toast-message-content div div {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--app-ink);
+  }
+
+  .p-toast-close-button {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    color: var(--app-ink-muted);
+
+    &:hover {
+      background-color: var(--app-toast-soft);
+      color: var(--app-ink);
+    }
+  }
+}
+
+.p-toast .p-toast-message-success {
+  --app-toast-accent: #15803d;
+  --app-toast-soft: #e8f7ee;
+}
+
+.p-toast .p-toast-message-info {
+  --app-toast-accent: var(--app-accent-text);
+  --app-toast-soft: var(--app-accent-soft);
+}
+
+.p-toast .p-toast-message-warn {
+  --app-toast-accent: #a15c00;
+  --app-toast-soft: #fff4dc;
+}
+
+.p-toast .p-toast-message-error {
+  --app-toast-accent: #c62828;
+  --app-toast-soft: #fdecec;
 }

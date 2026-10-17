@@ -8,12 +8,16 @@ const props = defineProps<{
 }>();
 
 const coins = computed(() => coinsForMinutes(props.event.durationMinutes));
-const image = computed(() => pickIllustration(EVENT_ILLUSTRATIONS, props.event.id));
+const image = computed(() => eventImage(props.event, props.event.id));
 </script>
 
 <template>
   <article class="app-event-card">
-    <component :is="to ? resolveComponent('NuxtLink') : 'div'" :to="to" class="app-event-card__image">
+    <component
+      :is="to ? resolveComponent('NuxtLink') : 'div'"
+      :to="to"
+      class="app-event-card__image"
+      :class="{ 'app-event-card__image--photo': event.imageUrl }">
       <img :src="image" alt="" />
       <div class="app-event-card__badges">
         <AppStatus

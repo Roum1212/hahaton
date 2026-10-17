@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file geo/v1/geo_service.proto.
  */
 export const file_geo_v1_geo_service: GenFile = /*@__PURE__*/
-  fileDesc("ChhnZW8vdjEvZ2VvX3NlcnZpY2UucHJvdG8SBmdlby52MSJUCghHZW9Qb2ludBIVCghsYXRpdHVkZRgBIAEoAUgAiAEBEhYKCWxvbmdpdHVkZRgCIAEoAUgBiAEBQgsKCV9sYXRpdHVkZUIMCgpfbG9uZ2l0dWRlIogBCgRDaXR5EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSIAoLcmVnaW9uX25hbWUYAyABKAlSC3JlZ2lvbl9uYW1lEiAKBmNlbnRlchgEIAEoCzIQLmdlby52MS5HZW9Qb2ludBIiCgxoYXNfYm91bmRhcnkYBSABKAhSDGhhc19ib3VuZGFyeSJUCgpSYWRpdXNBcmVhEiAKBmNlbnRlchgBIAEoCzIQLmdlby52MS5HZW9Qb2ludBIkCg1yYWRpdXNfbWV0ZXJzGAIgASgFUg1yYWRpdXNfbWV0ZXJzIlYKClNlYXJjaEFyZWESGgoHY2l0eV9pZBgBIAEoCUgAUgdjaXR5X2lkEiQKBnJhZGl1cxgCIAEoCzISLmdlby52MS5SYWRpdXNBcmVhSABCBgoEYXJlYSJQChFMaXN0Q2l0aWVzUmVxdWVzdBISCgVxdWVyeRgBIAEoCUgAiAEBEg0KBWxpbWl0GAIgASgFEg4KBm9mZnNldBgDIAEoA0IICgZfcXVlcnkifgoSTGlzdENpdGllc1Jlc3BvbnNlEhwKBmNpdGllcxgBIAMoCzIMLmdlby52MS5DaXR5EigKD2NhdGFsb2dfdmVyc2lvbhgDIAEoCVIPY2F0YWxvZ192ZXJzaW9uEiAKC3RvdGFsX2NvdW50GAIgASgDUgt0b3RhbF9jb3VudCIcCg5HZXRDaXR5UmVxdWVzdBIKCgJpZBgBIAEoCSJXCg9HZXRDaXR5UmVzcG9uc2USGgoEY2l0eRgBIAEoCzIMLmdlby52MS5DaXR5EigKD2NhdGFsb2dfdmVyc2lvbhgCIAEoCVIPY2F0YWxvZ192ZXJzaW9uIh0KDEFkZHJlc3NCb3VuZBINCgV2YWx1ZRgBIAEoCSKfAQoXU3VnZ2VzdEFkZHJlc3Nlc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSNAoKZnJvbV9ib3VuZBgCIAEoCzIULmdlby52MS5BZGRyZXNzQm91bmRSCmZyb21fYm91bmQSMAoIdG9fYm91bmQYAyABKAsyFC5nZW8udjEuQWRkcmVzc0JvdW5kUgh0b19ib3VuZBINCgVjb3VudBgEIAEoBSJ/ChFBZGRyZXNzU3VnZ2VzdGlvbhIuChJ1bnJlc3RyaWN0ZWRfdmFsdWUYAiABKAlSEnVucmVzdHJpY3RlZF92YWx1ZRINCgV2YWx1ZRgBIAEoCRIrCgRkYXRhGAMgASgLMh0uZ2VvLnYxLkFkZHJlc3NTdWdnZXN0aW9uRGF0YSLpAwoVQWRkcmVzc1N1Z2dlc3Rpb25EYXRhEicKDGNpdHlfZmlhc19pZBgCIAEoCUgAUgxjaXR5X2ZpYXNfaWSIAQESHQoHZmlhc19pZBgBIAEoCUgBUgdmaWFzX2lkiAEBEjMKEnNldHRsZW1lbnRfZmlhc19pZBgDIAEoCUgCUhJzZXR0bGVtZW50X2ZpYXNfaWSIAQESKwoOY2l0eV93aXRoX3R5cGUYBiABKAlIA1IOY2l0eV93aXRoX3R5cGWIAQESLwoQcmVnaW9uX3dpdGhfdHlwZRgHIAEoCUgEUhByZWdpb25fd2l0aF90eXBliAEBEjcKFHNldHRsZW1lbnRfd2l0aF90eXBlGAggASgJSAVSFHNldHRsZW1lbnRfd2l0aF90eXBliAEBEh8KBXBvaW50GAQgASgLMhAuZ2VvLnYxLkdlb1BvaW50EhsKBnFjX2dlbxgFIAEoBUgGUgZxY19nZW+IAQFCDwoNX2NpdHlfZmlhc19pZEIKCghfZmlhc19pZEIVChNfc2V0dGxlbWVudF9maWFzX2lkQhEKD19jaXR5X3dpdGhfdHlwZUITChFfcmVnaW9uX3dpdGhfdHlwZUIXChVfc2V0dGxlbWVudF93aXRoX3R5cGVCCQoHX3FjX2dlbyJKChhTdWdnZXN0QWRkcmVzc2VzUmVzcG9uc2USLgoLc3VnZ2VzdGlvbnMYASADKAsyGS5nZW8udjEuQWRkcmVzc1N1Z2dlc3Rpb24y6gEKCkdlb1NlcnZpY2USVwoQU3VnZ2VzdEFkZHJlc3NlcxIfLmdlby52MS5TdWdnZXN0QWRkcmVzc2VzUmVxdWVzdBogLmdlby52MS5TdWdnZXN0QWRkcmVzc2VzUmVzcG9uc2UiABJFCgpMaXN0Q2l0aWVzEhkuZ2VvLnYxLkxpc3RDaXRpZXNSZXF1ZXN0GhouZ2VvLnYxLkxpc3RDaXRpZXNSZXNwb25zZSIAEjwKB0dldENpdHkSFi5nZW8udjEuR2V0Q2l0eVJlcXVlc3QaFy5nZW8udjEuR2V0Q2l0eVJlc3BvbnNlIgBCNFoyZ2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL2dlby92MTtnZW9fdjFiBnByb3RvMw");
+  fileDesc("ChhnZW8vdjEvZ2VvX3NlcnZpY2UucHJvdG8SBmdlby52MSJUCghHZW9Qb2ludBIVCghsYXRpdHVkZRgBIAEoAUgAiAEBEhYKCWxvbmdpdHVkZRgCIAEoAUgBiAEBQgsKCV9sYXRpdHVkZUIMCgpfbG9uZ2l0dWRlIogBCgRDaXR5EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSIAoLcmVnaW9uX25hbWUYAyABKAlSC3JlZ2lvbl9uYW1lEiAKBmNlbnRlchgEIAEoCzIQLmdlby52MS5HZW9Qb2ludBIiCgxoYXNfYm91bmRhcnkYBSABKAhSDGhhc19ib3VuZGFyeSJUCgpSYWRpdXNBcmVhEiAKBmNlbnRlchgBIAEoCzIQLmdlby52MS5HZW9Qb2ludBIkCg1yYWRpdXNfbWV0ZXJzGAIgASgFUg1yYWRpdXNfbWV0ZXJzIlYKClNlYXJjaEFyZWESGgoHY2l0eV9pZBgBIAEoCUgAUgdjaXR5X2lkEiQKBnJhZGl1cxgCIAEoCzISLmdlby52MS5SYWRpdXNBcmVhSABCBgoEYXJlYSJQChFMaXN0Q2l0aWVzUmVxdWVzdBISCgVxdWVyeRgBIAEoCUgAiAEBEg0KBWxpbWl0GAIgASgFEg4KBm9mZnNldBgDIAEoA0IICgZfcXVlcnkifgoSTGlzdENpdGllc1Jlc3BvbnNlEhwKBmNpdGllcxgBIAMoCzIMLmdlby52MS5DaXR5EigKD2NhdGFsb2dfdmVyc2lvbhgCIAEoCVIPY2F0YWxvZ192ZXJzaW9uEiAKC3RvdGFsX2NvdW50GAMgASgDUgt0b3RhbF9jb3VudCIcCg5HZXRDaXR5UmVxdWVzdBIKCgJpZBgBIAEoCSJXCg9HZXRDaXR5UmVzcG9uc2USGgoEY2l0eRgBIAEoCzIMLmdlby52MS5DaXR5EigKD2NhdGFsb2dfdmVyc2lvbhgCIAEoCVIPY2F0YWxvZ192ZXJzaW9uIh0KDEFkZHJlc3NCb3VuZBINCgV2YWx1ZRgBIAEoCSKfAQoXU3VnZ2VzdEFkZHJlc3Nlc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSNAoKZnJvbV9ib3VuZBgCIAEoCzIULmdlby52MS5BZGRyZXNzQm91bmRSCmZyb21fYm91bmQSMAoIdG9fYm91bmQYAyABKAsyFC5nZW8udjEuQWRkcmVzc0JvdW5kUgh0b19ib3VuZBINCgVjb3VudBgEIAEoBSJ/ChFBZGRyZXNzU3VnZ2VzdGlvbhIuChJ1bnJlc3RyaWN0ZWRfdmFsdWUYASABKAlSEnVucmVzdHJpY3RlZF92YWx1ZRINCgV2YWx1ZRgCIAEoCRIrCgRkYXRhGAMgASgLMh0uZ2VvLnYxLkFkZHJlc3NTdWdnZXN0aW9uRGF0YSLpAwoVQWRkcmVzc1N1Z2dlc3Rpb25EYXRhEicKDGNpdHlfZmlhc19pZBgBIAEoCUgAUgxjaXR5X2ZpYXNfaWSIAQESHQoHZmlhc19pZBgCIAEoCUgBUgdmaWFzX2lkiAEBEjMKEnNldHRsZW1lbnRfZmlhc19pZBgDIAEoCUgCUhJzZXR0bGVtZW50X2ZpYXNfaWSIAQESKwoOY2l0eV93aXRoX3R5cGUYBCABKAlIA1IOY2l0eV93aXRoX3R5cGWIAQESLwoQcmVnaW9uX3dpdGhfdHlwZRgFIAEoCUgEUhByZWdpb25fd2l0aF90eXBliAEBEjcKFHNldHRsZW1lbnRfd2l0aF90eXBlGAYgASgJSAVSFHNldHRsZW1lbnRfd2l0aF90eXBliAEBEh8KBXBvaW50GAcgASgLMhAuZ2VvLnYxLkdlb1BvaW50EhsKBnFjX2dlbxgIIAEoBUgGUgZxY19nZW+IAQFCDwoNX2NpdHlfZmlhc19pZEIKCghfZmlhc19pZEIVChNfc2V0dGxlbWVudF9maWFzX2lkQhEKD19jaXR5X3dpdGhfdHlwZUITChFfcmVnaW9uX3dpdGhfdHlwZUIXChVfc2V0dGxlbWVudF93aXRoX3R5cGVCCQoHX3FjX2dlbyJKChhTdWdnZXN0QWRkcmVzc2VzUmVzcG9uc2USLgoLc3VnZ2VzdGlvbnMYASADKAsyGS5nZW8udjEuQWRkcmVzc1N1Z2dlc3Rpb24y6gEKCkdlb1NlcnZpY2USVwoQU3VnZ2VzdEFkZHJlc3NlcxIfLmdlby52MS5TdWdnZXN0QWRkcmVzc2VzUmVxdWVzdBogLmdlby52MS5TdWdnZXN0QWRkcmVzc2VzUmVzcG9uc2UiABJFCgpMaXN0Q2l0aWVzEhkuZ2VvLnYxLkxpc3RDaXRpZXNSZXF1ZXN0GhouZ2VvLnYxLkxpc3RDaXRpZXNSZXNwb25zZSIAEjwKB0dldENpdHkSFi5nZW8udjEuR2V0Q2l0eVJlcXVlc3QaFy5nZW8udjEuR2V0Q2l0eVJlc3BvbnNlIgBCNFoyZ2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL2dlby92MTtnZW9fdjFiBnByb3RvMw");
 
 /**
  * WGS84, десятичные градусы. Обе координаты обязательны, конечны.
@@ -184,12 +184,12 @@ export type ListCitiesResponse = Message<"geo.v1.ListCitiesResponse"> & {
   cities: City[];
 
   /**
-   * @generated from field: string catalog_version = 3 [json_name = "catalog_version"];
+   * @generated from field: string catalog_version = 2 [json_name = "catalog_version"];
    */
   catalogVersion: string;
 
   /**
-   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
    */
   totalCount: bigint;
 };
@@ -302,12 +302,12 @@ export const SuggestAddressesRequestSchema: GenMessage<SuggestAddressesRequest> 
  */
 export type AddressSuggestion = Message<"geo.v1.AddressSuggestion"> & {
   /**
-   * @generated from field: string unrestricted_value = 2 [json_name = "unrestricted_value"];
+   * @generated from field: string unrestricted_value = 1 [json_name = "unrestricted_value"];
    */
   unrestrictedValue: string;
 
   /**
-   * @generated from field: string value = 1;
+   * @generated from field: string value = 2;
    */
   value: string;
 
@@ -331,12 +331,12 @@ export const AddressSuggestionSchema: GenMessage<AddressSuggestion> = /*@__PURE_
  */
 export type AddressSuggestionData = Message<"geo.v1.AddressSuggestionData"> & {
   /**
-   * @generated from field: optional string city_fias_id = 2 [json_name = "city_fias_id"];
+   * @generated from field: optional string city_fias_id = 1 [json_name = "city_fias_id"];
    */
   cityFiasId?: string | undefined;
 
   /**
-   * @generated from field: optional string fias_id = 1 [json_name = "fias_id"];
+   * @generated from field: optional string fias_id = 2 [json_name = "fias_id"];
    */
   fiasId?: string | undefined;
 
@@ -346,17 +346,17 @@ export type AddressSuggestionData = Message<"geo.v1.AddressSuggestionData"> & {
   settlementFiasId?: string | undefined;
 
   /**
-   * @generated from field: optional string city_with_type = 6 [json_name = "city_with_type"];
+   * @generated from field: optional string city_with_type = 4 [json_name = "city_with_type"];
    */
   cityWithType?: string | undefined;
 
   /**
-   * @generated from field: optional string region_with_type = 7 [json_name = "region_with_type"];
+   * @generated from field: optional string region_with_type = 5 [json_name = "region_with_type"];
    */
   regionWithType?: string | undefined;
 
   /**
-   * @generated from field: optional string settlement_with_type = 8 [json_name = "settlement_with_type"];
+   * @generated from field: optional string settlement_with_type = 6 [json_name = "settlement_with_type"];
    */
   settlementWithType?: string | undefined;
 
@@ -364,7 +364,7 @@ export type AddressSuggestionData = Message<"geo.v1.AddressSuggestionData"> & {
    * Из geo_lat/geo_lon DaData. При null/некорректных координатах отсутствует целиком.
    * Фронт предлагает поставить точку вручную, нули не подставляются.
    *
-   * @generated from field: geo.v1.GeoPoint point = 4;
+   * @generated from field: geo.v1.GeoPoint point = 7;
    */
   point?: GeoPoint | undefined;
 
@@ -372,7 +372,7 @@ export type AddressSuggestionData = Message<"geo.v1.AddressSuggestionData"> & {
    * Исходный код DaData: 0 — точно, 1 — ближайший дом, 2 — улица,
    * 3 — населённый пункт, 4 — город, 5 — не определены; null остаётся отсутствием.
    *
-   * @generated from field: optional int32 qc_geo = 5 [json_name = "qc_geo"];
+   * @generated from field: optional int32 qc_geo = 8 [json_name = "qc_geo"];
    */
   qcGeo?: number | undefined;
 };

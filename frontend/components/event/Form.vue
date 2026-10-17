@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { EVENT_REQUIREMENT_LABELS, EventCandidateRequirement, type IEventDto } from '~/core/event/services/event/event.types';
+import { EVENT_REQUIREMENT_LABELS, EventCandidateRequirement } from '~/core/event/services/event/event.types';
+import type { IEventForm } from '~/composables/event/useEvents';
 import type { IAddressSuggestion, IGeoPoint } from '~/core/geo/services/geo/geo.types';
 
-const form = defineModel<IEventDto & { durationMinutes: number }>({ required: true });
+const form = defineModel<IEventForm>({ required: true });
 
 defineProps<{
   disabled?: boolean;
@@ -44,6 +45,11 @@ const onAddressInput = (value: IAddressSuggestion | string) => {
 
 const { resolving, resolve } = useReverseGeocode();
 
+const setImage = (path: string, url: string | null) => {
+  form.value.imagePath = path;
+  form.value.imageUrl = url;
+};
+
 const setPoint = async (point: IGeoPoint) => {
   form.value.point = point;
   const result = await resolve(point);
@@ -59,6 +65,16 @@ const setPoint = async (point: IGeoPoint) => {
       <span class="app-field__label">Название</span>
       <InputText v-model="form.title" :disabled="disabled" fluid />
     </label>
+
+    <div class="app-field">
+      <span class="app-field__label">Фото</span>
+      <AppImageUpload
+        :image="form.imageUrl"
+        shape="cover"
+        :disabled="disabled"
+        @uploaded="setImage($event.path, $event.url)"
+        @remove="setImage('', null)" />
+    </div>
 
     <label class="app-field">
       <span class="app-field__label">Описание</span>

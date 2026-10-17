@@ -63,7 +63,7 @@ onMounted(load);
               <span v-if="volunteer.phone"><i class="pi pi-phone" />{{ volunteer.phone }}</span>
               <span v-if="!volunteer.email && !volunteer.phone" class="flex items-center gap-2">
                 Контакты скрыты
-                <i v-tooltip.bottom="'Контакты видны, пока волонтёр в вашей команде'" class="pi pi-question-circle" />
+                <i v-tooltip.bottom="'Контакты видны, пока с волонтёром действует сотрудничество'" class="pi pi-question-circle" />
               </span>
             </div>
           </div>
@@ -84,11 +84,11 @@ onMounted(load);
             </div>
             <div v-if="cooperation?.status === CooperationStatus.PENDING" class="app-hero__actions">
               <Button label="Отклонить" severity="secondary" text @click="reject(volunteerId, name)" />
-              <Button label="Принять в команду" class="flex-1" @click="onApprove" />
+              <Button label="Принять заявку" class="flex-1" @click="onApprove" />
             </div>
             <Button
               v-else-if="cooperation?.status === CooperationStatus.ACTIVE"
-              label="Исключить из команды"
+              label="Прекратить сотрудничество"
               severity="secondary"
               text
               fluid
@@ -109,7 +109,7 @@ onMounted(load);
           <div v-else class="app-list">
             <div v-for="item in history" :key="item.id" class="app-list__item">
               <div class="app-list__lead">
-                <img :src="pickIllustration(EVENT_ILLUSTRATIONS, item.eventId)" alt="" class="app-thumb" />
+                <img :src="eventImage(event(item.eventId), item.eventId)" alt="" class="app-thumb" />
                 <div class="app-list__main">
                   <NuxtLink :to="`${ROUTES.coordinator.events}/${item.eventId}`" class="app-list__title">
                     {{ event(item.eventId)?.title ?? 'Мероприятие' }}
@@ -149,7 +149,7 @@ onMounted(load);
           <div v-else class="app-list">
             <div v-for="item in rejections" :key="item.id" class="app-list__item">
               <div class="app-list__lead">
-                <img :src="pickIllustration(EVENT_ILLUSTRATIONS, item.eventId)" alt="" class="app-thumb" />
+                <img :src="eventImage(event(item.eventId), item.eventId)" alt="" class="app-thumb" />
                 <div class="app-list__main">
                   <NuxtLink :to="`${ROUTES.coordinator.events}/${item.eventId}`" class="app-list__title">
                     {{ event(item.eventId)?.title ?? 'Мероприятие' }}

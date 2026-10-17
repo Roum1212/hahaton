@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file participation/v1/participation_service.proto.
  */
 export const file_participation_v1_participation_service: GenFile = /*@__PURE__*/
-  fileDesc("CixwYXJ0aWNpcGF0aW9uL3YxL3BhcnRpY2lwYXRpb25fc2VydmljZS5wcm90bxIQcGFydGljaXBhdGlvbi52MSKHBQoNUGFydGljaXBhdGlvbhIKCgJpZBgBIAEoCRIaCghldmVudF9pZBgCIAEoCVIIZXZlbnRfaWQSIgoMdm9sdW50ZWVyX2lkGAMgASgJUgx2b2x1bnRlZXJfaWQSYwoTY2FuY2VsbGF0aW9uX3JlYXNvbhgNIAEoDjIxLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbkNhbmNlbGxhdGlvblJlYXNvblITY2FuY2VsbGF0aW9uX3JlYXNvbhIvChByZWplY3Rpb25fcmVhc29uGAsgASgJSABSEHJlamVjdGlvbl9yZWFzb26IAQESNQoGc3RhdHVzGAQgASgOMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uU3RhdHVzEjcKFGFjY3J1YWxfb3BlcmF0aW9uX2lkGAggASgJSAFSFGFjY3J1YWxfb3BlcmF0aW9uX2lkiAEBEikKDWF3YXJkZWRfY29pbnMYCSABKANIAlINYXdhcmRlZF9jb2luc4gBARItCg9hd2FyZGVkX21pbnV0ZXMYCiABKANIA1IPYXdhcmRlZF9taW51dGVziAEBEjoKCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EjoKCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgp1cGRhdGVkX2F0QhMKEV9yZWplY3Rpb25fcmVhc29uQhcKFV9hY2NydWFsX29wZXJhdGlvbl9pZEIQCg5fYXdhcmRlZF9jb2luc0ISChBfYXdhcmRlZF9taW51dGVzIjkKG1JlcXVlc3RQYXJ0aWNpcGF0aW9uUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQiKgocUmVxdWVzdFBhcnRpY2lwYXRpb25SZXNwb25zZRIKCgJpZBgBIAEoCSIpChtSZXN0b3JlUGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiKQobQXBwcm92ZVBhcnRpY2lwYXRpb25SZXF1ZXN0EgoKAmlkGAEgASgJIkgKGlJlamVjdFBhcnRpY2lwYXRpb25SZXF1ZXN0EgoKAmlkGAEgASgJEhMKBnJlYXNvbhgCIAEoCUgAiAEBQgkKB19yZWFzb24iKAoaQ2FuY2VsUGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiJQoXR2V0UGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiUgoYR2V0UGFydGljaXBhdGlvblJlc3BvbnNlEjYKDXBhcnRpY2lwYXRpb24YASABKAsyHy5wYXJ0aWNpcGF0aW9uLnYxLlBhcnRpY2lwYXRpb24iogIKGUxpc3RQYXJ0aWNpcGF0aW9uc1JlcXVlc3QSNwoFc2NvcGUYByABKA4yKC5wYXJ0aWNpcGF0aW9uLnYxLlBhcnRpY2lwYXRpb25MaXN0U2NvcGUSHwoIZXZlbnRfaWQYASABKAlIAFIIZXZlbnRfaWSIAQESJwoMdm9sdW50ZWVyX2lkGAIgASgJSAFSDHZvbHVudGVlcl9pZIgBARI6CgZzdGF0dXMYAyABKA4yJS5wYXJ0aWNpcGF0aW9uLnYxLlBhcnRpY2lwYXRpb25TdGF0dXNIAogBARINCgVsaW1pdBgEIAEoBRIOCgZvZmZzZXQYBiABKANCCwoJX2V2ZW50X2lkQg8KDV92b2x1bnRlZXJfaWRCCQoHX3N0YXR1cyJ3ChpMaXN0UGFydGljaXBhdGlvbnNSZXNwb25zZRI3Cg5wYXJ0aWNpcGF0aW9ucxgBIAMoCzIfLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbhIgCgt0b3RhbF9jb3VudBgDIAEoA1ILdG90YWxfY291bnQingMKE1BhcnRpY2lwYXRpb25DaGFuZ2USEAoIc2VxdWVuY2UYASABKAQSYwoTY2FuY2VsbGF0aW9uX3JlYXNvbhgHIAEoDjIxLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbkNhbmNlbGxhdGlvblJlYXNvblITY2FuY2VsbGF0aW9uX3JlYXNvbhIvChByZWplY3Rpb25fcmVhc29uGAYgASgJSAFSEHJlamVjdGlvbl9yZWFzb26IAQESNQoGc3RhdHVzGAIgASgOMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uU3RhdHVzEigKDmNvb3JkaW5hdG9yX2lkGAQgASgJSABSDmNvb3JkaW5hdG9yX2lkEiQKDHZvbHVudGVlcl9pZBgFIAEoCUgAUgx2b2x1bnRlZXJfaWQSOgoKY3JlYXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXRCBwoFYWN0b3JCEwoRX3JlamVjdGlvbl9yZWFzb24ibAofTGlzdFBhcnRpY2lwYXRpb25DaGFuZ2VzUmVxdWVzdBIqChBwYXJ0aWNpcGF0aW9uX2lkGAEgASgJUhBwYXJ0aWNpcGF0aW9uX2lkEg0KBWxpbWl0GAIgASgFEg4KBm9mZnNldBgDIAEoAyJ8CiBMaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXNwb25zZRI2CgdjaGFuZ2VzGAEgAygLMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uQ2hhbmdlEiAKC3RvdGFsX2NvdW50GAIgASgDUgt0b3RhbF9jb3VudCqzAgoTUGFydGljaXBhdGlvblN0YXR1cxIkCiBQQVJUSUNJUEFUSU9OX1NUQVRVU19VTlNQRUNJRklFRBAAEiAKHFBBUlRJQ0lQQVRJT05fU1RBVFVTX1BFTkRJTkcQARIhCh1QQVJUSUNJUEFUSU9OX1NUQVRVU19BUFBST1ZFRBACEiEKHVBBUlRJQ0lQQVRJT05fU1RBVFVTX1JFSkVDVEVEEAMSIgoeUEFSVElDSVBBVElPTl9TVEFUVVNfQ09ORklSTUVEEAQSJQohUEFSVElDSVBBVElPTl9TVEFUVVNfTk9UX0FUVEVOREVEEAUSIgoeUEFSVElDSVBBVElPTl9TVEFUVVNfQ0FOQ0VMTEVEEAYSHwobUEFSVElDSVBBVElPTl9TVEFUVVNfQ0xPU0VEEAcqhAIKH1BhcnRpY2lwYXRpb25DYW5jZWxsYXRpb25SZWFzb24SMQotUEFSVElDSVBBVElPTl9DQU5DRUxMQVRJT05fUkVBU09OX1VOU1BFQ0lGSUVEEAASOQo1UEFSVElDSVBBVElPTl9DQU5DRUxMQVRJT05fUkVBU09OX1ZPTFVOVEVFUl9DQU5DRUxMRUQQARI8CjhQQVJUSUNJUEFUSU9OX0NBTkNFTExBVElPTl9SRUFTT05fQ09PUEVSQVRJT05fVEVSTUlOQVRFRBACEjUKMVBBUlRJQ0lQQVRJT05fQ0FOQ0VMTEFUSU9OX1JFQVNPTl9FVkVOVF9DQU5DRUxMRUQQAyqYAQoWUGFydGljaXBhdGlvbkxpc3RTY29wZRIoCiRQQVJUSUNJUEFUSU9OX0xJU1RfU0NPUEVfVU5TUEVDSUZJRUQQABIsCihQQVJUSUNJUEFUSU9OX0xJU1RfU0NPUEVfTVlfQVBQTElDQVRJT05TEAESJgoiUEFSVElDSVBBVElPTl9MSVNUX1NDT1BFX01ZX0VWRU5UUxACMvUGChRQYXJ0aWNpcGF0aW9uU2VydmljZRJ3ChRSZXF1ZXN0UGFydGljaXBhdGlvbhItLnBhcnRpY2lwYXRpb24udjEuUmVxdWVzdFBhcnRpY2lwYXRpb25SZXF1ZXN0Gi4ucGFydGljaXBhdGlvbi52MS5SZXF1ZXN0UGFydGljaXBhdGlvblJlc3BvbnNlIgASXwoUUmVzdG9yZVBhcnRpY2lwYXRpb24SLS5wYXJ0aWNpcGF0aW9uLnYxLlJlc3RvcmVQYXJ0aWNpcGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEl8KFEFwcHJvdmVQYXJ0aWNpcGF0aW9uEi0ucGFydGljaXBhdGlvbi52MS5BcHByb3ZlUGFydGljaXBhdGlvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJdChNSZWplY3RQYXJ0aWNpcGF0aW9uEiwucGFydGljaXBhdGlvbi52MS5SZWplY3RQYXJ0aWNpcGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEl0KE0NhbmNlbFBhcnRpY2lwYXRpb24SLC5wYXJ0aWNpcGF0aW9uLnYxLkNhbmNlbFBhcnRpY2lwYXRpb25SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASawoQR2V0UGFydGljaXBhdGlvbhIpLnBhcnRpY2lwYXRpb24udjEuR2V0UGFydGljaXBhdGlvblJlcXVlc3QaKi5wYXJ0aWNpcGF0aW9uLnYxLkdldFBhcnRpY2lwYXRpb25SZXNwb25zZSIAEnEKEkxpc3RQYXJ0aWNpcGF0aW9ucxIrLnBhcnRpY2lwYXRpb24udjEuTGlzdFBhcnRpY2lwYXRpb25zUmVxdWVzdBosLnBhcnRpY2lwYXRpb24udjEuTGlzdFBhcnRpY2lwYXRpb25zUmVzcG9uc2UiABKDAQoYTGlzdFBhcnRpY2lwYXRpb25DaGFuZ2VzEjEucGFydGljaXBhdGlvbi52MS5MaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXF1ZXN0GjIucGFydGljaXBhdGlvbi52MS5MaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXNwb25zZSIAQkhaRmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9wYXJ0aWNpcGF0aW9uL3YxO3BhcnRpY2lwYXRpb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("CixwYXJ0aWNpcGF0aW9uL3YxL3BhcnRpY2lwYXRpb25fc2VydmljZS5wcm90bxIQcGFydGljaXBhdGlvbi52MSKHBQoNUGFydGljaXBhdGlvbhIKCgJpZBgBIAEoCRIaCghldmVudF9pZBgCIAEoCVIIZXZlbnRfaWQSIgoMdm9sdW50ZWVyX2lkGAMgASgJUgx2b2x1bnRlZXJfaWQSYwoTY2FuY2VsbGF0aW9uX3JlYXNvbhgEIAEoDjIxLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbkNhbmNlbGxhdGlvblJlYXNvblITY2FuY2VsbGF0aW9uX3JlYXNvbhIvChByZWplY3Rpb25fcmVhc29uGAUgASgJSABSEHJlamVjdGlvbl9yZWFzb26IAQESNQoGc3RhdHVzGAYgASgOMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uU3RhdHVzEjcKFGFjY3J1YWxfb3BlcmF0aW9uX2lkGAcgASgJSAFSFGFjY3J1YWxfb3BlcmF0aW9uX2lkiAEBEikKDWF3YXJkZWRfY29pbnMYCCABKANIAlINYXdhcmRlZF9jb2luc4gBARItCg9hd2FyZGVkX21pbnV0ZXMYCSABKANIA1IPYXdhcmRlZF9taW51dGVziAEBEjoKCmNyZWF0ZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EjoKCnVwZGF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgp1cGRhdGVkX2F0QhMKEV9yZWplY3Rpb25fcmVhc29uQhcKFV9hY2NydWFsX29wZXJhdGlvbl9pZEIQCg5fYXdhcmRlZF9jb2luc0ISChBfYXdhcmRlZF9taW51dGVzIjkKG1JlcXVlc3RQYXJ0aWNpcGF0aW9uUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQiKgocUmVxdWVzdFBhcnRpY2lwYXRpb25SZXNwb25zZRIKCgJpZBgBIAEoCSIpChtSZXN0b3JlUGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiKQobQXBwcm92ZVBhcnRpY2lwYXRpb25SZXF1ZXN0EgoKAmlkGAEgASgJIkgKGlJlamVjdFBhcnRpY2lwYXRpb25SZXF1ZXN0EgoKAmlkGAEgASgJEhMKBnJlYXNvbhgCIAEoCUgAiAEBQgkKB19yZWFzb24iKAoaQ2FuY2VsUGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiJQoXR2V0UGFydGljaXBhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiUgoYR2V0UGFydGljaXBhdGlvblJlc3BvbnNlEjYKDXBhcnRpY2lwYXRpb24YASABKAsyHy5wYXJ0aWNpcGF0aW9uLnYxLlBhcnRpY2lwYXRpb24iogIKGUxpc3RQYXJ0aWNpcGF0aW9uc1JlcXVlc3QSNwoFc2NvcGUYASABKA4yKC5wYXJ0aWNpcGF0aW9uLnYxLlBhcnRpY2lwYXRpb25MaXN0U2NvcGUSHwoIZXZlbnRfaWQYAiABKAlIAFIIZXZlbnRfaWSIAQESOgoGc3RhdHVzGAMgASgOMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uU3RhdHVzSAGIAQESJwoMdm9sdW50ZWVyX2lkGAQgASgJSAJSDHZvbHVudGVlcl9pZIgBARINCgVsaW1pdBgFIAEoBRIOCgZvZmZzZXQYBiABKANCCwoJX2V2ZW50X2lkQgkKB19zdGF0dXNCDwoNX3ZvbHVudGVlcl9pZCJ3ChpMaXN0UGFydGljaXBhdGlvbnNSZXNwb25zZRI3Cg5wYXJ0aWNpcGF0aW9ucxgBIAMoCzIfLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbhIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQingMKE1BhcnRpY2lwYXRpb25DaGFuZ2USEAoIc2VxdWVuY2UYASABKAQSYwoTY2FuY2VsbGF0aW9uX3JlYXNvbhgCIAEoDjIxLnBhcnRpY2lwYXRpb24udjEuUGFydGljaXBhdGlvbkNhbmNlbGxhdGlvblJlYXNvblITY2FuY2VsbGF0aW9uX3JlYXNvbhIvChByZWplY3Rpb25fcmVhc29uGAMgASgJSAFSEHJlamVjdGlvbl9yZWFzb26IAQESNQoGc3RhdHVzGAQgASgOMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uU3RhdHVzEigKDmNvb3JkaW5hdG9yX2lkGAUgASgJSABSDmNvb3JkaW5hdG9yX2lkEiQKDHZvbHVudGVlcl9pZBgGIAEoCUgAUgx2b2x1bnRlZXJfaWQSOgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXRCBwoFYWN0b3JCEwoRX3JlamVjdGlvbl9yZWFzb24ibAofTGlzdFBhcnRpY2lwYXRpb25DaGFuZ2VzUmVxdWVzdBIqChBwYXJ0aWNpcGF0aW9uX2lkGAEgASgJUhBwYXJ0aWNpcGF0aW9uX2lkEg0KBWxpbWl0GAIgASgFEg4KBm9mZnNldBgDIAEoAyJ8CiBMaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXNwb25zZRI2CgdjaGFuZ2VzGAEgAygLMiUucGFydGljaXBhdGlvbi52MS5QYXJ0aWNpcGF0aW9uQ2hhbmdlEiAKC3RvdGFsX2NvdW50GAIgASgDUgt0b3RhbF9jb3VudCqzAgoTUGFydGljaXBhdGlvblN0YXR1cxIkCiBQQVJUSUNJUEFUSU9OX1NUQVRVU19VTlNQRUNJRklFRBAAEiAKHFBBUlRJQ0lQQVRJT05fU1RBVFVTX1BFTkRJTkcQARIhCh1QQVJUSUNJUEFUSU9OX1NUQVRVU19BUFBST1ZFRBACEiEKHVBBUlRJQ0lQQVRJT05fU1RBVFVTX1JFSkVDVEVEEAMSIgoeUEFSVElDSVBBVElPTl9TVEFUVVNfQ09ORklSTUVEEAQSJQohUEFSVElDSVBBVElPTl9TVEFUVVNfTk9UX0FUVEVOREVEEAUSIgoeUEFSVElDSVBBVElPTl9TVEFUVVNfQ0FOQ0VMTEVEEAYSHwobUEFSVElDSVBBVElPTl9TVEFUVVNfQ0xPU0VEEAcqhAIKH1BhcnRpY2lwYXRpb25DYW5jZWxsYXRpb25SZWFzb24SMQotUEFSVElDSVBBVElPTl9DQU5DRUxMQVRJT05fUkVBU09OX1VOU1BFQ0lGSUVEEAASOQo1UEFSVElDSVBBVElPTl9DQU5DRUxMQVRJT05fUkVBU09OX1ZPTFVOVEVFUl9DQU5DRUxMRUQQARI8CjhQQVJUSUNJUEFUSU9OX0NBTkNFTExBVElPTl9SRUFTT05fQ09PUEVSQVRJT05fVEVSTUlOQVRFRBACEjUKMVBBUlRJQ0lQQVRJT05fQ0FOQ0VMTEFUSU9OX1JFQVNPTl9FVkVOVF9DQU5DRUxMRUQQAyqYAQoWUGFydGljaXBhdGlvbkxpc3RTY29wZRIoCiRQQVJUSUNJUEFUSU9OX0xJU1RfU0NPUEVfVU5TUEVDSUZJRUQQABIsCihQQVJUSUNJUEFUSU9OX0xJU1RfU0NPUEVfTVlfQVBQTElDQVRJT05TEAESJgoiUEFSVElDSVBBVElPTl9MSVNUX1NDT1BFX01ZX0VWRU5UUxACMvUGChRQYXJ0aWNpcGF0aW9uU2VydmljZRJ3ChRSZXF1ZXN0UGFydGljaXBhdGlvbhItLnBhcnRpY2lwYXRpb24udjEuUmVxdWVzdFBhcnRpY2lwYXRpb25SZXF1ZXN0Gi4ucGFydGljaXBhdGlvbi52MS5SZXF1ZXN0UGFydGljaXBhdGlvblJlc3BvbnNlIgASXwoUUmVzdG9yZVBhcnRpY2lwYXRpb24SLS5wYXJ0aWNpcGF0aW9uLnYxLlJlc3RvcmVQYXJ0aWNpcGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEl8KFEFwcHJvdmVQYXJ0aWNpcGF0aW9uEi0ucGFydGljaXBhdGlvbi52MS5BcHByb3ZlUGFydGljaXBhdGlvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJdChNSZWplY3RQYXJ0aWNpcGF0aW9uEiwucGFydGljaXBhdGlvbi52MS5SZWplY3RQYXJ0aWNpcGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEl0KE0NhbmNlbFBhcnRpY2lwYXRpb24SLC5wYXJ0aWNpcGF0aW9uLnYxLkNhbmNlbFBhcnRpY2lwYXRpb25SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASawoQR2V0UGFydGljaXBhdGlvbhIpLnBhcnRpY2lwYXRpb24udjEuR2V0UGFydGljaXBhdGlvblJlcXVlc3QaKi5wYXJ0aWNpcGF0aW9uLnYxLkdldFBhcnRpY2lwYXRpb25SZXNwb25zZSIAEnEKEkxpc3RQYXJ0aWNpcGF0aW9ucxIrLnBhcnRpY2lwYXRpb24udjEuTGlzdFBhcnRpY2lwYXRpb25zUmVxdWVzdBosLnBhcnRpY2lwYXRpb24udjEuTGlzdFBhcnRpY2lwYXRpb25zUmVzcG9uc2UiABKDAQoYTGlzdFBhcnRpY2lwYXRpb25DaGFuZ2VzEjEucGFydGljaXBhdGlvbi52MS5MaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXF1ZXN0GjIucGFydGljaXBhdGlvbi52MS5MaXN0UGFydGljaXBhdGlvbkNoYW5nZXNSZXNwb25zZSIAQkhaRmdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9wYXJ0aWNpcGF0aW9uL3YxO3BhcnRpY2lwYXRpb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message participation.v1.Participation
@@ -34,46 +34,46 @@ export type Participation = Message<"participation.v1.Participation"> & {
   volunteerId: string;
 
   /**
-   * @generated from field: participation.v1.ParticipationCancellationReason cancellation_reason = 13 [json_name = "cancellation_reason"];
+   * @generated from field: participation.v1.ParticipationCancellationReason cancellation_reason = 4 [json_name = "cancellation_reason"];
    */
   cancellationReason: ParticipationCancellationReason;
 
   /**
    * Необязательная причина отказа; только сам адресат и создатель мероприятия.
    *
-   * @generated from field: optional string rejection_reason = 11 [json_name = "rejection_reason"];
+   * @generated from field: optional string rejection_reason = 5 [json_name = "rejection_reason"];
    */
   rejectionReason?: string | undefined;
 
   /**
-   * @generated from field: participation.v1.ParticipationStatus status = 4;
+   * @generated from field: participation.v1.ParticipationStatus status = 6;
    */
   status: ParticipationStatus;
 
   /**
    * Все три поля присутствуют только у CONFIRMED, записываются синхронно в CompleteEvent.
    *
-   * @generated from field: optional string accrual_operation_id = 8 [json_name = "accrual_operation_id"];
+   * @generated from field: optional string accrual_operation_id = 7 [json_name = "accrual_operation_id"];
    */
   accrualOperationId?: string | undefined;
 
   /**
-   * @generated from field: optional int64 awarded_coins = 9 [json_name = "awarded_coins"];
+   * @generated from field: optional int64 awarded_coins = 8 [json_name = "awarded_coins"];
    */
   awardedCoins?: bigint | undefined;
 
   /**
-   * @generated from field: optional int64 awarded_minutes = 10 [json_name = "awarded_minutes"];
+   * @generated from field: optional int64 awarded_minutes = 9 [json_name = "awarded_minutes"];
    */
   awardedMinutes?: bigint | undefined;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
+   * @generated from field: google.protobuf.Timestamp created_at = 10 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
+   * @generated from field: google.protobuf.Timestamp updated_at = 11 [json_name = "updated_at"];
    */
   updatedAt?: Timestamp | undefined;
 };
@@ -238,19 +238,14 @@ export type ListParticipationsRequest = Message<"participation.v1.ListParticipat
   /**
    * Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
    *
-   * @generated from field: participation.v1.ParticipationListScope scope = 7;
+   * @generated from field: participation.v1.ParticipationListScope scope = 1;
    */
   scope: ParticipationListScope;
 
   /**
-   * @generated from field: optional string event_id = 1 [json_name = "event_id"];
+   * @generated from field: optional string event_id = 2 [json_name = "event_id"];
    */
   eventId?: string | undefined;
-
-  /**
-   * @generated from field: optional string volunteer_id = 2 [json_name = "volunteer_id"];
-   */
-  volunteerId?: string | undefined;
 
   /**
    * Отсутствует — все; UNSPECIFIED/неизвестный статус недопустимы.
@@ -260,9 +255,14 @@ export type ListParticipationsRequest = Message<"participation.v1.ListParticipat
   status?: ParticipationStatus | undefined;
 
   /**
+   * @generated from field: optional string volunteer_id = 4 [json_name = "volunteer_id"];
+   */
+  volunteerId?: string | undefined;
+
+  /**
    * 0 означает 20; допустимы 1–100. offset >= 0. Проверки доступа до пагинации.
    *
-   * @generated from field: int32 limit = 4;
+   * @generated from field: int32 limit = 5;
    */
   limit: number;
 
@@ -293,7 +293,7 @@ export type ListParticipationsResponse = Message<"participation.v1.ListParticipa
   /**
    * Тот же снимок данных/права/фильтры, что и страница, без limit/offset.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };
@@ -317,17 +317,17 @@ export type ParticipationChange = Message<"participation.v1.ParticipationChange"
   sequence: bigint;
 
   /**
-   * @generated from field: participation.v1.ParticipationCancellationReason cancellation_reason = 7 [json_name = "cancellation_reason"];
+   * @generated from field: participation.v1.ParticipationCancellationReason cancellation_reason = 2 [json_name = "cancellation_reason"];
    */
   cancellationReason: ParticipationCancellationReason;
 
   /**
-   * @generated from field: optional string rejection_reason = 6 [json_name = "rejection_reason"];
+   * @generated from field: optional string rejection_reason = 3 [json_name = "rejection_reason"];
    */
   rejectionReason?: string | undefined;
 
   /**
-   * @generated from field: participation.v1.ParticipationStatus status = 2;
+   * @generated from field: participation.v1.ParticipationStatus status = 4;
    */
   status: ParticipationStatus;
 
@@ -338,20 +338,20 @@ export type ParticipationChange = Message<"participation.v1.ParticipationChange"
    */
   actor: {
     /**
-     * @generated from field: string coordinator_id = 4 [json_name = "coordinator_id"];
+     * @generated from field: string coordinator_id = 5 [json_name = "coordinator_id"];
      */
     value: string;
     case: "coordinatorId";
   } | {
     /**
-     * @generated from field: string volunteer_id = 5 [json_name = "volunteer_id"];
+     * @generated from field: string volunteer_id = 6 [json_name = "volunteer_id"];
      */
     value: string;
     case: "volunteerId";
   } | { case: undefined; value?: undefined };
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 3 [json_name = "created_at"];
+   * @generated from field: google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
 };

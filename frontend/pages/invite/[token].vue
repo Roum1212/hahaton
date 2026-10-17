@@ -53,7 +53,7 @@ const onAccept = async () => {
       </template>
 
       <template v-else>
-        <span class="app-card__title">Координатор приглашает вас в свою команду</span>
+        <span class="app-card__title">Координатор приглашает вас к сотрудничеству</span>
         <Button label="Принять приглашение" size="large" :loading="accepting" :disabled="!token" @click="onAccept" />
       </template>
     </div>

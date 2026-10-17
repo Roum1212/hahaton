@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file admin/v1/admin_service.proto.
  */
 export const file_admin_v1_admin_service: GenFile = /*@__PURE__*/
-  fileDesc("ChxhZG1pbi92MS9hZG1pbl9zZXJ2aWNlLnByb3RvEghhZG1pbi52MSKgAgoOQWRtaW5Wb2x1bnRlZXISCgoCaWQYASABKAkSHgoKYXZhdGFyX3VybBgIIAEoCVIKYXZhdGFyX3VybBIeCgpmaXJzdF9uYW1lGAIgASgJUgpmaXJzdF9uYW1lEhwKCWxhc3RfbmFtZRgDIAEoCVIJbGFzdF9uYW1lEiAKC21pZGRsZV9uYW1lGAQgASgJUgttaWRkbGVfbmFtZRIkCg1lbWFpbF9hZGRyZXNzGAUgASgJUg1lbWFpbF9hZGRyZXNzEiIKDHBob25lX251bWJlchgGIAEoCVIMcGhvbmVfbnVtYmVyEjgKF2hhc19jb29yZGluYXRvcl9wcm9maWxlGAcgASgIUhdoYXNfY29vcmRpbmF0b3JfcHJvZmlsZSK3AQoVRmluZFZvbHVudGVlcnNSZXF1ZXN0EiYKDWVtYWlsX2FkZHJlc3MYASABKAlIAFINZW1haWxfYWRkcmVzcxIkCgxwaG9uZV9udW1iZXIYAiABKAlIAFIMcGhvbmVfbnVtYmVyEiQKDHZvbHVudGVlcl9pZBgDIAEoCUgAUgx2b2x1bnRlZXJfaWQSDQoFbGltaXQYBCABKAUSDgoGb2Zmc2V0GAUgASgDQgsKCWNyaXRlcmlvbiJoChZGaW5kVm9sdW50ZWVyc1Jlc3BvbnNlEiwKCnZvbHVudGVlcnMYASADKAsyGC5hZG1pbi52MS5BZG1pblZvbHVudGVlchIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQi9wEKGENyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYByABKAlSDHZvbHVudGVlcl9pZBIgCgthdmF0YXJfcGF0aBgFIAEoCVILYXZhdGFyX3BhdGgSEwoLZGVzY3JpcHRpb24YBCABKAkSVwokY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzGAYgASgDSABSJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kc4gBAUInCiVfY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIicKGUNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2USCgoCaWQYASABKAkyxQEKDEFkbWluU2VydmljZRJVCg5GaW5kVm9sdW50ZWVycxIfLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVxdWVzdBogLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVzcG9uc2UiABJeChFDcmVhdGVDb29yZGluYXRvchIiLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBojLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2UiAEI4WjZnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vYWRtaW4vdjE7YWRtaW5fdjFiBnByb3RvMw");
+  fileDesc("ChxhZG1pbi92MS9hZG1pbl9zZXJ2aWNlLnByb3RvEghhZG1pbi52MSKgAgoOQWRtaW5Wb2x1bnRlZXISCgoCaWQYASABKAkSHgoKYXZhdGFyX3VybBgCIAEoCVIKYXZhdGFyX3VybBIeCgpmaXJzdF9uYW1lGAMgASgJUgpmaXJzdF9uYW1lEhwKCWxhc3RfbmFtZRgEIAEoCVIJbGFzdF9uYW1lEiAKC21pZGRsZV9uYW1lGAUgASgJUgttaWRkbGVfbmFtZRIkCg1lbWFpbF9hZGRyZXNzGAYgASgJUg1lbWFpbF9hZGRyZXNzEiIKDHBob25lX251bWJlchgHIAEoCVIMcGhvbmVfbnVtYmVyEjgKF2hhc19jb29yZGluYXRvcl9wcm9maWxlGAggASgIUhdoYXNfY29vcmRpbmF0b3JfcHJvZmlsZSK3AQoVRmluZFZvbHVudGVlcnNSZXF1ZXN0EiYKDWVtYWlsX2FkZHJlc3MYASABKAlIAFINZW1haWxfYWRkcmVzcxIkCgxwaG9uZV9udW1iZXIYAiABKAlIAFIMcGhvbmVfbnVtYmVyEiQKDHZvbHVudGVlcl9pZBgDIAEoCUgAUgx2b2x1bnRlZXJfaWQSDQoFbGltaXQYBCABKAUSDgoGb2Zmc2V0GAUgASgDQgsKCWNyaXRlcmlvbiJoChZGaW5kVm9sdW50ZWVyc1Jlc3BvbnNlEiwKCnZvbHVudGVlcnMYASADKAsyGC5hZG1pbi52MS5BZG1pblZvbHVudGVlchIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQi9wEKGENyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYASABKAlSDHZvbHVudGVlcl9pZBIgCgthdmF0YXJfcGF0aBgCIAEoCVILYXZhdGFyX3BhdGgSEwoLZGVzY3JpcHRpb24YAyABKAkSVwokY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzGAQgASgDSABSJGNvb3BlcmF0aW9uX3JlcXVlc3RfY29vbGRvd25fc2Vjb25kc4gBAUInCiVfY29vcGVyYXRpb25fcmVxdWVzdF9jb29sZG93bl9zZWNvbmRzIicKGUNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2USCgoCaWQYASABKAkyxQEKDEFkbWluU2VydmljZRJVCg5GaW5kVm9sdW50ZWVycxIfLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVxdWVzdBogLmFkbWluLnYxLkZpbmRWb2x1bnRlZXJzUmVzcG9uc2UiABJeChFDcmVhdGVDb29yZGluYXRvchIiLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVxdWVzdBojLmFkbWluLnYxLkNyZWF0ZUNvb3JkaW5hdG9yUmVzcG9uc2UiAEI4WjZnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vYWRtaW4vdjE7YWRtaW5fdjFiBnByb3RvMw");
 
 /**
  * @generated from message admin.v1.AdminVolunteer
@@ -22,37 +22,37 @@ export type AdminVolunteer = Message<"admin.v1.AdminVolunteer"> & {
   id: string;
 
   /**
-   * @generated from field: string avatar_url = 8 [json_name = "avatar_url"];
+   * @generated from field: string avatar_url = 2 [json_name = "avatar_url"];
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: string first_name = 2 [json_name = "first_name"];
+   * @generated from field: string first_name = 3 [json_name = "first_name"];
    */
   firstName: string;
 
   /**
-   * @generated from field: string last_name = 3 [json_name = "last_name"];
+   * @generated from field: string last_name = 4 [json_name = "last_name"];
    */
   lastName: string;
 
   /**
-   * @generated from field: string middle_name = 4 [json_name = "middle_name"];
+   * @generated from field: string middle_name = 5 [json_name = "middle_name"];
    */
   middleName: string;
 
   /**
-   * @generated from field: string email_address = 5 [json_name = "email_address"];
+   * @generated from field: string email_address = 6 [json_name = "email_address"];
    */
   emailAddress: string;
 
   /**
-   * @generated from field: string phone_number = 6 [json_name = "phone_number"];
+   * @generated from field: string phone_number = 7 [json_name = "phone_number"];
    */
   phoneNumber: string;
 
   /**
-   * @generated from field: bool has_coordinator_profile = 7 [json_name = "has_coordinator_profile"];
+   * @generated from field: bool has_coordinator_profile = 8 [json_name = "has_coordinator_profile"];
    */
   hasCoordinatorProfile: boolean;
 };
@@ -148,7 +148,7 @@ export type CreateCoordinatorRequest = Message<"admin.v1.CreateCoordinatorReques
   /**
    * Обязательный внутренний ID существующего волонтёра.
    *
-   * @generated from field: string volunteer_id = 7 [json_name = "volunteer_id"];
+   * @generated from field: string volunteer_id = 1 [json_name = "volunteer_id"];
    */
   volunteerId: string;
 
@@ -156,19 +156,19 @@ export type CreateCoordinatorRequest = Message<"admin.v1.CreateCoordinatorReques
    * Пустая строка — без аватара. Иначе image_path из UploadImage участника volunteer_id.
    * Файл обязан существовать и принадлежать этому участнику.
    *
-   * @generated from field: string avatar_path = 5 [json_name = "avatar_path"];
+   * @generated from field: string avatar_path = 2 [json_name = "avatar_path"];
    */
   avatarPath: string;
 
   /**
-   * @generated from field: string description = 4;
+   * @generated from field: string description = 3;
    */
   description: string;
 
   /**
    * Обязательно задано, >= 0; отсутствие нельзя путать с разрешённым значением 0.
    *
-   * @generated from field: optional int64 cooperation_request_cooldown_seconds = 6 [json_name = "cooperation_request_cooldown_seconds"];
+   * @generated from field: optional int64 cooperation_request_cooldown_seconds = 4 [json_name = "cooperation_request_cooldown_seconds"];
    */
   cooperationRequestCooldownSeconds?: bigint | undefined;
 };

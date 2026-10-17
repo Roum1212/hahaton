@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file cooperation/v1/cooperation_service.proto.
  */
 export const file_cooperation_v1_cooperation_service: GenFile = /*@__PURE__*/
-  fileDesc("Cihjb29wZXJhdGlvbi92MS9jb29wZXJhdGlvbl9zZXJ2aWNlLnByb3RvEg5jb29wZXJhdGlvbi52MSLXAgoLQ29vcGVyYXRpb24SJgoOY29vcmRpbmF0b3JfaWQYASABKAlSDmNvb3JkaW5hdG9yX2lkEiIKDHZvbHVudGVlcl9pZBgCIAEoCVIMdm9sdW50ZWVyX2lkEjEKBnN0YXR1cxgDIAEoDjIhLmNvb3BlcmF0aW9uLnYxLkNvb3BlcmF0aW9uU3RhdHVzEkEKC3JldHJ5X2FmdGVyGAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAUgtyZXRyeV9hZnRlcogBARI6CgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI6Cgp1cGRhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdEIOCgxfcmV0cnlfYWZ0ZXIiQwoZUmVxdWVzdENvb3BlcmF0aW9uUmVxdWVzdBImCg5jb29yZGluYXRvcl9pZBgBIAEoCVIOY29vcmRpbmF0b3JfaWQiTgoaUmVxdWVzdENvb3BlcmF0aW9uUmVzcG9uc2USMAoLY29vcGVyYXRpb24YASABKAsyGy5jb29wZXJhdGlvbi52MS5Db29wZXJhdGlvbiI/ChlBcHByb3ZlQ29vcGVyYXRpb25SZXF1ZXN0EiIKDHZvbHVudGVlcl9pZBgBIAEoCVIMdm9sdW50ZWVyX2lkIj4KGFJlamVjdENvb3BlcmF0aW9uUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYASABKAlSDHZvbHVudGVlcl9pZCJ8ChtUZXJtaW5hdGVDb29wZXJhdGlvblJlcXVlc3QSKAoOY29vcmRpbmF0b3JfaWQYAiABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAEgASgJSABSDHZvbHVudGVlcl9pZEINCgtjb3VudGVycGFydCJ2ChVHZXRDb29wZXJhdGlvblJlcXVlc3QSKAoOY29vcmRpbmF0b3JfaWQYASABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAIgASgJSABSDHZvbHVudGVlcl9pZEINCgtjb3VudGVycGFydCJKChZHZXRDb29wZXJhdGlvblJlc3BvbnNlEjAKC2Nvb3BlcmF0aW9uGAEgASgLMhsuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb24isAEKF0xpc3RDb29wZXJhdGlvbnNSZXF1ZXN0EjMKBXNjb3BlGAUgASgOMiQuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25MaXN0U2NvcGUSNgoGc3RhdHVzGAEgASgOMiEuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25TdGF0dXNIAIgBARINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYBCABKANCCQoHX3N0YXR1cyJvChhMaXN0Q29vcGVyYXRpb25zUmVzcG9uc2USMQoMY29vcGVyYXRpb25zGAEgAygLMhsuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb24SIAoLdG90YWxfY291bnQYAyABKANSC3RvdGFsX2NvdW50Iv8BChVDb29wZXJhdGlvbkludml0YXRpb24SCgoCaWQYASABKAkSJgoOY29vcmRpbmF0b3JfaWQYAiABKAlSDmNvb3JkaW5hdG9yX2lkEiYKDmludml0YXRpb25fdXJsGAUgASgJUg5pbnZpdGF0aW9uX3VybBI6CgpjcmVhdGVkX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI/CgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAUgpleHBpcmVzX2F0iAEBQg0KC19leHBpcmVzX2F0InQKIkNyZWF0ZUNvb3BlcmF0aW9uSW52aXRhdGlvblJlcXVlc3QSPwoKZXhwaXJlc19hdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAFIKZXhwaXJlc19hdIgBAUINCgtfZXhwaXJlc19hdCJgCiNDcmVhdGVDb29wZXJhdGlvbkludml0YXRpb25SZXNwb25zZRI5CgppbnZpdGF0aW9uGAEgASgLMiUuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25JbnZpdGF0aW9uIjAKIlJldm9rZUNvb3BlcmF0aW9uSW52aXRhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiMwoiQWNjZXB0Q29vcGVyYXRpb25JbnZpdGF0aW9uUmVxdWVzdBINCgV0b2tlbhgBIAEoCSJXCiNBY2NlcHRDb29wZXJhdGlvbkludml0YXRpb25SZXNwb25zZRIwCgtjb29wZXJhdGlvbhgBIAEoCzIbLmNvb3BlcmF0aW9uLnYxLkNvb3BlcmF0aW9uImwKIUxpc3RDb29wZXJhdGlvbkludml0YXRpb25zUmVxdWVzdBIoCg9pbmNsdWRlX2V4cGlyZWQYASABKAhSD2luY2x1ZGVfZXhwaXJlZBINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYBCABKAMiggEKIkxpc3RDb29wZXJhdGlvbkludml0YXRpb25zUmVzcG9uc2USOgoLaW52aXRhdGlvbnMYASADKAsyJS5jb29wZXJhdGlvbi52MS5Db29wZXJhdGlvbkludml0YXRpb24SIAoLdG90YWxfY291bnQYAyABKANSC3RvdGFsX2NvdW50KroBChFDb29wZXJhdGlvblN0YXR1cxIiCh5DT09QRVJBVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIeChpDT09QRVJBVElPTl9TVEFUVVNfUEVORElORxABEh0KGUNPT1BFUkFUSU9OX1NUQVRVU19BQ1RJVkUQAhIfChtDT09QRVJBVElPTl9TVEFUVVNfUkVKRUNURUQQAxIhCh1DT09QRVJBVElPTl9TVEFUVVNfVEVSTUlOQVRFRBAEKpIBChRDb29wZXJhdGlvbkxpc3RTY29wZRImCiJDT09QRVJBVElPTl9MSVNUX1NDT1BFX1VOU1BFQ0lGSUVEEAASJwojQ09PUEVSQVRJT05fTElTVF9TQ09QRV9BU19WT0xVTlRFRVIQARIpCiVDT09QRVJBVElPTl9MSVNUX1NDT1BFX0FTX0NPT1JESU5BVE9SEAIy7QgKEkNvb3BlcmF0aW9uU2VydmljZRJtChJSZXF1ZXN0Q29vcGVyYXRpb24SKS5jb29wZXJhdGlvbi52MS5SZXF1ZXN0Q29vcGVyYXRpb25SZXF1ZXN0GiouY29vcGVyYXRpb24udjEuUmVxdWVzdENvb3BlcmF0aW9uUmVzcG9uc2UiABJZChJBcHByb3ZlQ29vcGVyYXRpb24SKS5jb29wZXJhdGlvbi52MS5BcHByb3ZlQ29vcGVyYXRpb25SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASVwoRUmVqZWN0Q29vcGVyYXRpb24SKC5jb29wZXJhdGlvbi52MS5SZWplY3RDb29wZXJhdGlvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJdChRUZXJtaW5hdGVDb29wZXJhdGlvbhIrLmNvb3BlcmF0aW9uLnYxLlRlcm1pbmF0ZUNvb3BlcmF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEmEKDkdldENvb3BlcmF0aW9uEiUuY29vcGVyYXRpb24udjEuR2V0Q29vcGVyYXRpb25SZXF1ZXN0GiYuY29vcGVyYXRpb24udjEuR2V0Q29vcGVyYXRpb25SZXNwb25zZSIAEmcKEExpc3RDb29wZXJhdGlvbnMSJy5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25zUmVxdWVzdBooLmNvb3BlcmF0aW9uLnYxLkxpc3RDb29wZXJhdGlvbnNSZXNwb25zZSIAEogBChtDcmVhdGVDb29wZXJhdGlvbkludml0YXRpb24SMi5jb29wZXJhdGlvbi52MS5DcmVhdGVDb29wZXJhdGlvbkludml0YXRpb25SZXF1ZXN0GjMuY29vcGVyYXRpb24udjEuQ3JlYXRlQ29vcGVyYXRpb25JbnZpdGF0aW9uUmVzcG9uc2UiABKFAQoaTGlzdENvb3BlcmF0aW9uSW52aXRhdGlvbnMSMS5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25JbnZpdGF0aW9uc1JlcXVlc3QaMi5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25JbnZpdGF0aW9uc1Jlc3BvbnNlIgASawobUmV2b2tlQ29vcGVyYXRpb25JbnZpdGF0aW9uEjIuY29vcGVyYXRpb24udjEuUmV2b2tlQ29vcGVyYXRpb25JbnZpdGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEogBChtBY2NlcHRDb29wZXJhdGlvbkludml0YXRpb24SMi5jb29wZXJhdGlvbi52MS5BY2NlcHRDb29wZXJhdGlvbkludml0YXRpb25SZXF1ZXN0GjMuY29vcGVyYXRpb24udjEuQWNjZXB0Q29vcGVyYXRpb25JbnZpdGF0aW9uUmVzcG9uc2UiAEJEWkJnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vY29vcGVyYXRpb24vdjE7Y29vcGVyYXRpb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("Cihjb29wZXJhdGlvbi92MS9jb29wZXJhdGlvbl9zZXJ2aWNlLnByb3RvEg5jb29wZXJhdGlvbi52MSLXAgoLQ29vcGVyYXRpb24SJgoOY29vcmRpbmF0b3JfaWQYASABKAlSDmNvb3JkaW5hdG9yX2lkEiIKDHZvbHVudGVlcl9pZBgCIAEoCVIMdm9sdW50ZWVyX2lkEjEKBnN0YXR1cxgDIAEoDjIhLmNvb3BlcmF0aW9uLnYxLkNvb3BlcmF0aW9uU3RhdHVzEkEKC3JldHJ5X2FmdGVyGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAUgtyZXRyeV9hZnRlcogBARI6CgpjcmVhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI6Cgp1cGRhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdEIOCgxfcmV0cnlfYWZ0ZXIiQwoZUmVxdWVzdENvb3BlcmF0aW9uUmVxdWVzdBImCg5jb29yZGluYXRvcl9pZBgBIAEoCVIOY29vcmRpbmF0b3JfaWQiTgoaUmVxdWVzdENvb3BlcmF0aW9uUmVzcG9uc2USMAoLY29vcGVyYXRpb24YASABKAsyGy5jb29wZXJhdGlvbi52MS5Db29wZXJhdGlvbiI/ChlBcHByb3ZlQ29vcGVyYXRpb25SZXF1ZXN0EiIKDHZvbHVudGVlcl9pZBgBIAEoCVIMdm9sdW50ZWVyX2lkIj4KGFJlamVjdENvb3BlcmF0aW9uUmVxdWVzdBIiCgx2b2x1bnRlZXJfaWQYASABKAlSDHZvbHVudGVlcl9pZCJ8ChtUZXJtaW5hdGVDb29wZXJhdGlvblJlcXVlc3QSKAoOY29vcmRpbmF0b3JfaWQYASABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAIgASgJSABSDHZvbHVudGVlcl9pZEINCgtjb3VudGVycGFydCJ2ChVHZXRDb29wZXJhdGlvblJlcXVlc3QSKAoOY29vcmRpbmF0b3JfaWQYASABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAIgASgJSABSDHZvbHVudGVlcl9pZEINCgtjb3VudGVycGFydCJKChZHZXRDb29wZXJhdGlvblJlc3BvbnNlEjAKC2Nvb3BlcmF0aW9uGAEgASgLMhsuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb24isAEKF0xpc3RDb29wZXJhdGlvbnNSZXF1ZXN0EjMKBXNjb3BlGAEgASgOMiQuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25MaXN0U2NvcGUSNgoGc3RhdHVzGAIgASgOMiEuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25TdGF0dXNIAIgBARINCgVsaW1pdBgDIAEoBRIOCgZvZmZzZXQYBCABKANCCQoHX3N0YXR1cyJvChhMaXN0Q29vcGVyYXRpb25zUmVzcG9uc2USMQoMY29vcGVyYXRpb25zGAEgAygLMhsuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb24SIAoLdG90YWxfY291bnQYAiABKANSC3RvdGFsX2NvdW50Iv8BChVDb29wZXJhdGlvbkludml0YXRpb24SCgoCaWQYASABKAkSJgoOY29vcmRpbmF0b3JfaWQYAiABKAlSDmNvb3JkaW5hdG9yX2lkEiYKDmludml0YXRpb25fdXJsGAMgASgJUg5pbnZpdGF0aW9uX3VybBI6CgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI/CgpleHBpcmVzX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAUgpleHBpcmVzX2F0iAEBQg0KC19leHBpcmVzX2F0InQKIkNyZWF0ZUNvb3BlcmF0aW9uSW52aXRhdGlvblJlcXVlc3QSPwoKZXhwaXJlc19hdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAFIKZXhwaXJlc19hdIgBAUINCgtfZXhwaXJlc19hdCJgCiNDcmVhdGVDb29wZXJhdGlvbkludml0YXRpb25SZXNwb25zZRI5CgppbnZpdGF0aW9uGAEgASgLMiUuY29vcGVyYXRpb24udjEuQ29vcGVyYXRpb25JbnZpdGF0aW9uIjAKIlJldm9rZUNvb3BlcmF0aW9uSW52aXRhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiMwoiQWNjZXB0Q29vcGVyYXRpb25JbnZpdGF0aW9uUmVxdWVzdBINCgV0b2tlbhgBIAEoCSJXCiNBY2NlcHRDb29wZXJhdGlvbkludml0YXRpb25SZXNwb25zZRIwCgtjb29wZXJhdGlvbhgBIAEoCzIbLmNvb3BlcmF0aW9uLnYxLkNvb3BlcmF0aW9uImwKIUxpc3RDb29wZXJhdGlvbkludml0YXRpb25zUmVxdWVzdBIoCg9pbmNsdWRlX2V4cGlyZWQYASABKAhSD2luY2x1ZGVfZXhwaXJlZBINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYAyABKAMiggEKIkxpc3RDb29wZXJhdGlvbkludml0YXRpb25zUmVzcG9uc2USOgoLaW52aXRhdGlvbnMYASADKAsyJS5jb29wZXJhdGlvbi52MS5Db29wZXJhdGlvbkludml0YXRpb24SIAoLdG90YWxfY291bnQYAiABKANSC3RvdGFsX2NvdW50KroBChFDb29wZXJhdGlvblN0YXR1cxIiCh5DT09QRVJBVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIeChpDT09QRVJBVElPTl9TVEFUVVNfUEVORElORxABEh0KGUNPT1BFUkFUSU9OX1NUQVRVU19BQ1RJVkUQAhIfChtDT09QRVJBVElPTl9TVEFUVVNfUkVKRUNURUQQAxIhCh1DT09QRVJBVElPTl9TVEFUVVNfVEVSTUlOQVRFRBAEKpIBChRDb29wZXJhdGlvbkxpc3RTY29wZRImCiJDT09QRVJBVElPTl9MSVNUX1NDT1BFX1VOU1BFQ0lGSUVEEAASJwojQ09PUEVSQVRJT05fTElTVF9TQ09QRV9BU19WT0xVTlRFRVIQARIpCiVDT09QRVJBVElPTl9MSVNUX1NDT1BFX0FTX0NPT1JESU5BVE9SEAIy7QgKEkNvb3BlcmF0aW9uU2VydmljZRJtChJSZXF1ZXN0Q29vcGVyYXRpb24SKS5jb29wZXJhdGlvbi52MS5SZXF1ZXN0Q29vcGVyYXRpb25SZXF1ZXN0GiouY29vcGVyYXRpb24udjEuUmVxdWVzdENvb3BlcmF0aW9uUmVzcG9uc2UiABJZChJBcHByb3ZlQ29vcGVyYXRpb24SKS5jb29wZXJhdGlvbi52MS5BcHByb3ZlQ29vcGVyYXRpb25SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASVwoRUmVqZWN0Q29vcGVyYXRpb24SKC5jb29wZXJhdGlvbi52MS5SZWplY3RDb29wZXJhdGlvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJdChRUZXJtaW5hdGVDb29wZXJhdGlvbhIrLmNvb3BlcmF0aW9uLnYxLlRlcm1pbmF0ZUNvb3BlcmF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEmEKDkdldENvb3BlcmF0aW9uEiUuY29vcGVyYXRpb24udjEuR2V0Q29vcGVyYXRpb25SZXF1ZXN0GiYuY29vcGVyYXRpb24udjEuR2V0Q29vcGVyYXRpb25SZXNwb25zZSIAEmcKEExpc3RDb29wZXJhdGlvbnMSJy5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25zUmVxdWVzdBooLmNvb3BlcmF0aW9uLnYxLkxpc3RDb29wZXJhdGlvbnNSZXNwb25zZSIAEogBChtDcmVhdGVDb29wZXJhdGlvbkludml0YXRpb24SMi5jb29wZXJhdGlvbi52MS5DcmVhdGVDb29wZXJhdGlvbkludml0YXRpb25SZXF1ZXN0GjMuY29vcGVyYXRpb24udjEuQ3JlYXRlQ29vcGVyYXRpb25JbnZpdGF0aW9uUmVzcG9uc2UiABKFAQoaTGlzdENvb3BlcmF0aW9uSW52aXRhdGlvbnMSMS5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25JbnZpdGF0aW9uc1JlcXVlc3QaMi5jb29wZXJhdGlvbi52MS5MaXN0Q29vcGVyYXRpb25JbnZpdGF0aW9uc1Jlc3BvbnNlIgASawobUmV2b2tlQ29vcGVyYXRpb25JbnZpdGF0aW9uEjIuY29vcGVyYXRpb24udjEuUmV2b2tlQ29vcGVyYXRpb25JbnZpdGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEogBChtBY2NlcHRDb29wZXJhdGlvbkludml0YXRpb24SMi5jb29wZXJhdGlvbi52MS5BY2NlcHRDb29wZXJhdGlvbkludml0YXRpb25SZXF1ZXN0GjMuY29vcGVyYXRpb24udjEuQWNjZXB0Q29vcGVyYXRpb25JbnZpdGF0aW9uUmVzcG9uc2UiAEJEWkJnaXRodWIuY29tL1JvdW0xMjEyL2hhaGF0b24vZ2VucHJvdG8vY29vcGVyYXRpb24vdjE7Y29vcGVyYXRpb25fdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message cooperation.v1.Cooperation
@@ -38,19 +38,19 @@ export type Cooperation = Message<"cooperation.v1.Cooperation"> & {
   /**
    * Только для REJECTED; в остальных статусах отсутствует.
    *
-   * @generated from field: optional google.protobuf.Timestamp retry_after = 6 [json_name = "retry_after"];
+   * @generated from field: optional google.protobuf.Timestamp retry_after = 4 [json_name = "retry_after"];
    */
   retryAfter?: Timestamp | undefined;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 4 [json_name = "created_at"];
+   * @generated from field: google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
 
   /**
    * Время последнего изменения статуса.
    *
-   * @generated from field: google.protobuf.Timestamp updated_at = 5 [json_name = "updated_at"];
+   * @generated from field: google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
    */
   updatedAt?: Timestamp | undefined;
 };
@@ -147,13 +147,13 @@ export type TerminateCooperationRequest = Message<"cooperation.v1.TerminateCoope
    */
   counterpart: {
     /**
-     * @generated from field: string coordinator_id = 2 [json_name = "coordinator_id"];
+     * @generated from field: string coordinator_id = 1 [json_name = "coordinator_id"];
      */
     value: string;
     case: "coordinatorId";
   } | {
     /**
-     * @generated from field: string volunteer_id = 1 [json_name = "volunteer_id"];
+     * @generated from field: string volunteer_id = 2 [json_name = "volunteer_id"];
      */
     value: string;
     case: "volunteerId";
@@ -223,21 +223,21 @@ export type ListCooperationsRequest = Message<"cooperation.v1.ListCooperationsRe
   /**
    * Обязательно; UNSPECIFIED/неизвестное значение — InvalidArgument.
    *
-   * @generated from field: cooperation.v1.CooperationListScope scope = 5;
+   * @generated from field: cooperation.v1.CooperationListScope scope = 1;
    */
   scope: CooperationListScope;
 
   /**
    * Если отсутствует, возвращаются все статусы. Передавать UNSPECIFIED нельзя.
    *
-   * @generated from field: optional cooperation.v1.CooperationStatus status = 1;
+   * @generated from field: optional cooperation.v1.CooperationStatus status = 2;
    */
   status?: CooperationStatus | undefined;
 
   /**
    * 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
    *
-   * @generated from field: int32 limit = 2;
+   * @generated from field: int32 limit = 3;
    */
   limit: number;
 
@@ -273,7 +273,7 @@ export type ListCooperationsResponse = Message<"cooperation.v1.ListCooperationsR
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };
@@ -308,19 +308,19 @@ export type CooperationInvitation = Message<"cooperation.v1.CooperationInvitatio
    * QR-код содержит эту же ссылку и создаётся клиентом. Токен не совпадает с id
    * приглашения или coordinator_id и не выводится из них.
    *
-   * @generated from field: string invitation_url = 5 [json_name = "invitation_url"];
+   * @generated from field: string invitation_url = 3 [json_name = "invitation_url"];
    */
   invitationUrl: string;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 3 [json_name = "created_at"];
+   * @generated from field: google.protobuf.Timestamp created_at = 4 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
 
   /**
    * Отсутствует для бессрочного приглашения. После создания срок не изменяется.
    *
-   * @generated from field: optional google.protobuf.Timestamp expires_at = 4 [json_name = "expires_at"];
+   * @generated from field: optional google.protobuf.Timestamp expires_at = 5 [json_name = "expires_at"];
    */
   expiresAt?: Timestamp | undefined;
 };
@@ -446,7 +446,7 @@ export type ListCooperationInvitationsRequest = Message<"cooperation.v1.ListCoop
    * Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
    * На каждом запросе применяются текущие права доступа и фильтры.
    *
-   * @generated from field: int64 offset = 4;
+   * @generated from field: int64 offset = 3;
    */
   offset: bigint;
 };
@@ -473,7 +473,7 @@ export type ListCooperationInvitationsResponse = Message<"cooperation.v1.ListCoo
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };

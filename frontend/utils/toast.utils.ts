@@ -33,7 +33,7 @@ const toastWarning = (toast: ToastServiceMethods) => (message: string, options?:
   } as ToastMessageOptions);
 const toastSuccess = (toast: ToastServiceMethods) => (message: string, options?: ToastOptions) =>
   toast.add({
-    severity: 'contrast',
+    severity: 'success',
     summary: options?.summary ?? 'Успешно',
     detail: message,
     life: 3000,

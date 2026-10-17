@@ -74,7 +74,7 @@ onMounted(async () => {
         <div class="app-person__actions">
           <Button
             v-if="canRequestCooperation(cooperationOf(coordinator.id))"
-            label="Вступить в команду"
+            label="Предложить сотрудничество"
             size="small"
             @click="request(coordinator.id)" />
           <template v-if="cooperationOf(coordinator.id)?.status === CooperationStatus.ACTIVE">
@@ -82,7 +82,7 @@ onMounted(async () => {
               <Button label="Профиль" severity="secondary" outlined size="small" />
             </NuxtLink>
             <Button
-              label="Покинуть команду"
+              label="Прекратить сотрудничество"
               severity="secondary"
               text
               size="small"

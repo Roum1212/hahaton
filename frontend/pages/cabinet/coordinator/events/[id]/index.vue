@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { EVENT_REQUIREMENT_LABELS, EVENT_STATUS_LABELS, EVENT_STATUS_SEVERITY, type IEvent } from '~/core/event/services/event/event.types';
+import {
+  EVENT_REQUIREMENT_LABELS,
+  EVENT_STATUS_LABELS,
+  EVENT_STATUS_SEVERITY,
+  EventStatus,
+  type IEvent,
+} from '~/core/event/services/event/event.types';
 import {
   PARTICIPATION_CANCELLATION_LABELS,
   PARTICIPATION_STATUS_LABELS,
@@ -46,6 +52,10 @@ const visible = computed(() =>
 );
 
 const canDecide = computed(() => !!event.value && canCancelEvent(event.value));
+const canReject = computed(() => event.value?.status === EventStatus.PUBLISHED);
+const rejectingApproved = computed(() =>
+  list.value.some((item) => item.id === rejectTarget.value && item.status === ParticipationStatus.APPROVED),
+);
 
 const refresh = async () => {
   event.value = await eventsStore.fetchOne(eventId.value, true);
@@ -99,8 +109,8 @@ onMounted(load);
     <div v-else class="app-columns app-columns--left">
       <aside class="app-columns__aside">
         <div class="app-card app-event-aside">
-          <div class="app-event-aside__image">
-            <img :src="pickIllustration(EVENT_ILLUSTRATIONS, event.id)" alt="" />
+          <div class="app-event-aside__image" :class="{ 'app-event-aside__image--photo': event.imageUrl }">
+            <img :src="eventImage(event, event.id)" alt="" />
           </div>
           <span class="app-event-aside__count">
             Участвуют <b>{{ event.approvedCount }}</b> из {{ event.volunteerLimit }}
@@ -189,8 +199,15 @@ onMounted(load);
                 </div>
               </div>
               <div class="app-list__actions">
+                <Button
+                  v-if="canReject && item.status === ParticipationStatus.APPROVED"
+                  label="Снять с мероприятия"
+                  severity="secondary"
+                  text
+                  size="small"
+                  @click="openReject(item.id)" />
                 <template v-if="item.status === ParticipationStatus.PENDING">
-                  <Button label="Отклонить" severity="secondary" text size="small" @click="openReject(item.id)" />
+                  <Button v-if="canReject" label="Отклонить" severity="secondary" text size="small" @click="openReject(item.id)" />
                   <Button v-if="canDecide" label="Принять" size="small" :disabled="event.freePlaces === 0" @click="onApprove(item.id)" />
                 </template>
                 <Button
@@ -212,17 +229,24 @@ onMounted(load);
     <Dialog
       :visible="!!rejectTarget"
       modal
-      header="Отклонение заявки"
+      :header="rejectingApproved ? 'Снятие участника' : 'Отклонение заявки'"
       :draggable="false"
       :style="{ width: '460px' }"
       @update:visible="(value: boolean) => !value && (rejectTarget = null)">
+      <p class="app-text mb-4">
+        {{
+          rejectingApproved
+            ? 'Волонтёр потеряет место и доступ к чату, койны за мероприятие не начислятся. Подать заявку на это мероприятие снова он не сможет.'
+            : 'Подать заявку на это мероприятие снова волонтёр не сможет.'
+        }}
+      </p>
       <label class="app-field">
         <span class="app-field__label">Причина (видит только волонтёр)</span>
         <Textarea v-model="rejectReason" rows="3" maxlength="2000" auto-resize fluid />
       </label>
       <template #footer>
         <Button label="Отмена" severity="secondary" text @click="rejectTarget = null" />
-        <Button label="Отклонить" severity="danger" @click="confirmReject" />
+        <Button :label="rejectingApproved ? 'Снять с мероприятия' : 'Отклонить'" severity="danger" @click="confirmReject" />
       </template>
     </Dialog>
 

@@ -10,6 +10,7 @@ export interface IEvent {
   description: string;
   location: string;
   point: IGeoPoint | null;
+  imageUrl: string | null;
   startsAt: Date | null;
   endsAt: Date | null;
   durationMinutes: number;
@@ -26,6 +27,7 @@ export interface IEventDto {
   description: string;
   location: string;
   point: IGeoPoint | null;
+  imagePath?: string;
   startsAt: Date | null;
   endsAt: Date | null;
   requirements: EventCandidateRequirement[];

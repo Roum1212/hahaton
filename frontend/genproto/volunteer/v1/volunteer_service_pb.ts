@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file volunteer/v1/volunteer_service.proto.
  */
 export const file_volunteer_v1_volunteer_service: GenFile = /*@__PURE__*/
-  fileDesc("CiR2b2x1bnRlZXIvdjEvdm9sdW50ZWVyX3NlcnZpY2UucHJvdG8SDHZvbHVudGVlci52MSLsAgoJVm9sdW50ZWVyEgoKAmlkGAEgASgJEh4KCmF2YXRhcl91cmwYCiABKAlSCmF2YXRhcl91cmwSNwoNZGF0ZV9vZl9iaXJ0aBgCIAEoCzIRLmdvb2dsZS50eXBlLkRhdGVSDWRhdGVfb2ZfYmlydGgSHgoKZmlyc3RfbmFtZRgDIAEoCVIKZmlyc3RfbmFtZRIcCglsYXN0X25hbWUYBCABKAlSCWxhc3RfbmFtZRIgCgttaWRkbGVfbmFtZRgFIAEoCVILbWlkZGxlX25hbWUSJAoNZW1haWxfYWRkcmVzcxgGIAEoCVINZW1haWxfYWRkcmVzcxIiCgxwaG9uZV9udW1iZXIYCSABKAlSDHBob25lX251bWJlchIiCgxjb2luX2JhbGFuY2UYByABKANSDGNvaW5fYmFsYW5jZRIsChFjb25maXJtZWRfbWludXRlcxgIIAEoA1IRY29uZmlybWVkX21pbnV0ZXMiLQoTR2V0Vm9sdW50ZWVyUmVxdWVzdBIPCgJpZBgBIAEoCUgAiAEBQgUKA19pZCJCChRHZXRWb2x1bnRlZXJSZXNwb25zZRIqCgl2b2x1bnRlZXIYASABKAsyFy52b2x1bnRlZXIudjEuVm9sdW50ZWVyIpkCChRDb29yZGluYXRvclZvbHVudGVlchIKCgJpZBgBIAEoCRIeCgphdmF0YXJfdXJsGAcgASgJUgphdmF0YXJfdXJsEh4KCmZpcnN0X25hbWUYAiABKAlSCmZpcnN0X25hbWUSHAoJbGFzdF9uYW1lGAMgASgJUglsYXN0X25hbWUSIAoLbWlkZGxlX25hbWUYBCABKAlSC21pZGRsZV9uYW1lEikKDWVtYWlsX2FkZHJlc3MYBSABKAlIAFINZW1haWxfYWRkcmVzc4gBARInCgxwaG9uZV9udW1iZXIYBiABKAlIAVIMcGhvbmVfbnVtYmVyiAEBQhAKDl9lbWFpbF9hZGRyZXNzQg8KDV9waG9uZV9udW1iZXIiRAoeR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXJSZXF1ZXN0EiIKDHZvbHVudGVlcl9pZBgBIAEoCVIMdm9sdW50ZWVyX2lkIlgKH0dldENvb3JkaW5hdG9yVm9sdW50ZWVyUmVzcG9uc2USNQoJdm9sdW50ZWVyGAEgASgLMiIudm9sdW50ZWVyLnYxLkNvb3JkaW5hdG9yVm9sdW50ZWVyIrsCChZVcGRhdGVWb2x1bnRlZXJSZXF1ZXN0EiUKC2F2YXRhcl9wYXRoGAUgASgJSABSC2F2YXRhcl9wYXRoiAEBEjwKDWRhdGVfb2ZfYmlydGgYASABKAsyES5nb29nbGUudHlwZS5EYXRlSAFSDWRhdGVfb2ZfYmlydGiIAQESIwoKZmlyc3RfbmFtZRgCIAEoCUgCUgpmaXJzdF9uYW1liAEBEiEKCWxhc3RfbmFtZRgDIAEoCUgDUglsYXN0X25hbWWIAQESJQoLbWlkZGxlX25hbWUYBCABKAlIBFILbWlkZGxlX25hbWWIAQFCDgoMX2F2YXRhcl9wYXRoQhAKDl9kYXRlX29mX2JpcnRoQg0KC19maXJzdF9uYW1lQgwKCl9sYXN0X25hbWVCDgoMX21pZGRsZV9uYW1lIpUEChJWb2x1bnRlZXJPcGVyYXRpb24SCgoCaWQYASABKAkSJgoOY29vcmRpbmF0b3JfaWQYAiABKAlSDmNvb3JkaW5hdG9yX2lkEiIKDHZvbHVudGVlcl9pZBgDIAEoCVIMdm9sdW50ZWVyX2lkEhMKC2Rlc2NyaXB0aW9uGAQgASgJEjIKBHR5cGUYBSABKA4yJC52b2x1bnRlZXIudjEuVm9sdW50ZWVyT3BlcmF0aW9uVHlwZRIsChBwYXJ0aWNpcGF0aW9uX2lkGAYgASgJSABSEHBhcnRpY2lwYXRpb25faWQSKgoPcmV3YXJkX29yZGVyX2lkGAcgASgJSABSD3Jld2FyZF9vcmRlcl9pZBIeCgpjb2luX2RlbHRhGAggASgDUgpjb2luX2RlbHRhEiIKDG1pbnV0ZV9kZWx0YRgJIAEoA1IMbWludXRlX2RlbHRhEi4KEmNvaW5fYmFsYW5jZV9hZnRlchgKIAEoA1ISY29pbl9iYWxhbmNlX2FmdGVyEjgKF2NvbmZpcm1lZF9taW51dGVzX2FmdGVyGAsgASgDUhdjb25maXJtZWRfbWludXRlc19hZnRlchIQCghzZXF1ZW5jZRgMIAEoBBI6CgpjcmVhdGVkX2F0GA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdEIICgZzb3VyY2UigQEKHkxpc3RWb2x1bnRlZXJPcGVyYXRpb25zUmVxdWVzdBI3CgR0eXBlGAEgASgOMiQudm9sdW50ZWVyLnYxLlZvbHVudGVlck9wZXJhdGlvblR5cGVIAIgBARINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYBCABKANCBwoFX3R5cGUieQofTGlzdFZvbHVudGVlck9wZXJhdGlvbnNSZXNwb25zZRI0CgpvcGVyYXRpb25zGAEgAygLMiAudm9sdW50ZWVyLnYxLlZvbHVudGVlck9wZXJhdGlvbhIgCgt0b3RhbF9jb3VudBgDIAEoA1ILdG90YWxfY291bnQq0AEKFlZvbHVudGVlck9wZXJhdGlvblR5cGUSKAokVk9MVU5URUVSX09QRVJBVElPTl9UWVBFX1VOU1BFQ0lGSUVEEAASMgouVk9MVU5URUVSX09QRVJBVElPTl9UWVBFX1BBUlRJQ0lQQVRJT05fQUNDUlVBTBABEiwKKFZPTFVOVEVFUl9PUEVSQVRJT05fVFlQRV9SRVdBUkRfUFVSQ0hBU0UQAhIqCiZWT0xVTlRFRVJfT1BFUkFUSU9OX1RZUEVfUkVXQVJEX1JFRlVORBADMrIDChBWb2x1bnRlZXJTZXJ2aWNlElcKDEdldFZvbHVudGVlchIhLnZvbHVudGVlci52MS5HZXRWb2x1bnRlZXJSZXF1ZXN0GiIudm9sdW50ZWVyLnYxLkdldFZvbHVudGVlclJlc3BvbnNlIgASeAoXR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXISLC52b2x1bnRlZXIudjEuR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXJSZXF1ZXN0Gi0udm9sdW50ZWVyLnYxLkdldENvb3JkaW5hdG9yVm9sdW50ZWVyUmVzcG9uc2UiABJRCg9VcGRhdGVWb2x1bnRlZXISJC52b2x1bnRlZXIudjEuVXBkYXRlVm9sdW50ZWVyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEngKF0xpc3RWb2x1bnRlZXJPcGVyYXRpb25zEiwudm9sdW50ZWVyLnYxLkxpc3RWb2x1bnRlZXJPcGVyYXRpb25zUmVxdWVzdBotLnZvbHVudGVlci52MS5MaXN0Vm9sdW50ZWVyT3BlcmF0aW9uc1Jlc3BvbnNlIgBCQFo+Z2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL3ZvbHVudGVlci92MTt2b2x1bnRlZXJfdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp, file_google_type_date]);
+  fileDesc("CiR2b2x1bnRlZXIvdjEvdm9sdW50ZWVyX3NlcnZpY2UucHJvdG8SDHZvbHVudGVlci52MSLsAgoJVm9sdW50ZWVyEgoKAmlkGAEgASgJEh4KCmF2YXRhcl91cmwYAiABKAlSCmF2YXRhcl91cmwSNwoNZGF0ZV9vZl9iaXJ0aBgDIAEoCzIRLmdvb2dsZS50eXBlLkRhdGVSDWRhdGVfb2ZfYmlydGgSHgoKZmlyc3RfbmFtZRgEIAEoCVIKZmlyc3RfbmFtZRIcCglsYXN0X25hbWUYBSABKAlSCWxhc3RfbmFtZRIgCgttaWRkbGVfbmFtZRgGIAEoCVILbWlkZGxlX25hbWUSJAoNZW1haWxfYWRkcmVzcxgHIAEoCVINZW1haWxfYWRkcmVzcxIiCgxwaG9uZV9udW1iZXIYCCABKAlSDHBob25lX251bWJlchIiCgxjb2luX2JhbGFuY2UYCSABKANSDGNvaW5fYmFsYW5jZRIsChFjb25maXJtZWRfbWludXRlcxgKIAEoA1IRY29uZmlybWVkX21pbnV0ZXMiLQoTR2V0Vm9sdW50ZWVyUmVxdWVzdBIPCgJpZBgBIAEoCUgAiAEBQgUKA19pZCJCChRHZXRWb2x1bnRlZXJSZXNwb25zZRIqCgl2b2x1bnRlZXIYASABKAsyFy52b2x1bnRlZXIudjEuVm9sdW50ZWVyIpkCChRDb29yZGluYXRvclZvbHVudGVlchIKCgJpZBgBIAEoCRIeCgphdmF0YXJfdXJsGAIgASgJUgphdmF0YXJfdXJsEh4KCmZpcnN0X25hbWUYAyABKAlSCmZpcnN0X25hbWUSHAoJbGFzdF9uYW1lGAQgASgJUglsYXN0X25hbWUSIAoLbWlkZGxlX25hbWUYBSABKAlSC21pZGRsZV9uYW1lEikKDWVtYWlsX2FkZHJlc3MYBiABKAlIAFINZW1haWxfYWRkcmVzc4gBARInCgxwaG9uZV9udW1iZXIYByABKAlIAVIMcGhvbmVfbnVtYmVyiAEBQhAKDl9lbWFpbF9hZGRyZXNzQg8KDV9waG9uZV9udW1iZXIiRAoeR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXJSZXF1ZXN0EiIKDHZvbHVudGVlcl9pZBgBIAEoCVIMdm9sdW50ZWVyX2lkIlgKH0dldENvb3JkaW5hdG9yVm9sdW50ZWVyUmVzcG9uc2USNQoJdm9sdW50ZWVyGAEgASgLMiIudm9sdW50ZWVyLnYxLkNvb3JkaW5hdG9yVm9sdW50ZWVyIrsCChZVcGRhdGVWb2x1bnRlZXJSZXF1ZXN0EiUKC2F2YXRhcl9wYXRoGAEgASgJSABSC2F2YXRhcl9wYXRoiAEBEjwKDWRhdGVfb2ZfYmlydGgYAiABKAsyES5nb29nbGUudHlwZS5EYXRlSAFSDWRhdGVfb2ZfYmlydGiIAQESIwoKZmlyc3RfbmFtZRgDIAEoCUgCUgpmaXJzdF9uYW1liAEBEiEKCWxhc3RfbmFtZRgEIAEoCUgDUglsYXN0X25hbWWIAQESJQoLbWlkZGxlX25hbWUYBSABKAlIBFILbWlkZGxlX25hbWWIAQFCDgoMX2F2YXRhcl9wYXRoQhAKDl9kYXRlX29mX2JpcnRoQg0KC19maXJzdF9uYW1lQgwKCl9sYXN0X25hbWVCDgoMX21pZGRsZV9uYW1lIpUEChJWb2x1bnRlZXJPcGVyYXRpb24SCgoCaWQYASABKAkSJgoOY29vcmRpbmF0b3JfaWQYAiABKAlSDmNvb3JkaW5hdG9yX2lkEiIKDHZvbHVudGVlcl9pZBgDIAEoCVIMdm9sdW50ZWVyX2lkEhMKC2Rlc2NyaXB0aW9uGAQgASgJEjIKBHR5cGUYBSABKA4yJC52b2x1bnRlZXIudjEuVm9sdW50ZWVyT3BlcmF0aW9uVHlwZRIsChBwYXJ0aWNpcGF0aW9uX2lkGAYgASgJSABSEHBhcnRpY2lwYXRpb25faWQSKgoPcmV3YXJkX29yZGVyX2lkGAcgASgJSABSD3Jld2FyZF9vcmRlcl9pZBIeCgpjb2luX2RlbHRhGAggASgDUgpjb2luX2RlbHRhEiIKDG1pbnV0ZV9kZWx0YRgJIAEoA1IMbWludXRlX2RlbHRhEi4KEmNvaW5fYmFsYW5jZV9hZnRlchgKIAEoA1ISY29pbl9iYWxhbmNlX2FmdGVyEjgKF2NvbmZpcm1lZF9taW51dGVzX2FmdGVyGAsgASgDUhdjb25maXJtZWRfbWludXRlc19hZnRlchIQCghzZXF1ZW5jZRgMIAEoBBI6CgpjcmVhdGVkX2F0GA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdEIICgZzb3VyY2UigQEKHkxpc3RWb2x1bnRlZXJPcGVyYXRpb25zUmVxdWVzdBI3CgR0eXBlGAEgASgOMiQudm9sdW50ZWVyLnYxLlZvbHVudGVlck9wZXJhdGlvblR5cGVIAIgBARINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYAyABKANCBwoFX3R5cGUieQofTGlzdFZvbHVudGVlck9wZXJhdGlvbnNSZXNwb25zZRI0CgpvcGVyYXRpb25zGAEgAygLMiAudm9sdW50ZWVyLnYxLlZvbHVudGVlck9wZXJhdGlvbhIgCgt0b3RhbF9jb3VudBgCIAEoA1ILdG90YWxfY291bnQq0AEKFlZvbHVudGVlck9wZXJhdGlvblR5cGUSKAokVk9MVU5URUVSX09QRVJBVElPTl9UWVBFX1VOU1BFQ0lGSUVEEAASMgouVk9MVU5URUVSX09QRVJBVElPTl9UWVBFX1BBUlRJQ0lQQVRJT05fQUNDUlVBTBABEiwKKFZPTFVOVEVFUl9PUEVSQVRJT05fVFlQRV9SRVdBUkRfUFVSQ0hBU0UQAhIqCiZWT0xVTlRFRVJfT1BFUkFUSU9OX1RZUEVfUkVXQVJEX1JFRlVORBADMrIDChBWb2x1bnRlZXJTZXJ2aWNlElcKDEdldFZvbHVudGVlchIhLnZvbHVudGVlci52MS5HZXRWb2x1bnRlZXJSZXF1ZXN0GiIudm9sdW50ZWVyLnYxLkdldFZvbHVudGVlclJlc3BvbnNlIgASeAoXR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXISLC52b2x1bnRlZXIudjEuR2V0Q29vcmRpbmF0b3JWb2x1bnRlZXJSZXF1ZXN0Gi0udm9sdW50ZWVyLnYxLkdldENvb3JkaW5hdG9yVm9sdW50ZWVyUmVzcG9uc2UiABJRCg9VcGRhdGVWb2x1bnRlZXISJC52b2x1bnRlZXIudjEuVXBkYXRlVm9sdW50ZWVyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEngKF0xpc3RWb2x1bnRlZXJPcGVyYXRpb25zEiwudm9sdW50ZWVyLnYxLkxpc3RWb2x1bnRlZXJPcGVyYXRpb25zUmVxdWVzdBotLnZvbHVudGVlci52MS5MaXN0Vm9sdW50ZWVyT3BlcmF0aW9uc1Jlc3BvbnNlIgBCQFo+Z2l0aHViLmNvbS9Sb3VtMTIxMi9oYWhhdG9uL2dlbnByb3RvL3ZvbHVudGVlci92MTt2b2x1bnRlZXJfdjFiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_timestamp, file_google_type_date]);
 
 /**
  * @generated from message volunteer.v1.Volunteer
@@ -28,47 +28,47 @@ export type Volunteer = Message<"volunteer.v1.Volunteer"> & {
   /**
    * Вычисляемый /storage/...; пустая строка означает отсутствие аватара.
    *
-   * @generated from field: string avatar_url = 10 [json_name = "avatar_url"];
+   * @generated from field: string avatar_url = 2 [json_name = "avatar_url"];
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: google.type.Date date_of_birth = 2 [json_name = "date_of_birth"];
+   * @generated from field: google.type.Date date_of_birth = 3 [json_name = "date_of_birth"];
    */
   dateOfBirth?: Date | undefined;
 
   /**
-   * @generated from field: string first_name = 3 [json_name = "first_name"];
+   * @generated from field: string first_name = 4 [json_name = "first_name"];
    */
   firstName: string;
 
   /**
-   * @generated from field: string last_name = 4 [json_name = "last_name"];
+   * @generated from field: string last_name = 5 [json_name = "last_name"];
    */
   lastName: string;
 
   /**
-   * @generated from field: string middle_name = 5 [json_name = "middle_name"];
+   * @generated from field: string middle_name = 6 [json_name = "middle_name"];
    */
   middleName: string;
 
   /**
-   * @generated from field: string email_address = 6 [json_name = "email_address"];
+   * @generated from field: string email_address = 7 [json_name = "email_address"];
    */
   emailAddress: string;
 
   /**
-   * @generated from field: string phone_number = 9 [json_name = "phone_number"];
+   * @generated from field: string phone_number = 8 [json_name = "phone_number"];
    */
   phoneNumber: string;
 
   /**
-   * @generated from field: int64 coin_balance = 7 [json_name = "coin_balance"];
+   * @generated from field: int64 coin_balance = 9 [json_name = "coin_balance"];
    */
   coinBalance: bigint;
 
   /**
-   * @generated from field: int64 confirmed_minutes = 8 [json_name = "confirmed_minutes"];
+   * @generated from field: int64 confirmed_minutes = 10 [json_name = "confirmed_minutes"];
    */
   confirmedMinutes: bigint;
 };
@@ -129,32 +129,32 @@ export type CoordinatorVolunteer = Message<"volunteer.v1.CoordinatorVolunteer"> 
   id: string;
 
   /**
-   * @generated from field: string avatar_url = 7 [json_name = "avatar_url"];
+   * @generated from field: string avatar_url = 2 [json_name = "avatar_url"];
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: string first_name = 2 [json_name = "first_name"];
+   * @generated from field: string first_name = 3 [json_name = "first_name"];
    */
   firstName: string;
 
   /**
-   * @generated from field: string last_name = 3 [json_name = "last_name"];
+   * @generated from field: string last_name = 4 [json_name = "last_name"];
    */
   lastName: string;
 
   /**
-   * @generated from field: string middle_name = 4 [json_name = "middle_name"];
+   * @generated from field: string middle_name = 5 [json_name = "middle_name"];
    */
   middleName: string;
 
   /**
-   * @generated from field: optional string email_address = 5 [json_name = "email_address"];
+   * @generated from field: optional string email_address = 6 [json_name = "email_address"];
    */
   emailAddress?: string | undefined;
 
   /**
-   * @generated from field: optional string phone_number = 6 [json_name = "phone_number"];
+   * @generated from field: optional string phone_number = 7 [json_name = "phone_number"];
    */
   phoneNumber?: string | undefined;
 };
@@ -208,7 +208,7 @@ export type UpdateVolunteerRequest = Message<"volunteer.v1.UpdateVolunteerReques
    * Отсутствует — сохранить; пустая строка — убрать аватар.
    * Иначе image_path из UploadImage текущего участника; файл обязан существовать.
    *
-   * @generated from field: optional string avatar_path = 5 [json_name = "avatar_path"];
+   * @generated from field: optional string avatar_path = 1 [json_name = "avatar_path"];
    */
   avatarPath?: string | undefined;
 
@@ -216,22 +216,22 @@ export type UpdateVolunteerRequest = Message<"volunteer.v1.UpdateVolunteerReques
    * Отсутствующее поле сохраняется. Дата должна быть полной и не в будущем.
    * Имя и фамилия непустые; пустое middle_name очищает отчество.
    *
-   * @generated from field: optional google.type.Date date_of_birth = 1 [json_name = "date_of_birth"];
+   * @generated from field: optional google.type.Date date_of_birth = 2 [json_name = "date_of_birth"];
    */
   dateOfBirth?: Date | undefined;
 
   /**
-   * @generated from field: optional string first_name = 2 [json_name = "first_name"];
+   * @generated from field: optional string first_name = 3 [json_name = "first_name"];
    */
   firstName?: string | undefined;
 
   /**
-   * @generated from field: optional string last_name = 3 [json_name = "last_name"];
+   * @generated from field: optional string last_name = 4 [json_name = "last_name"];
    */
   lastName?: string | undefined;
 
   /**
-   * @generated from field: optional string middle_name = 4 [json_name = "middle_name"];
+   * @generated from field: optional string middle_name = 5 [json_name = "middle_name"];
    */
   middleName?: string | undefined;
 };
@@ -367,7 +367,7 @@ export type ListVolunteerOperationsRequest = Message<"volunteer.v1.ListVolunteer
    * Должно быть неотрицательным, иначе InvalidArgument. За пределами списка — пустая страница.
    * На каждом запросе применяются текущие права доступа и фильтры.
    *
-   * @generated from field: int64 offset = 4;
+   * @generated from field: int64 offset = 3;
    */
   offset: bigint;
 };
@@ -394,7 +394,7 @@ export type ListVolunteerOperationsResponse = Message<"volunteer.v1.ListVoluntee
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 2 [json_name = "total_count"];
    */
   totalCount: bigint;
 };

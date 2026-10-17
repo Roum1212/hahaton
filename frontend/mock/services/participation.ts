@@ -91,7 +91,10 @@ export const registerParticipationService = (router: ConnectRouter) =>
       const coordinator = requireCoordinator(ctx);
       const participation = requireParticipation(req.id);
       const event = requireOwnEvent(participation.eventId, coordinator.id);
-      if (participation.status !== ParticipationStatus.PENDING) return fail(Code.FailedPrecondition, 'Заявка уже рассмотрена');
+      const wasApproved = participation.status === ParticipationStatus.APPROVED;
+      if (participation.status !== ParticipationStatus.PENDING && !wasApproved) {
+        return fail(Code.FailedPrecondition, 'Отказать можно только в заявке на рассмотрении или принятой');
+      }
       if (event.status !== EventStatus.PUBLISHED) return fail(Code.FailedPrecondition, 'Мероприятие не опубликовано');
       const reason = req.reason?.trim();
       if (req.reason !== undefined && (!reason || [...reason].length > 2000)) {
@@ -101,6 +104,7 @@ export const registerParticipationService = (router: ConnectRouter) =>
         actor: coordinatorActor(coordinator.id),
         rejectionReason: reason,
       });
+      if (wasApproved) closeChatAccess(event.id, participation.volunteerId);
       return {};
     },
     cancelParticipation(req, ctx) {

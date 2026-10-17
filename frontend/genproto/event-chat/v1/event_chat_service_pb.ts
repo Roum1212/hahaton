@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file event-chat/v1/event_chat_service.proto.
  */
 export const file_event_chat_v1_event_chat_service: GenFile = /*@__PURE__*/
-  fileDesc("CiZldmVudC1jaGF0L3YxL2V2ZW50X2NoYXRfc2VydmljZS5wcm90bxINZXZlbnRfY2hhdC52MSLJAQoJRXZlbnRDaGF0EhoKCGV2ZW50X2lkGAEgASgJUghldmVudF9pZBIgCgtldmVudF90aXRsZRgCIAEoCVILZXZlbnRfdGl0bGUSHAoJcmVhZF9vbmx5GAYgASgIUglyZWFkX29ubHkSKAoPbGF0ZXN0X3NlcXVlbmNlGAUgASgEUg9sYXRlc3Rfc2VxdWVuY2USNgoWdmlzaWJsZV9hZnRlcl9zZXF1ZW5jZRgEIAEoBFIWdmlzaWJsZV9hZnRlcl9zZXF1ZW5jZSIxChNHZXRFdmVudENoYXRSZXF1ZXN0EhoKCGV2ZW50X2lkGAEgASgJUghldmVudF9pZCI+ChRHZXRFdmVudENoYXRSZXNwb25zZRImCgRjaGF0GAEgASgLMhguZXZlbnRfY2hhdC52MS5FdmVudENoYXQiOAoXTGlzdE15RXZlbnRDaGF0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgDImUKGExpc3RNeUV2ZW50Q2hhdHNSZXNwb25zZRInCgVjaGF0cxgBIAMoCzIYLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0EiAKC3RvdGFsX2NvdW50GAIgASgDUgt0b3RhbF9jb3VudCKiAgoQRXZlbnRDaGF0TWVzc2FnZRIKCgJpZBgBIAEoCRIaCghldmVudF9pZBgCIAEoCVIIZXZlbnRfaWQSKAoOY29vcmRpbmF0b3JfaWQYAyABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAQgASgJSABSDHZvbHVudGVlcl9pZBIwChNhdXRob3JfZGlzcGxheV9uYW1lGAUgASgJUhNhdXRob3JfZGlzcGxheV9uYW1lEgwKBHRleHQYBiABKAkSEAoIc2VxdWVuY2UYCCABKAQSOgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXRCCAoGYXV0aG9yImcKG1NlbmRFdmVudENoYXRNZXNzYWdlUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSDAoEdGV4dBgCIAEoCRIeCgpyZXF1ZXN0X2lkGAMgASgJUgpyZXF1ZXN0X2lkIlAKHFNlbmRFdmVudENoYXRNZXNzYWdlUmVzcG9uc2USMAoHbWVzc2FnZRgBIAEoCzIfLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0TWVzc2FnZSKiAQocTGlzdEV2ZW50Q2hhdE1lc3NhZ2VzUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSMQoRc25hcHNob3Rfc2VxdWVuY2UYBSABKARIAFIRc25hcHNob3Rfc2VxdWVuY2WIAQESDQoFbGltaXQYAiABKAUSDgoGb2Zmc2V0GAQgASgDQhQKEl9zbmFwc2hvdF9zZXF1ZW5jZSLaAQodTGlzdEV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2USMQoIbWVzc2FnZXMYASADKAsyHy5ldmVudF9jaGF0LnYxLkV2ZW50Q2hhdE1lc3NhZ2USLAoRc25hcHNob3Rfc2VxdWVuY2UYBCABKARSEXNuYXBzaG90X3NlcXVlbmNlEjYKFnZpc2libGVfYWZ0ZXJfc2VxdWVuY2UYBiABKARSFnZpc2libGVfYWZ0ZXJfc2VxdWVuY2USIAoLdG90YWxfY291bnQYAyABKANSC3RvdGFsX2NvdW50ImcKIVN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSJgoOYWZ0ZXJfc2VxdWVuY2UYAiABKARSDmFmdGVyX3NlcXVlbmNlIlYKIlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2USMAoHbWVzc2FnZRgBIAEoCzIfLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0TWVzc2FnZTLFBAoQRXZlbnRDaGF0U2VydmljZRJZCgxHZXRFdmVudENoYXQSIi5ldmVudF9jaGF0LnYxLkdldEV2ZW50Q2hhdFJlcXVlc3QaIy5ldmVudF9jaGF0LnYxLkdldEV2ZW50Q2hhdFJlc3BvbnNlIgASZQoQTGlzdE15RXZlbnRDaGF0cxImLmV2ZW50X2NoYXQudjEuTGlzdE15RXZlbnRDaGF0c1JlcXVlc3QaJy5ldmVudF9jaGF0LnYxLkxpc3RNeUV2ZW50Q2hhdHNSZXNwb25zZSIAEnEKFFNlbmRFdmVudENoYXRNZXNzYWdlEiouZXZlbnRfY2hhdC52MS5TZW5kRXZlbnRDaGF0TWVzc2FnZVJlcXVlc3QaKy5ldmVudF9jaGF0LnYxLlNlbmRFdmVudENoYXRNZXNzYWdlUmVzcG9uc2UiABJ0ChVMaXN0RXZlbnRDaGF0TWVzc2FnZXMSKy5ldmVudF9jaGF0LnYxLkxpc3RFdmVudENoYXRNZXNzYWdlc1JlcXVlc3QaLC5ldmVudF9jaGF0LnYxLkxpc3RFdmVudENoYXRNZXNzYWdlc1Jlc3BvbnNlIgAShQEKGlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzEjAuZXZlbnRfY2hhdC52MS5TdWJzY3JpYmVFdmVudENoYXRNZXNzYWdlc1JlcXVlc3QaMS5ldmVudF9jaGF0LnYxLlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2UiADABQkJaQGdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9ldmVudC1jaGF0L3YxO2V2ZW50X2NoYXRfdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CiZldmVudC1jaGF0L3YxL2V2ZW50X2NoYXRfc2VydmljZS5wcm90bxINZXZlbnRfY2hhdC52MSLJAQoJRXZlbnRDaGF0EhoKCGV2ZW50X2lkGAEgASgJUghldmVudF9pZBIgCgtldmVudF90aXRsZRgCIAEoCVILZXZlbnRfdGl0bGUSHAoJcmVhZF9vbmx5GAMgASgIUglyZWFkX29ubHkSKAoPbGF0ZXN0X3NlcXVlbmNlGAQgASgEUg9sYXRlc3Rfc2VxdWVuY2USNgoWdmlzaWJsZV9hZnRlcl9zZXF1ZW5jZRgFIAEoBFIWdmlzaWJsZV9hZnRlcl9zZXF1ZW5jZSIxChNHZXRFdmVudENoYXRSZXF1ZXN0EhoKCGV2ZW50X2lkGAEgASgJUghldmVudF9pZCI+ChRHZXRFdmVudENoYXRSZXNwb25zZRImCgRjaGF0GAEgASgLMhguZXZlbnRfY2hhdC52MS5FdmVudENoYXQiOAoXTGlzdE15RXZlbnRDaGF0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgDImUKGExpc3RNeUV2ZW50Q2hhdHNSZXNwb25zZRInCgVjaGF0cxgBIAMoCzIYLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0EiAKC3RvdGFsX2NvdW50GAIgASgDUgt0b3RhbF9jb3VudCKiAgoQRXZlbnRDaGF0TWVzc2FnZRIKCgJpZBgBIAEoCRIaCghldmVudF9pZBgCIAEoCVIIZXZlbnRfaWQSKAoOY29vcmRpbmF0b3JfaWQYAyABKAlIAFIOY29vcmRpbmF0b3JfaWQSJAoMdm9sdW50ZWVyX2lkGAQgASgJSABSDHZvbHVudGVlcl9pZBIwChNhdXRob3JfZGlzcGxheV9uYW1lGAUgASgJUhNhdXRob3JfZGlzcGxheV9uYW1lEgwKBHRleHQYBiABKAkSEAoIc2VxdWVuY2UYByABKAQSOgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXRCCAoGYXV0aG9yImcKG1NlbmRFdmVudENoYXRNZXNzYWdlUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSDAoEdGV4dBgCIAEoCRIeCgpyZXF1ZXN0X2lkGAMgASgJUgpyZXF1ZXN0X2lkIlAKHFNlbmRFdmVudENoYXRNZXNzYWdlUmVzcG9uc2USMAoHbWVzc2FnZRgBIAEoCzIfLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0TWVzc2FnZSKiAQocTGlzdEV2ZW50Q2hhdE1lc3NhZ2VzUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSMQoRc25hcHNob3Rfc2VxdWVuY2UYAiABKARIAFIRc25hcHNob3Rfc2VxdWVuY2WIAQESDQoFbGltaXQYAyABKAUSDgoGb2Zmc2V0GAQgASgDQhQKEl9zbmFwc2hvdF9zZXF1ZW5jZSLaAQodTGlzdEV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2USMQoIbWVzc2FnZXMYASADKAsyHy5ldmVudF9jaGF0LnYxLkV2ZW50Q2hhdE1lc3NhZ2USLAoRc25hcHNob3Rfc2VxdWVuY2UYAiABKARSEXNuYXBzaG90X3NlcXVlbmNlEjYKFnZpc2libGVfYWZ0ZXJfc2VxdWVuY2UYAyABKARSFnZpc2libGVfYWZ0ZXJfc2VxdWVuY2USIAoLdG90YWxfY291bnQYBCABKANSC3RvdGFsX2NvdW50ImcKIVN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVxdWVzdBIaCghldmVudF9pZBgBIAEoCVIIZXZlbnRfaWQSJgoOYWZ0ZXJfc2VxdWVuY2UYAiABKARSDmFmdGVyX3NlcXVlbmNlIlYKIlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2USMAoHbWVzc2FnZRgBIAEoCzIfLmV2ZW50X2NoYXQudjEuRXZlbnRDaGF0TWVzc2FnZTLFBAoQRXZlbnRDaGF0U2VydmljZRJZCgxHZXRFdmVudENoYXQSIi5ldmVudF9jaGF0LnYxLkdldEV2ZW50Q2hhdFJlcXVlc3QaIy5ldmVudF9jaGF0LnYxLkdldEV2ZW50Q2hhdFJlc3BvbnNlIgASZQoQTGlzdE15RXZlbnRDaGF0cxImLmV2ZW50X2NoYXQudjEuTGlzdE15RXZlbnRDaGF0c1JlcXVlc3QaJy5ldmVudF9jaGF0LnYxLkxpc3RNeUV2ZW50Q2hhdHNSZXNwb25zZSIAEnEKFFNlbmRFdmVudENoYXRNZXNzYWdlEiouZXZlbnRfY2hhdC52MS5TZW5kRXZlbnRDaGF0TWVzc2FnZVJlcXVlc3QaKy5ldmVudF9jaGF0LnYxLlNlbmRFdmVudENoYXRNZXNzYWdlUmVzcG9uc2UiABJ0ChVMaXN0RXZlbnRDaGF0TWVzc2FnZXMSKy5ldmVudF9jaGF0LnYxLkxpc3RFdmVudENoYXRNZXNzYWdlc1JlcXVlc3QaLC5ldmVudF9jaGF0LnYxLkxpc3RFdmVudENoYXRNZXNzYWdlc1Jlc3BvbnNlIgAShQEKGlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzEjAuZXZlbnRfY2hhdC52MS5TdWJzY3JpYmVFdmVudENoYXRNZXNzYWdlc1JlcXVlc3QaMS5ldmVudF9jaGF0LnYxLlN1YnNjcmliZUV2ZW50Q2hhdE1lc3NhZ2VzUmVzcG9uc2UiADABQkJaQGdpdGh1Yi5jb20vUm91bTEyMTIvaGFoYXRvbi9nZW5wcm90by9ldmVudC1jaGF0L3YxO2V2ZW50X2NoYXRfdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Координатор-создатель видит весь свой чат; для него visible_after_sequence = 0.
@@ -34,19 +34,19 @@ export type EventChat = Message<"event_chat.v1.EventChat"> & {
   eventTitle: string;
 
   /**
-   * @generated from field: bool read_only = 6 [json_name = "read_only"];
+   * @generated from field: bool read_only = 3 [json_name = "read_only"];
    */
   readOnly: boolean;
 
   /**
-   * @generated from field: uint64 latest_sequence = 5 [json_name = "latest_sequence"];
+   * @generated from field: uint64 latest_sequence = 4 [json_name = "latest_sequence"];
    */
   latestSequence: bigint;
 
   /**
    * Доступны только сообщения со sequence строго больше этой границы.
    *
-   * @generated from field: uint64 visible_after_sequence = 4 [json_name = "visible_after_sequence"];
+   * @generated from field: uint64 visible_after_sequence = 5 [json_name = "visible_after_sequence"];
    */
   visibleAfterSequence: bigint;
 };
@@ -193,12 +193,12 @@ export type EventChatMessage = Message<"event_chat.v1.EventChatMessage"> & {
    * Нумерация и сохранение сериализуются по чату: нельзя позже зафиксировать сообщение
    * с sequence ниже уже видимой границы. Это обеспечивает восстановление без пропусков.
    *
-   * @generated from field: uint64 sequence = 8;
+   * @generated from field: uint64 sequence = 7;
    */
   sequence: bigint;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 7 [json_name = "created_at"];
+   * @generated from field: google.protobuf.Timestamp created_at = 8 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
 };
@@ -277,14 +277,14 @@ export type ListEventChatMessagesRequest = Message<"event_chat.v1.ListEventChatM
    * новые сообщения стрима не сдвигают offset в этой выборке.
    * Граница вне [visible_after_sequence, latest_sequence] означает InvalidArgument.
    *
-   * @generated from field: optional uint64 snapshot_sequence = 5 [json_name = "snapshot_sequence"];
+   * @generated from field: optional uint64 snapshot_sequence = 2 [json_name = "snapshot_sequence"];
    */
   snapshotSequence?: bigint | undefined;
 
   /**
    * 0 означает 20 результатов; допустимы 1–100, остальные значения — InvalidArgument.
    *
-   * @generated from field: int32 limit = 2;
+   * @generated from field: int32 limit = 3;
    */
   limit: number;
 
@@ -321,12 +321,12 @@ export type ListEventChatMessagesResponse = Message<"event_chat.v1.ListEventChat
    * Клиент загружает историю, затем открывает стрим с after_sequence = snapshot_sequence.
    * Сообщения, появившиеся между этими запросами, будут доставлены стримом.
    *
-   * @generated from field: uint64 snapshot_sequence = 4 [json_name = "snapshot_sequence"];
+   * @generated from field: uint64 snapshot_sequence = 2 [json_name = "snapshot_sequence"];
    */
   snapshotSequence: bigint;
 
   /**
-   * @generated from field: uint64 visible_after_sequence = 6 [json_name = "visible_after_sequence"];
+   * @generated from field: uint64 visible_after_sequence = 3 [json_name = "visible_after_sequence"];
    */
   visibleAfterSequence: bigint;
 
@@ -334,7 +334,7 @@ export type ListEventChatMessagesResponse = Message<"event_chat.v1.ListEventChat
    * Общее число доступных записей с текущими фильтрами, без limit и offset.
    * Подсчитывается в том же снимке данных, что и элементы страницы.
    *
-   * @generated from field: int64 total_count = 3 [json_name = "total_count"];
+   * @generated from field: int64 total_count = 4 [json_name = "total_count"];
    */
   totalCount: bigint;
 };

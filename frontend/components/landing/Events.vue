@@ -39,7 +39,10 @@ watch(area, (value) => load(value), { immediate: true, deep: true });
 
       <div v-else class="landing-events">
         <article v-for="event in store.upcoming" :key="event.id" class="landing-event">
-          <LandingPhoto :photo="LANDING_PHOTOS.stepCatalog" ratio="3 / 2" class="landing-event__photo" />
+          <LandingPhoto
+            :photo="event.imageUrl ? { src: event.imageUrl, alt: event.title } : LANDING_PHOTOS.stepCatalog"
+            ratio="3 / 2"
+            class="landing-event__photo" />
           <div class="landing-event__body">
             <span class="landing-tag">Свободно {{ event.freePlaces }} из {{ event.volunteerLimit }}</span>
             <h3 class="landing-event__title">{{ event.title }}</h3>

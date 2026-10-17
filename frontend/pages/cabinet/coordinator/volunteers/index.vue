@@ -96,7 +96,7 @@ onMounted(load);
 
       <div class="app-card app-columns__aside">
         <img src="/images/landing/step-handover.jpg" alt="" class="app-promo__image" />
-        <span class="app-card__title">Пригласить в команду</span>
+        <span class="app-card__title">Пригласить к сотрудничеству</span>
         <div class="flex flex-wrap items-end gap-2">
           <label class="app-field grow">
             <span class="app-field__label">Действует до</span>

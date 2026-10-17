@@ -89,7 +89,7 @@ watch(area, loadContent, { deep: true });
                 <span>{{ pluralize(rewardsStore.list.length, ['поощрение', 'поощрения', 'поощрений']) }}</span>
               </div>
             </div>
-            <Button v-if="canJoin" label="Вступить в команду" fluid @click="request(coordinatorId)" />
+            <Button v-if="canJoin" label="Предложить сотрудничество" fluid @click="request(coordinatorId)" />
             <span v-else-if="cooperation?.status === CooperationStatus.REJECTED" class="app-card__hint">
               Повторная заявка с {{ formatDateTime(cooperation.retryAfter) }}
             </span>
@@ -98,7 +98,7 @@ watch(area, loadContent, { deep: true });
             </span>
             <Button
               v-if="isMember"
-              label="Покинуть команду"
+              label="Прекратить сотрудничество"
               severity="secondary"
               text
               fluid
@@ -152,7 +152,9 @@ watch(area, loadContent, { deep: true });
       </template>
 
       <div v-else class="app-card">
-        <AppEmpty title="Мероприятия и поощрения координатора доступны участникам его команды" image="/images/landing/step-request.jpg" />
+        <AppEmpty
+          title="Мероприятия и поощрения координатора доступны волонтёрам, которые с ним сотрудничают"
+          image="/images/landing/step-request.jpg" />
       </div>
     </template>
   </AppPage>

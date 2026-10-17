@@ -90,8 +90,8 @@ onMounted(load);
     <div v-else class="app-columns app-columns--left">
       <aside class="app-columns__aside">
         <div class="app-card app-event-aside">
-          <div class="app-event-aside__image">
-            <img :src="pickIllustration(EVENT_ILLUSTRATIONS, event.id)" alt="" />
+          <div class="app-event-aside__image" :class="{ 'app-event-aside__image--photo': event.imageUrl }">
+            <img :src="eventImage(event, event.id)" alt="" />
           </div>
           <span class="app-event-aside__count">
             Участвуют <b>{{ event.approvedCount }}</b> из {{ event.volunteerLimit }}

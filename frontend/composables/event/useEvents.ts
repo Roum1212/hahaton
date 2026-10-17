@@ -106,8 +106,12 @@ export const canCancelEvent = (event: IEvent) => event.status === EventStatus.PU
 
 export const canCompleteEvent = (event: IEvent) => event.status === EventStatus.PUBLISHED && isPast(event.endsAt);
 
+export type IEventForm = IEventDto & { durationMinutes: number; imageUrl: string | null };
+
+export const eventImage = (event: IEvent | null | undefined, id: string) => event?.imageUrl ?? pickIllustration(EVENT_ILLUSTRATIONS, id);
+
 export const useEventForm = () => {
-  const generateInitialData = (event?: IEvent): IEventDto & { durationMinutes: number } => {
+  const generateInitialData = (event?: IEvent): IEventForm => {
     const start = event?.startsAt ?? nextHalfHour(new Date(Date.now() + 24 * 60 * 60 * 1000));
     return {
       title: event?.title ?? '',
@@ -119,10 +123,11 @@ export const useEventForm = () => {
       durationMinutes: event?.durationMinutes ?? 180,
       requirements: [...(event?.requirements ?? [])],
       volunteerLimit: event?.volunteerLimit ?? 10,
+      imageUrl: event?.imageUrl ?? null,
     };
   };
 
-  const validate = (dto: IEventDto & { durationMinutes: number }): string | null => {
+  const validate = (dto: IEventForm): string | null => {
     if (!dto.title.trim()) return 'Укажите название';
     if (!dto.point) return 'Отметьте место проведения на карте';
     if (!dto.startsAt || isPast(dto.startsAt)) return 'Начало должно быть в будущем';
@@ -133,7 +138,7 @@ export const useEventForm = () => {
     return null;
   };
 
-  const toDto = (form: IEventDto & { durationMinutes: number }): IEventDto => {
+  const toDto = (form: IEventForm): IEventDto => {
     const startsAt = form.startsAt ? new Date(form.startsAt) : null;
     if (startsAt) startsAt.setSeconds(0, 0);
     return {
@@ -145,6 +150,7 @@ export const useEventForm = () => {
       endsAt: startsAt ? new Date(startsAt.getTime() + form.durationMinutes * 60000) : null,
       requirements: form.requirements,
       volunteerLimit: form.volunteerLimit,
+      imagePath: form.imagePath,
     };
   };
 

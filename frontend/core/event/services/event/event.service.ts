@@ -8,6 +8,7 @@ import type { IEvent, IEventDto, IEventFilter, IEventResult } from './event.type
 export class EventService {
   private service = EVENT_API().event;
   private geo = GEO_SERVICES().GeoService;
+  private baseUrl = String(useRuntimeConfig().public.rpcUrl);
 
   async find(filter: IEventFilter, pagination: ApiPagination, signal?: AbortSignal): Promise<IListResult<IEvent>> {
     const { events, totalCount } = await this.service.find(this.toApiFindParams(filter, pagination), signal);
@@ -61,6 +62,7 @@ export class EventService {
       title: dto.title,
       description: dto.description,
       location: dto.location,
+      imagePath: dto.imagePath ?? '',
       point: dto.point ? this.geo.toApiPoint(dto.point) : undefined,
       startsAt: dto.startsAt ? toTimestamp(dto.startsAt) : undefined,
       endsAt: dto.endsAt ? toTimestamp(dto.endsAt) : undefined,
@@ -75,6 +77,7 @@ export class EventService {
       title: dto.title,
       description: dto.description,
       location: dto.location,
+      imagePath: dto.imagePath,
       point: dto.point ? this.geo.toApiPoint(dto.point) : undefined,
       startsAt: dto.startsAt ? toTimestamp(dto.startsAt) : undefined,
       endsAt: dto.endsAt ? toTimestamp(dto.endsAt) : undefined,
@@ -93,6 +96,7 @@ export class EventService {
       description: data.description,
       location: data.location,
       point: this.geo.toPoint(data.point),
+      imageUrl: resolveImageUrl(data.imageUrl, this.baseUrl),
       startsAt,
       endsAt,
       durationMinutes: startsAt && endsAt ? Math.round((endsAt.getTime() - startsAt.getTime()) / 60000) : 0,

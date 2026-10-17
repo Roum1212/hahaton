@@ -145,6 +145,7 @@ const addEvent = (coordinatorId: string, input: EventInput): EventRec => {
     endsAt: new Date(input.startsAt.getTime() + input.hours * HOUR),
     requirements: input.requirements ?? [],
     volunteerLimit: input.limit,
+    imagePath: '',
     status: EventStatus.PUBLISHED,
   };
   db.events.set(event.id, event);

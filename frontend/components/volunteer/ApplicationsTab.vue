@@ -51,7 +51,7 @@ watch(status, reload, { immediate: true });
       <div class="app-list">
         <div v-for="item in store.list" :key="item.id" class="app-list__item">
           <div class="app-list__lead">
-            <img :src="pickIllustration(EVENT_ILLUSTRATIONS, item.eventId)" alt="" class="app-thumb" />
+            <img :src="eventImage(event(item.eventId), item.eventId)" alt="" class="app-thumb" />
             <div class="app-list__main">
               <NuxtLink :to="`${ROUTES.volunteer.events}/${item.eventId}`" class="app-list__title">
                 {{ event(item.eventId)?.title ?? 'Мероприятие' }}

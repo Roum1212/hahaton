@@ -111,6 +111,7 @@ export const toEvent = (item: EventRec) =>
     coordinatorId: item.coordinatorId,
     description: item.description,
     title: item.title,
+    imageUrl: imageUrl(item.imagePath),
     location: item.location,
     point: toPoint(item.point),
     startsAt: ts(item.startsAt),

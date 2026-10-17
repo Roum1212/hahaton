@@ -138,7 +138,7 @@ watch(
               :key="item.id"
               :to="`${ROUTES.volunteer.events}/${item.eventId}`"
               class="app-mini-list__item">
-              <img :src="pickIllustration(EVENT_ILLUSTRATIONS, item.eventId)" alt="" class="app-thumb app-thumb--sm" />
+              <img :src="eventImage(event(item.eventId), item.eventId)" alt="" class="app-thumb app-thumb--sm" />
               <span class="app-mini-list__text">
                 <b>{{ event(item.eventId)?.title }}</b>
                 <span>{{ formatEventPeriod(event(item.eventId)?.startsAt ?? null, null) }}</span>
