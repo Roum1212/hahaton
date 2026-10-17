@@ -22,6 +22,10 @@ export function coinsForMinutes(minutes: number): number {
   return Math.floor(minutes / MINUTES_STEP) * COINS_PER_HALF_HOUR;
 }
 
+export function formatHours(minutes: number): string {
+  return (minutes / 60).toLocaleString('ru-RU', { maximumFractionDigits: 1 });
+}
+
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;

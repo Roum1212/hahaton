@@ -37,6 +37,9 @@ export const OWNED_EVENT_TABS: IProfileTab[] = [
   { key: 'chat', label: 'Чат' },
 ];
 
+export const PROFILE_COVER_VOLUNTEER = '/images/common/volunteer-cover.webp';
+export const PROFILE_COVER_COORDINATOR = '/images/common/coordinator-cover.webp';
+
 export const EVENT_ILLUSTRATIONS = [
   '/images/landing/step-catalog.jpg',
   '/images/landing/step-request.jpg',
