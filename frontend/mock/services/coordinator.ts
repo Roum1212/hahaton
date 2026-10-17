@@ -3,17 +3,8 @@ import { Code, type ConnectRouter } from '@connectrpc/connect';
 import { CoordinatorService, CoordinatorSettingsSchema } from '../../genproto/coordinator/v1/coordinator_service_pb';
 import { requireCoordinator, requireUser } from '../auth';
 import { compareStrings, db, fail, paginate, requireFound } from '../db';
+import { resolveImagePath } from '../images';
 import { toCoordinator } from '../mappers';
-
-export const isValidAvatarUrl = (value: string) => {
-  if (!value) return true;
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password;
-  } catch {
-    return false;
-  }
-};
 
 export const registerCoordinatorService = (router: ConnectRouter) =>
   router.service(CoordinatorService, {
@@ -33,9 +24,7 @@ export const registerCoordinatorService = (router: ConnectRouter) =>
     },
     updateCoordinator(req, ctx) {
       const coordinator = requireCoordinator(ctx);
-      if (req.avatarUrl !== undefined && !isValidAvatarUrl(req.avatarUrl))
-        return fail(Code.InvalidArgument, 'Аватар должен быть HTTPS-ссылкой');
-      if (req.avatarUrl !== undefined) coordinator.avatarUrl = req.avatarUrl;
+      if (req.avatarPath !== undefined) coordinator.avatarPath = resolveImagePath(req.avatarPath, coordinator.id);
       if (req.description !== undefined) coordinator.description = req.description;
       return {};
     },

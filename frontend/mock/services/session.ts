@@ -67,6 +67,7 @@ const register = (claims: IdTokenClaims & { iss: string; sub: string }): Volunte
     email: claims.email || `${claims.sub}@example.com`,
     phone: claims.phone_number || '+70000000000',
     dateOfBirth: dateOfBirth ?? { year: 2000, month: 1, day: 1 },
+    avatarPath: '',
     coinBalance: 0,
     confirmedMinutes: 0,
     operationSequence: 0,
@@ -88,7 +89,7 @@ export const registerSessionService = (router: ConnectRouter) =>
     openSession(_, ctx) {
       const session = findSession(ctx) ?? createSession();
       setSessionCookie(ctx, session);
-      return { session: toSession(session) };
+      return {};
     },
     authenticateSession(req, ctx) {
       const current = requireSession(ctx);
@@ -96,9 +97,10 @@ export const registerSessionService = (router: ConnectRouter) =>
       if (!req.idToken) return fail(Code.InvalidArgument, 'Нет ID token');
       const volunteer = resolveVolunteer(decodeIdToken(req.idToken));
       current.revoked = true;
+      db.sessions.delete(current.id);
       const session = createSession(volunteer.id);
       setSessionCookie(ctx, session);
-      return { session: toSession(session) };
+      return {};
     },
     getSession(_, ctx) {
       return { session: toSession(requireSession(ctx)) };
@@ -107,6 +109,7 @@ export const registerSessionService = (router: ConnectRouter) =>
       const session = findSession(ctx);
       if (session) {
         session.revoked = true;
+        db.sessions.delete(session.id);
         chatHub.closeSession(session.id);
       }
       clearSessionCookie(ctx);

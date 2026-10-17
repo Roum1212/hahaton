@@ -14,8 +14,8 @@ defineEmits<{
 
 <template>
   <article class="app-reward">
-    <div class="app-reward__image">
-      <img :src="pickIllustration(REWARD_ILLUSTRATIONS, reward.id)" alt="" />
+    <div class="app-reward__image" :class="{ 'app-reward__image--photo': reward.imageUrl }">
+      <img :src="reward.imageUrl ?? pickIllustration(REWARD_ILLUSTRATIONS, reward.id)" alt="" />
     </div>
     <div class="app-reward__body">
       <span v-if="owner" class="app-reward__owner">{{ owner }}</span>

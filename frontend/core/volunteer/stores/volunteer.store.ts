@@ -26,6 +26,11 @@ export const useVolunteerStore = defineStore('volunteer', {
       return this.profile;
     },
 
+    async updateAvatar(avatarPath: string) {
+      this.profile = await this.service.updateAvatar(avatarPath);
+      return this.profile;
+    },
+
     async fetchCoordinatorView(volunteerId: string, force = false) {
       if (!force && this.coordinatorViews[volunteerId]) return this.coordinatorViews[volunteerId];
       const view = await this.service.getForCoordinator(volunteerId);

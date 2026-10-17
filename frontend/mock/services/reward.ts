@@ -4,6 +4,7 @@ import { RewardListScope, RewardService } from '../../genproto/reward/v1/reward_
 import { activePartnerIds, hasActiveCooperation, requireCoordinator, requireUser } from '../auth';
 import { compareStrings, db, fail, newId, paginate, type RewardRec } from '../db';
 import { cancelRewardOrder, issuedQuantity, reservedQuantity } from '../domain';
+import { resolveImagePath } from '../images';
 import { toReward } from '../mappers';
 
 export const requireOwnReward = (id: string, coordinatorId: string): RewardRec => {
@@ -28,6 +29,7 @@ export const registerRewardService = (router: ConnectRouter) =>
         description: req.description,
         priceCoins: Number(req.priceCoins),
         quantityLimit: req.quantityLimit,
+        imagePath: resolveImagePath(req.imagePath, coordinator.id),
         deleted: false,
       };
       db.rewards.set(reward.id, reward);
@@ -68,6 +70,8 @@ export const registerRewardService = (router: ConnectRouter) =>
           return fail(Code.FailedPrecondition, 'Количество меньше выданных и зарезервированных единиц');
         }
       }
+      const imagePath = req.imagePath === undefined ? undefined : resolveImagePath(req.imagePath, coordinator.id);
+      if (imagePath !== undefined) reward.imagePath = imagePath;
       if (req.title !== undefined) reward.title = req.title.trim();
       if (req.description !== undefined) reward.description = req.description;
       if (req.priceCoins !== undefined) reward.priceCoins = Number(req.priceCoins);

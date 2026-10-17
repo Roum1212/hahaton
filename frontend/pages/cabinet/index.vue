@@ -13,7 +13,7 @@ const authStore = useAuthStore();
 const volunteerStore = useVolunteerStore();
 const participationsStore = useParticipationsStore();
 const { store: cooperationsStore, load: loadCooperations } = useVolunteerCooperations();
-const { ensure: ensureCoordinators, name: coordinatorName } = useCoordinatorNames();
+const { ensure: ensureCoordinators, name: coordinatorName, avatar: coordinatorAvatar } = useCoordinatorNames();
 const { ensure: ensureEvents, event } = useEventLookup();
 const { label: cityLabel } = useSearchArea();
 const { active } = useProfileTabs(VOLUNTEER_TABS);
@@ -26,31 +26,43 @@ const profile = computed(() => volunteerStore.profile);
 const hours = computed(() => Math.floor((profile.value?.confirmedMinutes ?? 0) / 60));
 const coordinatorIds = computed(() => cooperationsStore.activeCoordinatorIds);
 
+const loadUpcoming = async () => {
+  const approved = await participationsStore.service.find(
+    { scope: ParticipationListScope.MY_APPLICATIONS, status: ParticipationStatus.APPROVED },
+    { limit: 20, offset: 0 },
+  );
+  await ensureEvents(approved.list.map((item) => item.eventId));
+  upcoming.value = approved.list.filter((item) => !isPast(event(item.eventId)?.endsAt)).slice(0, 4);
+};
+
 onMounted(async () => {
   loading.value = true;
   await handleAsyncOperation(
     async () => {
-      const [, approved, confirmed] = await Promise.all([
+      const [, confirmed] = await Promise.all([
         volunteerStore.fetchProfile(),
-        participationsStore.service.find(
-          { scope: ParticipationListScope.MY_APPLICATIONS, status: ParticipationStatus.APPROVED },
-          { limit: 20, offset: 0 },
-        ),
         participationsStore.service.find(
           { scope: ParticipationListScope.MY_APPLICATIONS, status: ParticipationStatus.CONFIRMED },
           { limit: 1, offset: 0 },
         ),
         loadCooperations(),
+        loadUpcoming(),
       ]);
       doneCount.value = confirmed.total;
-      await Promise.all([ensureEvents(approved.list.map((item) => item.eventId)), ensureCoordinators(coordinatorIds.value)]);
-      upcoming.value = approved.list.filter((item) => !isPast(event(item.eventId)?.endsAt)).slice(0, 4);
+      await ensureCoordinators(coordinatorIds.value);
     },
     () => {
       loading.value = false;
     },
   );
 });
+
+watch(
+  () => participationsStore.list.map((item) => `${item.id}:${item.status}`).join(),
+  (value, previous) => {
+    if (previous && !loading.value) handleAsyncOperation(loadUpcoming);
+  },
+);
 </script>
 
 <template>
@@ -58,7 +70,7 @@ onMounted(async () => {
     <section class="app-hero">
       <div class="app-hero__cover" />
       <div class="app-hero__card">
-        <AppAvatar :name="profile?.fullName ?? ''" size="lg" class="app-hero__avatar" />
+        <AppAvatar :name="profile?.fullName ?? ''" :image="profile?.avatarUrl" size="lg" class="app-hero__avatar" />
         <div class="app-hero__body">
           <Skeleton v-if="!profile" width="18rem" height="2rem" />
           <template v-else>
@@ -78,7 +90,7 @@ onMounted(async () => {
           <div class="app-hero__stats">
             <div class="app-hero__stat">
               <b>{{ profile?.coinBalance ?? 0 }}</b>
-              <span>{{ pluralize(profile?.coinBalance ?? 0, ['коин', 'коина', 'коинов']) }}</span>
+              <span>{{ pluralize(profile?.coinBalance ?? 0, ['койн', 'койна', 'койнов']) }}</span>
             </div>
             <div class="app-hero__stat">
               <b>{{ hours }}</b>
@@ -113,13 +125,13 @@ onMounted(async () => {
       <aside class="app-columns__aside">
         <div class="app-card">
           <div class="app-card__head">
-            <span class="app-card__title">Ближайшие дела</span>
+            <span class="app-card__title">Ближайшие мероприятия</span>
             <NuxtLink :to="ROUTES.volunteer.events" class="app-link">Каталог</NuxtLink>
           </div>
           <div v-if="loading" class="flex flex-col gap-3">
             <Skeleton v-for="n in 2" :key="n" height="56px" border-radius="14px" />
           </div>
-          <span v-else-if="!upcoming.length" class="app-card__hint">Когда координатор примет заявку, дело появится здесь</span>
+          <span v-else-if="!upcoming.length" class="app-card__hint">Когда координатор примет заявку, мероприятие появится здесь</span>
           <div v-else class="app-mini-list">
             <NuxtLink
               v-for="item in upcoming"
@@ -146,7 +158,7 @@ onMounted(async () => {
           <span v-else-if="!coordinatorIds.length" class="app-card__hint">Подайте заявку координатору, чтобы видеть его мероприятия</span>
           <div v-else class="app-mini-list">
             <NuxtLink v-for="id in coordinatorIds" :key="id" :to="`${ROUTES.volunteer.coordinators}/${id}`" class="app-mini-list__item">
-              <AppAvatar :name="coordinatorName(id)" size="sm" />
+              <AppAvatar :name="coordinatorName(id)" :image="coordinatorAvatar(id)" size="sm" />
               <span class="app-mini-list__text">
                 <b>{{ coordinatorName(id) }}</b>
               </span>

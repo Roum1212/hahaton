@@ -90,6 +90,7 @@ const addVolunteer = (
     email,
     phone,
     dateOfBirth: { year, month: 4, day: 12 },
+    avatarPath: '',
     coinBalance: 0,
     confirmedMinutes: 0,
     operationSequence: 0,
@@ -98,8 +99,8 @@ const addVolunteer = (
   return volunteer;
 };
 
-const addCoordinator = (id: string, description: string, cooldownSeconds = 86400, avatarUrl = ''): CoordinatorRec => {
-  const coordinator: CoordinatorRec = { id, description, cooldownSeconds, avatarUrl };
+const addCoordinator = (id: string, description: string, cooldownSeconds = 86400, avatarPath = ''): CoordinatorRec => {
+  const coordinator: CoordinatorRec = { id, description, cooldownSeconds, avatarPath };
   db.coordinators.set(id, coordinator);
   return coordinator;
 };
@@ -209,7 +210,7 @@ const completeHistorical = (event: EventRec, results: { participation: Participa
 };
 
 const addReward = (coordinatorId: string, title: string, description: string, priceCoins: number, quantityLimit: number): RewardRec => {
-  const reward: RewardRec = { id: newId(), coordinatorId, title, description, priceCoins, quantityLimit, deleted: false };
+  const reward: RewardRec = { id: newId(), coordinatorId, title, description, priceCoins, quantityLimit, imagePath: '', deleted: false };
   db.rewards.set(reward.id, reward);
   return reward;
 };
@@ -258,9 +259,19 @@ const say = (event: EventRec, author: VolunteerRec, text: string, createdAt: Dat
 
 const seedVolunteers: VolunteerRec[] = [];
 
+const seedEmpty = () => {
+  const irina = addVolunteer('Ирина', 'Ковалёва', 'Сергеевна', 'irina.kovaleva@example.com', '+79100000001', 1988);
+  addVolunteer('Мария', 'Иванова', 'Павловна', 'maria.ivanova@example.com', '+79100000003', 2003);
+  addCoordinator(irina.id, '');
+  return [];
+};
+
 export const seed = () => {
   addCities();
+  return process.env.MOCK_SEED === 'demo' ? seedDemo() : seedEmpty();
+};
 
+const seedDemo = () => {
   const irina = addVolunteer('Ирина', 'Ковалёва', 'Сергеевна', 'irina.kovaleva@example.com', '+79100000001', 1988);
   const nikolay = addVolunteer('Николай', 'Орлов', 'Андреевич', 'nikolay.orlov@example.com', '+79100000002', 1992);
   const maria = addVolunteer('Мария', 'Иванова', 'Павловна', 'maria.ivanova@example.com', '+79100000003', 2003);
@@ -376,7 +387,7 @@ export const provisionCoordinator = (volunteerId: string, options: Partial<Omit<
     volunteerId,
     options.description ?? 'Координатор волонтёрских мероприятий Обнинска.',
     options.cooldownSeconds ?? 86400,
-    options.avatarUrl ?? '',
+    options.avatarPath ?? '',
   );
   const [maria, dmitry, aleksey, ekaterina] = seedVolunteers;
   if (!maria || !dmitry || !aleksey || !ekaterina) return;

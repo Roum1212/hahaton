@@ -3,6 +3,7 @@ import type { Date as ProtoDate } from '../../genproto/google/type/date_pb';
 import { VolunteerOperationType, VolunteerService } from '../../genproto/volunteer/v1/volunteer_service_pb';
 import { hasActiveCooperation, requireCoordinator, requireUser } from '../auth';
 import { cooperationKey, db, fail, paginate, requireFound } from '../db';
+import { resolveImagePath } from '../images';
 import { toCoordinatorVolunteer, toOperation, toVolunteer } from '../mappers';
 
 const isValidBirthDate = (value: ProtoDate) => {
@@ -39,6 +40,8 @@ export const registerVolunteerService = (router: ConnectRouter) =>
       if (req.firstName !== undefined && !req.firstName.trim()) return fail(Code.InvalidArgument, 'Имя не может быть пустым');
       if (req.lastName !== undefined && !req.lastName.trim()) return fail(Code.InvalidArgument, 'Фамилия не может быть пустой');
       if (req.dateOfBirth && !isValidBirthDate(req.dateOfBirth)) return fail(Code.InvalidArgument, 'Некорректная дата рождения');
+      const avatarPath = req.avatarPath === undefined ? undefined : resolveImagePath(req.avatarPath, user.id);
+      if (avatarPath !== undefined) user.avatarPath = avatarPath;
       if (req.firstName !== undefined) user.firstName = req.firstName.trim();
       if (req.lastName !== undefined) user.lastName = req.lastName.trim();
       if (req.middleName !== undefined) user.middleName = req.middleName.trim();

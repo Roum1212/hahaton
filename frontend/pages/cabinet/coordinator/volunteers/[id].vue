@@ -48,7 +48,7 @@ onMounted(load);
       <section class="app-hero">
         <div class="app-hero__cover" />
         <div class="app-hero__card">
-          <AppAvatar :name="name" size="lg" class="app-hero__avatar" />
+          <AppAvatar :name="name" :image="volunteer.avatarUrl" size="lg" class="app-hero__avatar" />
           <div class="app-hero__body">
             <h1 class="app-hero__name">{{ name }}</h1>
             <div class="app-hero__chips">
@@ -79,7 +79,7 @@ onMounted(load);
               </div>
               <div class="app-hero__stat">
                 <b>{{ stats.coins }}</b>
-                <span>{{ pluralize(stats.coins, ['коин', 'коина', 'коинов']) }}</span>
+                <span>{{ pluralize(stats.coins, ['койн', 'койна', 'койнов']) }}</span>
               </div>
             </div>
             <div v-if="cooperation?.status === CooperationStatus.PENDING" class="app-hero__actions">

@@ -33,7 +33,7 @@ export const useRewardPurchase = () => {
   const purchase = (reward: IReward) => {
     const requestId = createRequestId();
     confirm.accept(`Обменять ${formatCoins(reward.priceCoins)} на «${reward.title}»?`, {
-      header: 'Обмен коинов',
+      header: 'Обмен койнов',
       acceptLabel: 'Обменять',
       accept: async () => {
         await ordersStore.purchase(reward.id, reward.priceCoins, requestId);
@@ -70,14 +70,14 @@ export const useMyPurchases = () => {
   };
 
   const cancel = (id: string) =>
-    confirm.delete('Отменить заказ? Коины вернутся на баланс.', {
+    confirm.delete('Отменить заказ? Койны вернутся на баланс.', {
       header: 'Отмена заказа',
       acceptLabel: 'Отменить заказ',
       rejectLabel: 'Не отменять',
       accept: async () => {
         await store.cancel(id);
         await volunteerStore.fetchProfile();
-        toast.success('Заказ отменён, коины возвращены');
+        toast.success('Заказ отменён, койны возвращены');
       },
     });
 
@@ -115,7 +115,7 @@ export const useOwnedRewards = () => {
   };
 
   const remove = (reward: IReward) =>
-    confirm.delete(`Удалить «${reward.title}»? Невыданные заказы будут отменены с возвратом коинов.`, {
+    confirm.delete(`Удалить «${reward.title}»? Невыданные заказы будут отменены с возвратом койнов.`, {
       header: 'Удаление поощрения',
       acceptLabel: 'Удалить',
       rejectLabel: 'Отмена',
@@ -160,7 +160,7 @@ export const useIncomingOrders = () => {
   };
 
   const cancel = (id: string) =>
-    confirm.delete('Отменить заказ? Коины вернутся волонтёру.', {
+    confirm.delete('Отменить заказ? Койны вернутся волонтёру.', {
       header: 'Отмена заказа',
       acceptLabel: 'Отменить заказ',
       rejectLabel: 'Не отменять',

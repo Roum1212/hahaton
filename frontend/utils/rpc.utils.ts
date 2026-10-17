@@ -57,14 +57,34 @@ export const RPC_METHOD_ERROR_MESSAGES: Record<string, Partial<Record<Code, stri
   RejectParticipation: { [Code.FailedPrecondition]: 'Заявка уже рассмотрена' },
   CreateRewardOrder: {
     [Code.Aborted]: 'Цена изменилась, проверьте карточку поощрения',
-    [Code.FailedPrecondition]: 'Недостаточно коинов или поощрение закончилось',
+    [Code.FailedPrecondition]: 'Недостаточно койнов или поощрение закончилось',
     [Code.AlreadyExists]: 'Эта покупка уже оформлена',
   },
   IssueRewardOrder: { [Code.FailedPrecondition]: 'Этот заказ нельзя выдать' },
   CancelRewardOrder: { [Code.FailedPrecondition]: 'Выданный заказ нельзя отменить' },
-  UpdateReward: { [Code.FailedPrecondition]: 'Количество меньше выданных и зарезервированных единиц' },
+  UpdateReward: {
+    [Code.FailedPrecondition]: 'Количество меньше выданных и зарезервированных единиц',
+    [Code.NotFound]: 'Изображение не найдено, загрузите его заново',
+    [Code.PermissionDenied]: 'Это изображение загружено другим участником',
+  },
   SendEventChatMessage: { [Code.FailedPrecondition]: 'Чат доступен только для чтения' },
   SubscribeEventChatMessages: { [Code.PermissionDenied]: 'Доступ к чату закрыт' },
+  UploadImage: {
+    [Code.InvalidArgument]: 'Файл не подходит: нужен JPEG или PNG до 5 МиБ и не больше 4096 пикселей по стороне',
+    [Code.Unauthenticated]: 'Войдите, чтобы загрузить изображение',
+  },
+  UpdateVolunteer: {
+    [Code.NotFound]: 'Изображение не найдено, загрузите его заново',
+    [Code.PermissionDenied]: 'Это изображение загружено другим участником',
+  },
+  UpdateCoordinator: {
+    [Code.NotFound]: 'Изображение не найдено, загрузите его заново',
+    [Code.PermissionDenied]: 'Это изображение загружено другим участником',
+  },
+  CreateReward: {
+    [Code.NotFound]: 'Изображение не найдено, загрузите его заново',
+    [Code.PermissionDenied]: 'Это изображение загружено другим участником',
+  },
   SuggestAddresses: {
     [Code.Unavailable]: 'Сервис подсказок адресов недоступен',
     [Code.ResourceExhausted]: 'Лимит подсказок адресов исчерпан, попробуйте позже',

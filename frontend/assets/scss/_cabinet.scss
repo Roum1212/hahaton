@@ -1046,6 +1046,10 @@
       height: 100%;
       object-fit: contain;
     }
+
+    &--photo img {
+      object-fit: cover;
+    }
   }
 
   &__body {
@@ -1603,6 +1607,156 @@
       color: var(--app-ink-muted);
     }
   }
+}
+
+.app-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &__preview {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    background-color: var(--app-soft);
+    cursor: pointer;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .app-avatar--lg {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      box-shadow: none;
+    }
+
+    &:hover .app-upload__overlay,
+    &:disabled .app-upload__overlay {
+      opacity: 1;
+    }
+  }
+
+  &--circle &__preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+  }
+
+  &--cover &__preview {
+    width: 160px;
+    height: 100px;
+    border-radius: 16px;
+  }
+
+  &__placeholder {
+    font-size: 24px;
+    color: var(--app-ink-muted);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(31, 26, 23, 0.45);
+    font-size: 20px;
+    color: #ffffff;
+    opacity: 0;
+    transition: opacity var(--app-transition);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.app-crop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #1f1a17;
+
+  &__stage {
+    position: relative;
+    line-height: 0;
+    touch-action: none;
+    user-select: none;
+  }
+
+  &__image {
+    display: block;
+    max-width: 100%;
+    max-height: 60vh;
+    pointer-events: none;
+  }
+
+  &__frame {
+    position: absolute;
+    border: 1px solid #ffffff;
+    cursor: move;
+
+    &--round .app-crop__mask {
+      border-radius: 50%;
+    }
+  }
+
+  &__mask {
+    position: absolute;
+    inset: 0;
+    box-shadow: 0 0 0 9999px rgba(15, 12, 10, 0.6);
+    pointer-events: none;
+  }
+
+  &__handle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #1f1a17;
+    background-color: #ffffff;
+
+    &--nw {
+      top: -7px;
+      left: -7px;
+      cursor: nwse-resize;
+    }
+
+    &--ne {
+      top: -7px;
+      right: -7px;
+      cursor: nesw-resize;
+    }
+
+    &--sw {
+      bottom: -7px;
+      left: -7px;
+      cursor: nesw-resize;
+    }
+
+    &--se {
+      right: -7px;
+      bottom: -7px;
+      cursor: nwse-resize;
+    }
+  }
+}
+
+.app-crop-dialog.p-dialog .p-dialog-footer {
+  justify-content: center;
 }
 
 .app-location {

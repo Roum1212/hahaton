@@ -15,7 +15,7 @@ definePageMeta({
 const route = useRoute();
 const eventsStore = useEventsStore();
 const { list, loading: applicationsLoading, load: loadApplications, approve, reject } = useEventApplications();
-const { name: volunteerName, view: volunteerView } = useVolunteerNames();
+const { name: volunteerName, view: volunteerView, avatar: volunteerAvatar } = useVolunteerNames();
 const { cancel } = useEventActions();
 const history = useParticipationHistory();
 const { active: section } = useProfileTabs(OWNED_EVENT_TABS);
@@ -166,7 +166,7 @@ onMounted(load);
             <div v-for="item in visible" :key="item.id" class="app-list__item">
               <div class="app-list__lead">
                 <NuxtLink :to="`${ROUTES.coordinator.volunteers}/${item.volunteerId}`"
-                  ><AppAvatar :name="volunteerName(item.volunteerId)"
+                  ><AppAvatar :name="volunteerName(item.volunteerId)" :image="volunteerAvatar(item.volunteerId)"
                 /></NuxtLink>
                 <div class="app-list__main">
                   <span class="app-list__title">

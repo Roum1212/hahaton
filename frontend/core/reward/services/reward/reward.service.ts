@@ -6,6 +6,7 @@ import type { IReward, IRewardDto, IRewardFilter } from './reward.types';
 
 export class RewardService {
   private service = REWARD_API().reward;
+  private baseUrl = String(useRuntimeConfig().public.rpcUrl);
 
   async find(filter: IRewardFilter, pagination: ApiPagination, signal?: AbortSignal): Promise<IListResult<IReward>> {
     const { rewards, totalCount } = await this.service.find({ ...filter, ...toApiPage(pagination) }, signal);
@@ -37,6 +38,7 @@ export class RewardService {
       description: dto.description,
       priceCoins: BigInt(dto.priceCoins),
       quantityLimit: dto.quantityLimit,
+      imagePath: dto.imagePath ?? '',
     };
   }
 
@@ -47,6 +49,7 @@ export class RewardService {
       description: dto.description,
       priceCoins: dto.priceCoins === undefined ? undefined : BigInt(dto.priceCoins),
       quantityLimit: dto.quantityLimit,
+      imagePath: dto.imagePath,
     };
   }
 
@@ -59,6 +62,7 @@ export class RewardService {
       priceCoins: fromBigInt(data.priceCoins),
       availableQuantity: data.availableQuantity,
       quantityLimit: data.quantityLimit,
+      imageUrl: resolveImageUrl(data.imageUrl, this.baseUrl),
     };
   }
 }

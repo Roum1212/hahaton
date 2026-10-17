@@ -7,17 +7,25 @@ const { toast } = useApp();
 const editingId = ref<string | null>(null);
 const dialogVisible = ref(false);
 const form = ref<IRewardDto>({ title: '', description: '', priceCoins: 20, quantityLimit: 10 });
+const imagePreview = ref<string | null>(null);
 
 const openCreate = () => {
   editingId.value = null;
   form.value = { title: '', description: '', priceCoins: 20, quantityLimit: 10 };
+  imagePreview.value = null;
   dialogVisible.value = true;
 };
 
 const openEdit = (reward: IReward) => {
   editingId.value = reward.id;
   form.value = { title: reward.title, description: reward.description, priceCoins: reward.priceCoins, quantityLimit: reward.quantityLimit };
+  imagePreview.value = reward.imageUrl;
   dialogVisible.value = true;
+};
+
+const setImage = (path: string, url: string | null) => {
+  form.value.imagePath = path;
+  imagePreview.value = url;
 };
 
 const onSave = async () => {
@@ -38,7 +46,7 @@ onMounted(load);
 <template>
   <div class="app-card">
     <div class="app-card__head">
-      <span class="app-card__title">Что можно получить за коины</span>
+      <span class="app-card__title">Что можно получить за койны</span>
       <Button label="Добавить" icon="pi pi-plus" size="small" @click="openCreate" />
     </div>
 
@@ -50,8 +58,8 @@ onMounted(load);
 
     <div v-else class="app-grid">
       <article v-for="reward in store.list" :key="reward.id" class="app-reward app-reward--bordered">
-        <div class="app-reward__image">
-          <img :src="pickIllustration(REWARD_ILLUSTRATIONS, reward.id)" alt="" />
+        <div class="app-reward__image" :class="{ 'app-reward__image--photo': reward.imageUrl }">
+          <img :src="reward.imageUrl ?? pickIllustration(REWARD_ILLUSTRATIONS, reward.id)" alt="" />
         </div>
         <div class="app-reward__body">
           <span class="app-reward__title">{{ reward.title }}</span>
@@ -77,6 +85,10 @@ onMounted(load);
       :draggable="false"
       :style="{ width: '480px' }">
       <form class="app-form" @submit.prevent="onSave">
+        <div class="app-field">
+          <span class="app-field__label">Изображение</span>
+          <AppImageUpload :image="imagePreview" shape="cover" @uploaded="setImage($event.path, $event.url)" @remove="setImage('', null)" />
+        </div>
         <label class="app-field">
           <span class="app-field__label">Название</span>
           <InputText v-model="form.title" fluid />
@@ -87,7 +99,7 @@ onMounted(load);
         </label>
         <div class="app-form-grid">
           <label class="app-field">
-            <span class="app-field__label">Цена, коинов</span>
+            <span class="app-field__label">Цена, койнов</span>
             <InputNumber v-model="form.priceCoins" :min="1" fluid />
           </label>
           <label class="app-field">

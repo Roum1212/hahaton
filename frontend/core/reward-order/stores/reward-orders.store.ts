@@ -48,6 +48,13 @@ export const useRewardOrdersStore = defineStore('rewardOrders', {
     },
 
     replace(order: IRewardOrder) {
+      const status = this.filter?.status;
+      if (status !== undefined && order.status !== status) {
+        const before = this.list.length;
+        this.list = this.list.filter((item) => item.id !== order.id);
+        this.total = Math.max(0, this.total - (before - this.list.length));
+        return order;
+      }
       this.list = this.list.map((item) => (item.id === order.id ? order : item));
       return order;
     },

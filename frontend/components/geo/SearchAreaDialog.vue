@@ -17,6 +17,11 @@ const addressSuggestions = ref<IAddressSuggestion[]>([]);
 const count = ref<number | null>(null);
 const counting = ref(false);
 const { resolving, resolve, findCity } = useReverseGeocode();
+
+const addressPlaceholder = computed(() => {
+  if (resolving.value) return 'Определяем адрес…';
+  return authStore.isLoggedIn ? 'Улица и номер дома или точка на карте' : 'Отметьте точку на карте';
+});
 let pickToken = 0;
 
 const center = computed<IGeoPoint>(() => draft.value.center ?? draft.value.city.center ?? DEFAULT_CITY.center!);
@@ -52,6 +57,7 @@ const selectCity = ({ value }: { value: ICity }) => {
 };
 
 const searchAddresses = async ({ query }: { query: string }) => {
+  if (!authStore.isLoggedIn) return;
   const result = await handleAsyncOperation(() => geoStore.service.suggest(`${draft.value.city.name}, ${query}`, 'street', 'house', 7));
   addressSuggestions.value = result ?? [];
 };
@@ -161,9 +167,10 @@ watchDebounced(
         v-model="addressQuery"
         :suggestions="addressSuggestions"
         option-label="value"
-        :placeholder="resolving ? 'Определяем адрес…' : 'Улица и номер дома или точка на карте'"
+        :placeholder="addressPlaceholder"
         :delay="300"
         :loading="resolving"
+        :disabled="!authStore.isLoggedIn"
         fluid
         @complete="searchAddresses"
         @option-select="selectAddress" />

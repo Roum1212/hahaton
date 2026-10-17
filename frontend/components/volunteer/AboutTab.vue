@@ -14,6 +14,18 @@ const generateInitialData = (): IUpdateVolunteerDto => ({
 
 const dto = ref<IUpdateVolunteerDto>(generateInitialData());
 const submitting = ref(false);
+const savingAvatar = ref(false);
+
+const saveAvatar = async (avatarPath: string) => {
+  savingAvatar.value = true;
+  const profile = await handleAsyncOperation(
+    () => volunteerStore.updateAvatar(avatarPath),
+    () => {
+      savingAvatar.value = false;
+    },
+  );
+  if (profile) toast.success(avatarPath ? 'Фото обновлено' : 'Фото удалено');
+};
 const today = new Date();
 
 watch(
@@ -41,7 +53,15 @@ const onSave = async () => {
 
 <template>
   <form v-if="volunteerStore.profile" class="app-card" @submit.prevent="onSave">
-    <span class="app-card__title">Личные данные</span>
+    <span class="app-card__title">Фото профиля</span>
+    <AppImageUpload
+      :image="volunteerStore.profile.avatarUrl"
+      :name="volunteerStore.profile.fullName"
+      :disabled="savingAvatar"
+      @uploaded="saveAvatar($event.path)"
+      @remove="saveAvatar('')" />
+
+    <span class="app-card__title mt-2">Личные данные</span>
     <div class="app-form-grid">
       <label class="app-field">
         <span class="app-field__label">Фамилия</span>

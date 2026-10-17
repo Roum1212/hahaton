@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import ThemeSettings from './theme.settings';
+import { PRIMEVUE_LOCALE } from './config/locale.config';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -64,6 +65,7 @@ export default defineNuxtConfig({
     options: {
       ripple: true,
       theme: ThemeSettings,
+      locale: PRIMEVUE_LOCALE,
       zIndex: {
         modal: 1100,
         overlay: 1100,

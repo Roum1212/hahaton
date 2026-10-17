@@ -4,7 +4,7 @@ import { isAdminRequest } from '../auth';
 import { compareStrings, db, fail, paginate, requireFound } from '../db';
 import { toAdminVolunteer } from '../mappers';
 import { provisionCoordinator } from '../seed';
-import { isValidAvatarUrl } from './coordinator';
+import { resolveImagePath } from '../images';
 
 const requireAdmin = (ctx: HandlerContext) => {
   if (!isAdminRequest(ctx.requestHeader.get('authorization') ?? undefined)) fail(Code.Unauthenticated, 'Нужна служебная авторизация');
@@ -40,9 +40,8 @@ export const registerAdminService = (router: ConnectRouter) =>
       if (req.cooperationRequestCooldownSeconds === undefined || req.cooperationRequestCooldownSeconds < 0n) {
         return fail(Code.InvalidArgument, 'Нужен неотрицательный период ожидания');
       }
-      if (!isValidAvatarUrl(req.avatarUrl)) return fail(Code.InvalidArgument, 'Аватар должен быть HTTPS-ссылкой');
       provisionCoordinator(req.volunteerId, {
-        avatarUrl: req.avatarUrl,
+        avatarPath: resolveImagePath(req.avatarPath, req.volunteerId),
         description: req.description,
         cooldownSeconds: Number(req.cooperationRequestCooldownSeconds),
       });

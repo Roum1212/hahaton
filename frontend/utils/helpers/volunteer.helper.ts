@@ -11,7 +11,7 @@ export function pluralize(count: number, forms: [string, string, string]): strin
 }
 
 export function formatCoins(count: number): string {
-  return `${count} ${pluralize(count, ['коин', 'коина', 'коинов'])}`;
+  return `${count} ${pluralize(count, ['койн', 'койна', 'койнов'])}`;
 }
 
 export function formatSignedCoins(count: number): string {

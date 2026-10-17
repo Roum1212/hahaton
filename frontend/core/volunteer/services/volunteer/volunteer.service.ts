@@ -14,6 +14,7 @@ const joinName = (...parts: string[]) => parts.filter(Boolean).join(' ');
 
 export class VolunteerService {
   private service = VOLUNTEER_API().volunteer;
+  private baseUrl = String(useRuntimeConfig().public.rpcUrl);
 
   async getMe(signal?: AbortSignal): Promise<IVolunteer> {
     const volunteer = await this.service.get(signal);
@@ -29,6 +30,11 @@ export class VolunteerService {
 
   async update(dto: IUpdateVolunteerDto): Promise<IVolunteer> {
     await this.service.update(this.toApiUpdateDto(dto));
+    return this.getMe();
+  }
+
+  async updateAvatar(avatarPath: string): Promise<IVolunteer> {
+    await this.service.update({ avatarPath });
     return this.getMe();
   }
 
@@ -53,6 +59,7 @@ export class VolunteerService {
       lastName: data.lastName,
       middleName: data.middleName,
       fullName: joinName(data.lastName, data.firstName, data.middleName) || data.emailAddress,
+      avatarUrl: resolveImageUrl(data.avatarUrl, this.baseUrl),
       dateOfBirth: fromProtoDate(data.dateOfBirth),
       email: data.emailAddress,
       phone: data.phoneNumber,
@@ -68,6 +75,7 @@ export class VolunteerService {
       lastName: data.lastName,
       middleName: data.middleName,
       fullName: joinName(data.lastName, data.firstName, data.middleName),
+      avatarUrl: resolveImageUrl(data.avatarUrl, this.baseUrl),
       email: data.emailAddress ?? null,
       phone: data.phoneNumber ?? null,
     };

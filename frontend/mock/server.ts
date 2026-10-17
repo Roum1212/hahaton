@@ -1,6 +1,7 @@
 import http from 'node:http';
 import type { ConnectRouter } from '@connectrpc/connect';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
+import { MAX_IMAGE_BYTES, serveStorage } from './images';
 import { seed } from './seed';
 import { registerAdminService } from './services/admin';
 import { registerCooperationService } from './services/cooperation';
@@ -8,6 +9,7 @@ import { registerCoordinatorService } from './services/coordinator';
 import { registerEventChatService } from './services/event-chat';
 import { registerEventService } from './services/event';
 import { registerGeoService } from './services/geo';
+import { registerImageService } from './services/image';
 import { registerParticipationService } from './services/participation';
 import { registerRewardOrderService } from './services/reward-order';
 import { registerRewardService } from './services/reward';
@@ -28,7 +30,10 @@ const clientRoutes = (router: ConnectRouter) => {
   registerRewardOrderService(router);
   registerEventChatService(router);
   registerGeoService(router);
+  registerImageService(router);
 };
+
+const READ_MAX_BYTES = 8 * 1024 * 1024;
 
 const withCors =
   (handler: http.RequestListener): http.RequestListener =>
@@ -46,16 +51,19 @@ const withCors =
       res.writeHead(204).end();
       return;
     }
+    if (serveStorage(req, res)) return;
     handler(req, res);
   };
 
 const invitations = seed();
 
-http.createServer(withCors(connectNodeAdapter({ routes: clientRoutes }))).listen(PORT, () => {
-  console.log(`Mock Connect RPC: http://localhost:${PORT}`);
-  console.log(`DaData: ${process.env.MOCK_DADATA_API_KEY ? 'подключён' : 'не настроен (MOCK_DADATA_API_KEY)'}`);
-  invitations.forEach((item) => console.log(`Приглашение от ${item.coordinator}: ${item.url}`));
-});
+http
+  .createServer(withCors(connectNodeAdapter({ routes: clientRoutes, readMaxBytes: Math.max(READ_MAX_BYTES, MAX_IMAGE_BYTES * 2) })))
+  .listen(PORT, () => {
+    console.log(`Mock Connect RPC: http://localhost:${PORT}`);
+    console.log(`DaData: ${process.env.MOCK_DADATA_API_KEY ? 'подключён' : 'не настроен (MOCK_DADATA_API_KEY)'}`);
+    invitations.forEach((item) => console.log(`Приглашение от ${item.coordinator}: ${item.url}`));
+  });
 
 http.createServer(connectNodeAdapter({ routes: registerAdminService })).listen(ADMIN_PORT, () => {
   console.log(`Mock AdminService: http://localhost:${ADMIN_PORT} (Authorization: Bearer $MOCK_ADMIN_TOKEN)`);
