@@ -70,7 +70,7 @@ func newIdentityProvider(t *testing.T) *identityProvider {
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.URL.Path {
-		case "/.well-known/openid-configuration":
+		case "/api/.well-known/openid-configuration":
 			require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
 				"issuer":                                x.server.URL,
 				"jwks_uri":                              x.server.URL + "/keys",

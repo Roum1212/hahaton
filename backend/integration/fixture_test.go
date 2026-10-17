@@ -393,6 +393,11 @@ func newFixture(t *testing.T) *fixture {
 		r *http.Request,
 	) {
 		switch r.URL.Path {
+		case "/invalid-issuer-discovery":
+			must(t, json.NewEncoder(w).Encode(map[string]any{
+				"issuer":   "https://wrong.example.com",
+				"jwks_uri": x.provider.URL + "/keys",
+			}))
 		case "/.well-known/openid-configuration":
 			must(t, json.NewEncoder(w).Encode(map[string]any{
 				"issuer":   x.provider.URL,
@@ -508,6 +513,7 @@ func newFixture(t *testing.T) *fixture {
 		"ADMIN_API_KEY":                  "integration-admin",
 		"FRONTEND_URL":                   "https://demo.test",
 		"FLIDA_ISSUER":                   x.provider.URL,
+		"FLIDA_DISCOVERY_URL":            "",
 		"FLIDA_CLIENT_ID":                "demo",
 		"SESSION_TOKEN_V4_SYMMETRIC_KEY": strings.Repeat("01", 32),
 		"DATA_ENCRYPTION_KEY":            strings.Repeat("02", 32),

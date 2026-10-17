@@ -88,6 +88,7 @@ func (x *RPCTestSuite) SetupSuite() {
 		"ADMIN_API_KEY":                  adminAPIKey,
 		"FRONTEND_URL":                   "https://frontend.test",
 		"FLIDA_ISSUER":                   x.provider.server.URL,
+		"FLIDA_DISCOVERY_URL":            x.provider.server.URL + "/api/.well-known/openid-configuration",
 		"FLIDA_CLIENT_ID":                clientID,
 		"SESSION_TOKEN_TTL":              "24h",
 		"SESSION_TOKEN_V4_SYMMETRIC_KEY": strings.Repeat("01", 32),

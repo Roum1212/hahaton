@@ -10,12 +10,16 @@ export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized) => 
     await authStore.init();
 
     if (!GUEST_PAGES.includes(path) && !authStore.isLoggedIn) {
-      useCookie('redirectAfterLogin').value = to.fullPath;
-      return navigateTo(ROUTES.login);
+      rememberLoginRedirect(to.fullPath);
+      return navigateTo({ path: ROUTES.login, query: { returnTo: to.fullPath } });
+    }
+
+    if (AUTH_PAGES.includes(path) && typeof to.query.returnTo === 'string') {
+      rememberLoginRedirect(to.query.returnTo);
     }
 
     if (AUTH_PAGES.includes(path) && authStore.isLoggedIn) {
-      return navigateTo(ROUTES.cabinet);
+      return useAuthActions().redirectAfterLogin();
     }
 
     return true;

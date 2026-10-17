@@ -2,7 +2,7 @@
 
 Docker Compose запускает три постоянных контейнера: Nuxt frontend, Go backend и PostgreSQL 17.
 Nginx и HTTPS настраиваются отдельно на сервере. Приложения внутри контейнеров работают по HTTP;
-по умолчанию наружу опубликованы только `127.0.0.1:3000` и `127.0.0.1:8080`.
+по умолчанию наружу опубликованы только `127.0.0.1:3000` и `127.0.0.1:8000`.
 PostgreSQL доступен только во внутренней сети Compose.
 
 ## Подготовка
@@ -22,6 +22,9 @@ sh backend/scripts/fetch-cities.sh
 - `FRONTEND_URL` — публичный HTTPS-адрес frontend.
 - `BACKEND_URL` — публичный HTTPS-адрес backend, доступный браузеру.
 - `FLIDA_ISSUER` и `FLIDA_CLIENT_ID` — issuer и Client ID приложения Flida.
+- `FLIDA_DISCOVERY_URL` — отдельный адрес discovery, если он находится не в корне issuer.
+  Для текущей Flida: issuer `https://id.flida.ru`, discovery
+  `https://id.flida.ru/api/.well-known/openid-configuration`.
 - `FLIDA_REDIRECT_URI` — HTTPS-адрес `<FRONTEND_URL>/auth/callback`, разрешённый в Flida.
 - `DADATA_API_KEY` и `YANDEX_MAPS_API_KEY` — если используете подсказки адресов и карту.
 
@@ -42,12 +45,16 @@ Compose передаёт frontend только публичные `NUXT_PUBLIC_*
 
 ```sh
 docker compose config --quiet
-docker compose build
+docker compose build frontend
+docker compose build backend
 docker compose up -d --wait postgres
 docker compose run --rm --no-deps --entrypoint /app/goose backend up
 docker compose up -d --wait
 docker compose ps
 ```
+
+Образы собираются отдельными командами, чтобы сборки не конкурировали за память на небольшой VPS.
+Для VPS с 2 ГБ RAM нужен запас памяти на сборку, например swap.
 
 Миграции выполняются вручную Goose из собранного образа; сервер их не применяет автоматически.
 Команда `run --rm` создаёт временный контейнер только на время миграции. Постоянно работают три.
@@ -66,7 +73,7 @@ PostgreSQL имеет healthcheck; backend запускается после г�
 ## Nginx и административный API
 
 Ваш Nginx должен направлять frontend на `http://127.0.0.1:3000`, backend — на
-`http://127.0.0.1:8080`, включая `/storage/` и пути Connect RPC. Для чата нужен streaming:
+`http://127.0.0.1:8000`, включая `/storage/` и пути Connect RPC. Для чата нужен streaming:
 не буферизуйте ответы backend и задайте достаточный read timeout.
 Публичные URL должны быть HTTPS, поскольку сессионная cookie имеет `Secure; HttpOnly; SameSite=None`.
 Не нужно передавать сертификаты в контейнеры при завершении TLS на Nginx.
@@ -77,7 +84,7 @@ AdminService расположен на том же адресе и порту, �
 Пример обращения к локальному backend на самом сервере:
 
 ```sh
-curl --fail-with-body http://127.0.0.1:8080/admin.v1.AdminService/FindVolunteers \
+curl --fail-with-body http://127.0.0.1:8000/admin.v1.AdminService/FindVolunteers \
   -H "Authorization: Bearer $ADMIN_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"email_address":"volunteer@example.com"}'
@@ -103,7 +110,8 @@ SESSION_TOKEN_V4_SYMMETRIC_KEY сохраняет возможность исп�
 Обновление с ручной миграцией без работающих приложений:
 
 ```sh
-docker compose build
+docker compose build frontend
+docker compose build backend
 docker compose stop frontend backend
 docker compose run --rm --no-deps --entrypoint /app/goose backend up
 docker compose up -d --wait
@@ -117,3 +125,9 @@ docker compose up -d --wait
 ```
 
 Проверки backend, репозиториев и всех RPC описаны в [backend/README.md](backend/README.md).
+
+## CD
+
+После merge в `main` GitHub Actions собирает образы, передаёт их на VPS, сохраняет дамп БД,
+применяет миграции Goose и обновляет приложения с проверкой готовности.
+Серверный `.env`, PostgreSQL и изображения сохраняются. Настройка — в [deploy/README.md](deploy/README.md).

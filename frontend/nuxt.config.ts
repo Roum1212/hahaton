@@ -21,10 +21,6 @@ export default defineNuxtConfig({
 
   modules: ['@vueuse/nuxt', '@nuxt/eslint', '@primevue/nuxt-module', '@pinia/nuxt'],
 
-  nitro: {
-    noExternals: true,
-  },
-
   css: ['primeicons/primeicons.css', '@/assets/style.scss', '@/assets/tailwind.css'],
 
   runtimeConfig: {
@@ -42,7 +38,7 @@ export default defineNuxtConfig({
         redirectUri: process.env.APP_FLIDA_REDIRECT_URI || `${process.env.APP_PUBLIC_URL || 'http://localhost:3000'}/auth/callback`,
         postLogoutRedirectUri: process.env.APP_FLIDA_POST_LOGOUT_REDIRECT_URI || '',
         mode: process.env.APP_FLIDA_MODE || 'redirect',
-        fedcm: (process.env.APP_FLIDA_FEDCM ?? 'active,passive')
+        fedcm: (process.env.APP_FLIDA_FEDCM ?? '')
           .split(',')
           .map((mode) => mode.trim())
           .filter(Boolean),
@@ -66,6 +62,7 @@ export default defineNuxtConfig({
 
   primevue: {
     usePrimeVue: true,
+    loadStyles: false,
     options: {
       ripple: true,
       theme: ThemeSettings,

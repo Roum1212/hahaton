@@ -17,6 +17,7 @@ import (
 
 	"github.com/Roum1212/hahaton/cmd/hahaton"
 	"github.com/Roum1212/hahaton/internal/config"
+	client_flida "github.com/Roum1212/hahaton/internal/infra/client/flida"
 )
 
 func checkCORS(x *fixture) {
@@ -118,6 +119,17 @@ func checkCORS(x *fixture) {
 func checkRuntime(x *fixture) {
 	checkCORS(x)
 
+	providerClient := x.provider.Client()
+	providerClient.Timeout = time.Second
+	_, err := client_flida.NewClient(
+		x.t.Context(), x.provider.URL, "demo", x.provider.URL+"/invalid-issuer-discovery", providerClient,
+	)
+	require(
+		x.t,
+		err != nil && strings.Contains(err.Error(), "issuer does not match"),
+		"discovery issuer mismatch accepted",
+	)
+
 	var cfg config.Config
 
 	x.t.Setenv("CITY_CATALOG_CSV_PATH", "/missing-catalog.csv")
@@ -126,7 +138,7 @@ func checkRuntime(x *fixture) {
 
 	x.t.Setenv("SESSION_TOKEN_V4_SYMMETRIC_KEY", "invalid")
 
-	err := env.ParseWithOptions(&cfg, config.ParseOptions())
+	err = env.ParseWithOptions(&cfg, config.ParseOptions())
 	require(x.t, err != nil, "invalid session encryption key was accepted")
 	x.t.Setenv("SESSION_TOKEN_V4_SYMMETRIC_KEY", originalKey)
 	x.t.Setenv("SESSION_TOKEN_TTL", "0s")
