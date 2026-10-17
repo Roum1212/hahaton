@@ -678,16 +678,6 @@
   border: 1px solid var(--landing-line);
   border-radius: var(--landing-radius);
   background-color: #ffffff;
-  transition:
-    transform var(--app-transition),
-    box-shadow var(--app-transition),
-    border-color var(--app-transition);
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: var(--app-brand-border);
-    box-shadow: 0 24px 48px -32px rgba(122, 52, 20, 0.35);
-  }
 
   &__icon {
     display: inline-flex;
